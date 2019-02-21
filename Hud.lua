@@ -22,24 +22,48 @@ local hotkey = ui.new_hotkey
 local userToIndex = client.userid_to_entindex
 local slider = ui.new_slider
 local screenSize = client.screen_size
+local visibility = ui.set_visible
+local referenceUi = ui.reference
+local worldToScreen = renderer.world_to_screen
+local colorPicker = ui.new_color_picker
 
 local hudCheckbox = checkbox("Lua", "B", "Hud")
-local hudMultibox = multibox("Lua", "B", "Extras", "Keystroke indicator", "Fake duck indicator")
+local hudMultibox = multibox("Lua", "B", "Extras", "Keystroke indicator", "Damage indicator", "Fake duck indicator")
+
+local largeDmgIndcCheckbox = checkbox("Lua", "B", "Large damage indicators")
+local dmgIndcColorpicker = colorPicker("Lua", "B", "Large damage indicators", 255, 255, 255, 255)
 
 local wh = hotkey("Lua", "B", "W")
 local sh = hotkey("Lua", "B", "S")
 local ah = hotkey("Lua", "B", "A")
 local dh = hotkey("Lua", "B", "D")
 local spaceh = hotkey("Lua", "B", "Space")
-local slowWalkh = hotkey("Lua", "B", "Slow Walk")
+local slowWalkh = hotkey("Lua", "B", "Slow walk")
 
 local function contains(table, val)
-	for i=1,#table do
-		if table[i] == val then 
+	for l=1,#table do
+		if table[l] == val then 
 			return true
 		end
 	end
 	return false
+end
+
+local playerDamage = {}
+
+local function on_player_hurt(e)
+	local localPlayer = entity.get_local_player()
+
+	if userToIndex(e.attacker) == localPlayer then
+	    local x, y, z = getProp(userToIndex(e.userid), "m_vecOrigin")
+        local duckAmount = getProp(userToIndex(e.userid), "m_flDuckAmount")
+ 
+        playerDamage[#playerDamage + 1] = {x, y, z + (46 + (1 - duckAmount) * 18), (z + (46 + (1 - duckAmount) * 18)) + 50, e.dmg_health, true}
+    end
+end
+
+local function on_round_prestart(e)
+	playerDamage = {}
 end
 
 local function on_paintExtras(ctx)
@@ -55,7 +79,6 @@ local function on_paintExtras(ctx)
 	if getUi(hudCheckbox, true) then
 		if health > 0 then
 			if contains(hudExtras, "Keystroke indicator") then
-
 				drawRectangle(w - 100, 150, 75, 75, 0, 0, 0, 220)
 				drawRectangle(w - 180, 150, 75, 75, 0, 0, 0, 220)
 				drawRectangle(w - 260, 150, 75, 75, 0, 0, 0, 220)
@@ -95,6 +118,33 @@ local function on_paintExtras(ctx)
 				end
 			end
 		end
+
+		if contains(hudExtras, "Damage indicator") then
+			visibility(dmgIndcColorpicker, true)
+
+			local r, g, b, a = getUi(dmgIndcColorpicker)
+			if getUi(largeDmgIndcCheckbox, true) then
+				flags = "c+"
+			else
+				flags = "cb"
+			end
+
+			for i = 1, #playerDamage do
+
+        		if playerDamage[i][6] == true then
+            		if playerDamage[i][3] >= playerDamage[i][4] then
+                		playerDamage[i][6] = false
+            		end
+
+           		local x, y = worldToScreen(playerDamage[i][1], playerDamage[i][2], playerDamage[i][3])
+            	drawText(x, y, r, g, b, a, flags, 0, playerDamage[i][5])
+
+            	playerDamage[i][3] = playerDamage[i][3] + 0.35
+           		end
+			end
+		else
+			visibility(dmgIndcColorpicker, false)
+        end
 
 		if contains(hudExtras, "Fake duck indicator") then
 			local storedTick = 0
@@ -230,5 +280,15 @@ local hudError = client.set_event_callback('paint', on_paintHud)
 
 local extrasError = client.set_event_callback('paint', on_paintExtras)
 	if extrasError then
+		consoleLog("client.set_event_callback failed: ", error)
+	end
+
+local hurtError = client.set_event_callback('player_hurt', on_player_hurt)
+	if hurtError then
+		consoleLog("client.set_event_callback failed: ", error)
+	end
+
+local prestartError = client.set_event_callback('round_prestart', on_round_prestart)
+	if prestartError then
 		consoleLog("client.set_event_callback failed: ", error)
 	end
