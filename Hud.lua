@@ -26,19 +26,37 @@ local visibility = ui.set_visible
 local referenceUi = ui.reference
 local worldToScreen = renderer.world_to_screen
 local colorPicker = ui.new_color_picker
+local realTime = globals.realtime
+local callback = client.set_event_callback
 
 local hudCheckbox = checkbox("Lua", "B", "Hud")
-local hudMultibox = multibox("Lua", "B", "Extras", "Keystroke indicator", "Damage indicator", "Fake duck indicator")
+local hudMultibox = multibox("Lua", "B", "Extras", "Keystroke indicator", "Damage indicator", "Fake duck indicator", "Hitrate indicator")
 
+--dmg indc--
 local largeDmgIndcCheckbox = checkbox("Lua", "B", "Large damage indicators")
 local dmgIndcColorpicker = colorPicker("Lua", "B", "Large damage indicators", 255, 255, 255, 255)
+local hsCheckbox = checkbox("Lua", "B", "Headshot indicator")
+local hsColorpicker = colorPicker("Lua", "B", "Headshot indicator")
 
-local wh = hotkey("Lua", "B", "W")
-local sh = hotkey("Lua", "B", "S")
-local ah = hotkey("Lua", "B", "A")
-local dh = hotkey("Lua", "B", "D")
-local spaceh = hotkey("Lua", "B", "Space")
-local slowWalkh = hotkey("Lua", "B", "Slow walk")
+--keystroke indc--
+local whCheckbox = checkbox("Lua", "B", "W")
+local wh = hotkey("Lua", "B", "W", true)
+local shCheckbox = checkbox("Lua", "B", "S")
+local sh = hotkey("Lua", "B", "S", true)
+local ahCheckbox = checkbox("Lua", "B", "A")
+local ah = hotkey("Lua", "B", "A", true)
+local dhCheckbox = checkbox("Lua", "B", "D")
+local dh = hotkey("Lua", "B", "D", true)
+local spacehCheckbox = checkbox("Lua", "B", "Space")
+local spaceh = hotkey("Lua", "B", "Space", true)
+local slowWalkhCheckbox = checkbox("Lua", "B", "Slow walk")
+local slowWalkh = hotkey("Lua", "B", "Slow walk", true)
+local boxColorCheckbox = checkbox("Lua", "B", "Box color")
+local boxColorPicker = colorPicker("Lua", "B", "Box color", 0, 0, 0, 220)
+local keyUnpressedColorCheckbox = checkbox("Lua", "B", "Key unpress color")
+local keyUnpressedColorPicker = colorPicker("Lua", "B", "Key press color", 255, 255, 255, 150)
+local keyPressedColorCheckbox = checkbox("Lua", "B", "Key press color")
+local keyPressedColorPicker = colorPicker("Lua", "B", "Key press color", 50, 255, 50, 220)
 
 local function contains(table, val)
 	for l=1,#table do
@@ -46,24 +64,65 @@ local function contains(table, val)
 			return true
 		end
 	end
+
 	return false
 end
+
+--for damage indicator and hit rate--
+local hits = 0
+local misses = 0
 
 local playerDamage = {}
 
 local function on_player_hurt(e)
 	local localPlayer = entity.get_local_player()
+	local attacker = userToIndex(e.attacker)
 
+	--dmg indc--
 	if userToIndex(e.attacker) == localPlayer then
 	    local x, y, z = getProp(userToIndex(e.userid), "m_vecOrigin")
         local duckAmount = getProp(userToIndex(e.userid), "m_flDuckAmount")
  
         playerDamage[#playerDamage + 1] = {x, y, z + (46 + (1 - duckAmount) * 18), (z + (46 + (1 - duckAmount) * 18)) + 50, e.dmg_health, true}
     end
+
+    --hit rate--
+    if attacker == nil then
+    	return
+    end
+
+    if attacker ~= localPlayer then
+    	return
+    end
+
+    hits = hits + 1
+end
+
+--hit rate--
+local function on_aim_miss(e)
+	misses = misses + 1
+end
+
+--hs indc--
+local headshot = {}
+
+local function on_player_death(e)
+	local localPlayer = entity.get_local_player()
+	local attacker = userToIndex(e.attacker)
+
+	if userToIndex(e.attacker) == localPlayer then
+		if e.headshot then
+			local x, y, z = getProp(userToIndex(e.userid), "m_vecOrigin")
+    		local duckAmount = getProp(userToIndex(e.userid), "m_flDuckAmount")
+
+    		headshot[#headshot + 1] = {x, y, z + (46 + (1 - duckAmount) * 18), realTime() + 2, true}
+    	end
+	end
 end
 
 local function on_round_prestart(e)
 	playerDamage = {}
+	headshot = {}
 end
 
 local function on_paintExtras(ctx)
@@ -78,51 +137,127 @@ local function on_paintExtras(ctx)
 
 	if getUi(hudCheckbox, true) then
 		if health > 0 then
-			if contains(hudExtras, "Keystroke indicator") then
-				drawRectangle(w - 100, 150, 75, 75, 0, 0, 0, 220)
-				drawRectangle(w - 180, 150, 75, 75, 0, 0, 0, 220)
-				drawRectangle(w - 260, 150, 75, 75, 0, 0, 0, 220)
-				drawRectangle(w - 180, 70, 75, 75, 0, 0, 0, 220)
-				drawRectangle(w - 260, 230, 235, 45, 0, 0, 0, 220)
-				drawRectangle(w - 260, 280, 235, 45, 0, 0, 0, 220)
-		
-				drawText(w - 154, 95, r, g, b, 150, "+", 0, "W")
-				drawText(w - 151, 174, r, g, b, 150, "+", 0, "S")
-				drawText(w - 72, 174, r, g, b, 150, "+", 0, "D")
-				drawText(w - 231, 174, r, g, b, 150, "+", 0, "A")
-				drawText(w - 145, 250, r, g, b, 150, "c+", 0, "Space")
-				drawText(w - 145, 301, r, g, b, 150, "c+", 0, "Slow Walk")
+			if getUi(hudCheckbox, true) and contains(hudExtras, "Keystroke indicator") then
+				visibility(whCheckbox, true)
+				visibility(shCheckbox, true)
+				visibility(ahCheckbox, true)
+				visibility(dhCheckbox, true)
+				visibility(spacehCheckbox, true)
+				visibility(slowWalkhCheckbox, true)
+				visibility(wh, true)
+				visibility(sh, true)
+				visibility(ah, true)
+				visibility(dh, true)
+				visibility(spaceh, true)
+				visibility(slowWalkh, true)
+				visibility(boxColorCheckbox, true)
+				visibility(boxColorPicker, true)
+				visibility(keyUnpressedColorCheckbox, true)
+				visibility(keyUnpressedColorPicker, true)
+				visibility(keyPressedColorCheckbox, true)
+				visibility(keyPressedColorPicker, true)
 
-				if getUi(wh) then
-					drawText(w - 154, 95, 50, g, 50, 220, "+", 0, "W")
+				if getUi(boxColorCheckbox, true) then
+					boxR, boxG, boxB, boxA = getUi(boxColorPicker)
+				else
+					boxR, boxG, boxB, boxA = 0, 0, 0, 220
 				end
 
-				if getUi(sh) then
-					drawText(w - 151, 174, 50, g, 50, 220, "+", 0, "S")
+				if getUi(keyUnpressedColorCheckbox, true) then
+					keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA = getUi(keyUnpressedColorPicker)
+				else
+					keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA = 255, 255, 255, 150
 				end
 
-				if getUi(ah) then
-					drawText(w - 231, 174, 50, g, 50, 220, "+", 0, "A")
+				if getUi(keyPressedColorCheckbox, true) then
+					keyPressR, keyPressG, keyPressB, keyPressA = getUi(keyPressedColorPicker)
+				else
+					keyPressR, keyPressG, keyPressB, keyPressA = 50, 255, 50, 220
 				end
 
-				if getUi(dh) then
-					drawText(w - 72, 174, 50, g, 50, 220, "+", 0, "D")
+				if getUi(whCheckbox, true) then
+					drawRectangle(w - 180, 70, 75, 75, boxR, boxG, boxB, boxA)
+					drawText(w - 154, 95, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "W")
+
+					if getUi(wh) then
+						drawText(w - 154, 95, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "W")
+					end
 				end
 
-				if getUi(spaceh) then
-					drawText(w - 145, 250, 50, g, 50, 220, "c+", 0, "Space")
+				if getUi(shCheckbox, true) then
+					drawRectangle(w - 180, 150, 75, 75, boxR, boxG, boxB, boxA)
+					drawText(w - 151, 174, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "S")
+
+					if getUi(sh) then
+						drawText(w - 151, 174, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "S")
+					end
 				end
 
-				if getUi(slowWalkh) then
-					drawText(w - 145, 301, 50, g, 50, 220, "c+", 0, "Slow Walk")
+				if getUi(ahCheckbox, true) then
+					drawRectangle(w - 260, 150, 75, 75, boxR, boxG, boxB, boxA)
+					drawText(w - 231, 174, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "A")
+
+					if getUi(ah) then
+						drawText(w - 231, 174, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "A")
+					end
 				end
+
+				if getUi(dhCheckbox, true) then
+					drawRectangle(w - 100, 150, 75, 75, boxR, boxG, boxB, boxA)
+					drawText(w - 72, 174, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "D")
+
+					if getUi(dh) then
+						drawText(w - 72, 174, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "D")
+					end
+				end
+
+				if getUi(spacehCheckbox, true) then
+					drawRectangle(w - 260, 230, 235, 45, boxR, boxG, boxB, boxA)
+					drawText(w - 145, 250, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "c+", 0, "Space")
+
+					if getUi(spaceh) then
+						drawText(w - 145, 250, keyPressR, keyPressG, keyPressB, keyPressA, "c+", 0, "Space")
+					end
+				end
+
+				if getUi(slowWalkhCheckbox, true) then
+					drawRectangle(w - 260, 280, 235, 45, boxR, boxG, boxB, boxA)
+					drawText(w - 145, 301, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "c+", 0, "Slow Walk")
+
+					if getUi(slowWalkh) then
+						drawText(w - 145, 301, keyPressR, keyPressG, keyPressB, keyPressA, "c+", 0, "Slow Walk")
+					end
+				end
+			else
+				visibility(whCheckbox, false)
+				visibility(shCheckbox, false)
+				visibility(ahCheckbox, false)
+				visibility(dhCheckbox, false)
+				visibility(spacehCheckbox, false)
+				visibility(slowWalkhCheckbox, false)
+				visibility(wh, false)
+				visibility(sh, false)
+				visibility(ah, false)
+				visibility(dh, false)
+				visibility(spaceh, false)
+				visibility(slowWalkh, false)
+				visibility(boxColorCheckbox, false)
+				visibility(boxColorPicker, false)
+				visibility(keyUnpressedColorCheckbox, false)
+				visibility(keyUnpressedColorPicker, false)
+				visibility(keyPressedColorCheckbox, false)
+				visibility(keyPressedColorPicker, false)
 			end
 		end
 
-		if contains(hudExtras, "Damage indicator") then
+		if getUi(hudCheckbox, true) and contains(hudExtras, "Damage indicator") then
+			visibility(largeDmgIndcCheckbox, true)
 			visibility(dmgIndcColorpicker, true)
+			visibility(hsCheckbox, true)
+			visibility(hsColorpicker, true)
 
 			local r, g, b, a = getUi(dmgIndcColorpicker)
+
 			if getUi(largeDmgIndcCheckbox, true) then
 				flags = "c+"
 			else
@@ -130,7 +265,6 @@ local function on_paintExtras(ctx)
 			end
 
 			for i = 1, #playerDamage do
-
         		if playerDamage[i][6] == true then
             		if playerDamage[i][3] >= playerDamage[i][4] then
                 		playerDamage[i][6] = false
@@ -142,14 +276,35 @@ local function on_paintExtras(ctx)
             	playerDamage[i][3] = playerDamage[i][3] + 0.35
            		end
 			end
+
+			--hs indc--
+			if getUi(hsCheckbox, true) then
+				local r, g, b, a = getUi(hsColorpicker)
+
+    			for i = 1, #headshot do
+        			if headshot[i][5] == true then
+            			if realTime() >= headshot[i][4] then
+                			headshot[i][5] = false
+            			end
+ 
+            			local x, y = worldToScreen(headshot[i][1], headshot[i][2], headshot[i][3])
+            			drawText(x, y, r, g, b, a, "cb", 0, "Headshot")
+        			end
+    			end
+    		end
+
 		else
+			visibility(largeDmgIndcCheckbox, false)
 			visibility(dmgIndcColorpicker, false)
+			visibility(hsCheckbox, false)
+			visibility(hsColorpicker, false)
         end
 
 		if contains(hudExtras, "Fake duck indicator") then
 			local storedTick = 0
 			local crouchedTicks = {}
 			local entityTable = entity.get_players(true)
+
 			function toBits(num)
 			   	local t={}
 			   	while num>0 do
@@ -157,13 +312,15 @@ local function on_paintExtras(ctx)
 			       	t[#t+1]=rest
 			       	num=(num-rest)/2
 			   	end
+
 			   	return t
+
 			end
 
         	for entid = 1, #entityTable do
            		local ent = entityTable[entid]
+
             	if ent ~= localPlayer then
-               		
                 	local m_flDuckAmount = getProp(ent, string.char(109,095,102,108,068,117,099,107,065,109,111,117,110,116))
                 	local m_flDuckSpeed = getProp(ent, string.char(109,095,102,108,068,117,099,107,083,112,101,101,100))
                 	local m_fFlags = getProp(ent, string.char(109,095,102,070,108,097,103,115))
@@ -195,6 +352,47 @@ local function on_paintExtras(ctx)
             	end
             end
         end
+
+        if contains(hudExtras, "Hitrate indicator") then
+        	local total = hits + misses
+        	local hitPercent = hits / total
+        	local hitPercentFixed = 0
+
+        	if (hitPercent > 0)  then
+				hitPercentFixed = hitPercent * 100
+				hitPercentFixed = string.format("%2.1f", hitPercentFixed)
+			end
+
+			drawIndicator(255, 255, 255, 255, "%: ".. hitPercentFixed)
+			drawIndicator(255, 50, 50, 255, "Misses: ".. misses)
+			drawIndicator(50, 255, 50, 255, "Hits: ".. hits)
+        end
+	else
+		--keystroke--
+		visibility(whCheckbox, false)
+		visibility(shCheckbox, false)
+		visibility(ahCheckbox, false)
+		visibility(dhCheckbox, false)
+		visibility(spacehCheckbox, false)
+		visibility(slowWalkhCheckbox, false)
+		visibility(wh, false)
+		visibility(sh, false)
+		visibility(ah, false)
+		visibility(dh, false)
+		visibility(spaceh, false)
+		visibility(slowWalkh, false)
+		visibility(boxColorCheckbox, false)
+		visibility(boxColorPicker, false)
+		visibility(keyUnpressedColorCheckbox, false)
+		visibility(keyUnpressedColorPicker, false)
+		visibility(keyPressedColorCheckbox, false)
+		visibility(keyPressedColorPicker, false)
+		
+		--dmg indc--
+		visibility(largeDmgIndcCheckbox, false)
+		visibility(dmgIndcColorpicker, false)
+		visibility(hsCheckbox, false)
+		visibility(hsColorpicker, false)
 	end
 end
 
@@ -271,24 +469,42 @@ local function on_paintHud(ctx)
 	end
 end
 
-
-
-local hudError = client.set_event_callback('paint', on_paintHud)
+local hudError = callback('paint', on_paintHud)
 	if hudError then
 		consoleLog("client.set_event_callback failed: ", error)
 	end
 
-local extrasError = client.set_event_callback('paint', on_paintExtras)
+local extrasError = callback('paint', on_paintExtras)
 	if extrasError then
 		consoleLog("client.set_event_callback failed: ", error)
 	end
 
-local hurtError = client.set_event_callback('player_hurt', on_player_hurt)
+local hurtError = callback('player_hurt', on_player_hurt)
 	if hurtError then
 		consoleLog("client.set_event_callback failed: ", error)
 	end
 
-local prestartError = client.set_event_callback('round_prestart', on_round_prestart)
+local prestartError = callback('round_prestart', on_round_prestart)
 	if prestartError then
 		consoleLog("client.set_event_callback failed: ", error)
 	end
+
+local missError = callback('aim_miss', on_aim_miss)
+	if missError then
+		consoleLog("client.set_event_callback failed: ", error)
+	end
+
+local deathError = callback('player_death', on_player_death)
+	if deathError then
+		consoleLog("client.set_event_callback failed: ", error)
+	end
+
+--resets hits/misses on connect
+callback("player_connect_full", function(e)
+	if userToIndex(e.userid) ~= localPlayer then
+		return
+	end
+
+    misses = 0
+	hits = 0
+end)
