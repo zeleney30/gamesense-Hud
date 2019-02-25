@@ -1,6 +1,7 @@
 --for images--
 local images_lib = require "images"
 local imageIcons = images_lib.load(require("imagepack_icons"))
+----------------------------------------------------------------------------------------------------------------------------------
 
 local consoleCmd = client.exec
 local consoleLog = client.log
@@ -28,15 +29,15 @@ local worldToScreen = renderer.world_to_screen
 local colorPicker = ui.new_color_picker
 local realTime = globals.realtime
 local callback = client.set_event_callback
+local textbox = ui.new_textbox
+local setClantag = client.set_clan_tag
+local tickInterval = globals.tickinterval()
+local tickCount = globals.tickcount()
+----------------------------------------------------------------------------------------------------------------------------------
 
 local hudCheckbox = checkbox("Lua", "B", "Hud")
-local hudMultibox = multibox("Lua", "B", "Extras", "Keystroke indicator", "Damage indicator", "Fake duck indicator", "Hitrate indicator")
-
---dmg indc--
-local largeDmgIndcCheckbox = checkbox("Lua", "B", "Large damage indicators")
-local dmgIndcColorpicker = colorPicker("Lua", "B", "Large damage indicators", 255, 255, 255, 255)
-local hsCheckbox = checkbox("Lua", "B", "Headshot indicator")
-local hsColorpicker = colorPicker("Lua", "B", "Headshot indicator")
+local hudMultibox = multibox("Lua", "B", "Extras", {"Keystroke indicator", "Damage indicator", "Fake duck indicator", "Hitrate indicator"--[[, "Custom clantag"--]], "Netvar indicators"})
+----------------------------------------------------------------------------------------------------------------------------------
 
 --keystroke indc--
 local whCheckbox = checkbox("Lua", "B", "W")
@@ -57,6 +58,34 @@ local keyUnpressedColorCheckbox = checkbox("Lua", "B", "Key unpress color")
 local keyUnpressedColorPicker = colorPicker("Lua", "B", "Key press color", 255, 255, 255, 150)
 local keyPressedColorCheckbox = checkbox("Lua", "B", "Key press color")
 local keyPressedColorPicker = colorPicker("Lua", "B", "Key press color", 50, 255, 50, 220)
+----------------------------------------------------------------------------------------------------------------------------------
+
+--dmg/hitrate indc--
+local largeDmgIndcCheckbox = checkbox("Lua", "B", "Large damage indicators")
+local dmgIndcColorpicker = colorPicker("Lua", "B", "Large damage indicators", 255, 255, 255, 255)
+local hsCheckbox = checkbox("Lua", "B", "Headshot indicator")
+local hsColorpicker = colorPicker("Lua", "B", "Headshot indicator")
+
+--player_hurt(e)--
+local hits = 0
+local misses = 0
+local playerDamage = {}
+
+--player_death(e)
+local headshot = {}
+----------------------------------------------------------------------------------------------------------------------------------
+
+--clantag--
+--[[local clantagCheckbox = checkbox("Lua", "B", "Clantag")
+local clantagTextbox = textbox("Lua", "B", "Clantag")--]]
+----------------------------------------------------------------------------------------------------------------------------------
+
+--choke/ping indc--
+local pingCheckbox = checkbox("Lua", "B", "Ping")
+local latencyCheckbox = checkbox("Lua", "B", "Latency")
+local chokeCheckbox = checkbox("Lua", "B", "Choke")
+local numbersCheckbox = checkbox("Lua", "B", "Display numbers")
+----------------------------------------------------------------------------------------------------------------------------------
 
 local function contains(table, val)
 	for l=1,#table do
@@ -67,18 +96,13 @@ local function contains(table, val)
 
 	return false
 end
+----------------------------------------------------------------------------------------------------------------------------------
 
---for damage indicator and hit rate--
-local hits = 0
-local misses = 0
-
-local playerDamage = {}
-
+--hit rate/dmg indc--
 local function on_player_hurt(e)
 	local localPlayer = entity.get_local_player()
 	local attacker = userToIndex(e.attacker)
 
-	--dmg indc--
 	if userToIndex(e.attacker) == localPlayer then
 	    local x, y, z = getProp(userToIndex(e.userid), "m_vecOrigin")
         local duckAmount = getProp(userToIndex(e.userid), "m_flDuckAmount")
@@ -86,7 +110,6 @@ local function on_player_hurt(e)
         playerDamage[#playerDamage + 1] = {x, y, z + (46 + (1 - duckAmount) * 18), (z + (46 + (1 - duckAmount) * 18)) + 50, e.dmg_health, true}
     end
 
-    --hit rate--
     if attacker == nil then
     	return
     end
@@ -98,13 +121,9 @@ local function on_player_hurt(e)
     hits = hits + 1
 end
 
---hit rate--
 local function on_aim_miss(e)
 	misses = misses + 1
 end
-
---hs indc--
-local headshot = {}
 
 local function on_player_death(e)
 	local localPlayer = entity.get_local_player()
@@ -120,10 +139,46 @@ local function on_player_death(e)
 	end
 end
 
+local function on_player_connect_full(e)
+	if userToIndex(e.userid) ~= localPlayer then
+		return
+	end
+
+    misses = 0
+	hits = 0
+end
+
 local function on_round_prestart(e)
 	playerDamage = {}
 	headshot = {}
 end
+----------------------------------------------------------------------------------------------------------------------------------
+
+--clantag--
+--[[local function time_to_ticks(time)
+	return math.floor(time / tickInterval + .5)
+end
+
+local function ClantagAnimation(text, indices)
+	local latency = client.latency()
+	--local text_anim = "               " .. text .. "                      " 
+	local tickinterval = tickInterval
+	local ticks = tickCount + time_to_ticks(latency)
+	local i = ticks / time_to_ticks(0.3)
+	i = math.floor(i % #indices)
+	i = indices[i+1]+1
+
+	return string.sub(text_anim, i, i+15)
+end--]]
+----------------------------------------------------------------------------------------------------------------------------------
+
+--netvar indc--
+local choked = 0
+
+local function on_run_command(c)
+    choked = c.chokedcommands
+end
+----------------------------------------------------------------------------------------------------------------------------------
 
 local function on_paintExtras(ctx)
 	local localPlayer = entity.get_local_player()
@@ -136,6 +191,9 @@ local function on_paintExtras(ctx)
 	local w, h = screenSize()
 
 	if getUi(hudCheckbox, true) then
+		--master--
+		visibility(hudMultibox, true)
+
 		if health > 0 then
 			if getUi(hudCheckbox, true) and contains(hudExtras, "Keystroke indicator") then
 				visibility(whCheckbox, true)
@@ -331,9 +389,9 @@ local function on_paintExtras(ctx)
                 
       		        if m_flDuckSpeed ~= nil and m_flDuckAmount ~= nil then
                     	if m_flDuckSpeed == 8 and m_flDuckAmount <= 0.9 and m_flDuckAmount > 0.01 and toBits(m_fFlags)[1] == 1 then
-                        	if storedTick ~= globals.tickcount() then
+                        	if storedTick ~= tickCount then
                             	crouchedTicks[ent] = crouchedTicks[ent] + 1
-                            	storedTick = globals.tickcount()
+                            	storedTick = tickCount
                         	end
                         
                         	if crouchedTicks[ent] >= 1 then
@@ -367,7 +425,139 @@ local function on_paintExtras(ctx)
 			drawIndicator(255, 50, 50, 255, "Misses: ".. misses)
 			drawIndicator(50, 255, 50, 255, "Hits: ".. hits)
         end
+
+        --[[if contains(hudExtras, "Custom clantag") then
+        	visibility(clantagCheckbox, true)
+
+        	if getUi(clantagCheckbox, true) then
+        		visibility(clantagTextbox, true)
+
+        		local clantagTextbox = ClantagAnimation(getUi(clantagTextbox), {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 11, 11, 11, 11, 11, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22})
+
+        		if clantagTextbox ~= "" then
+        			setClantag(getUi(clantagTextbox))
+        		end
+        	end
+        end--]]
+
+        if contains(hudExtras, "Netvar indicators") then
+        	visibility(pingCheckbox, true)
+        	visibility(chokeCheckbox, true)
+        	visibility(latencyCheckbox, true)
+
+        	local latency = client.latency()
+        	local latencyFixed = math.floor(latency * 100)
+
+        	local fakelag, fakelagHk = referenceUi("AA", "Fake lag", "Enabled")
+
+        	local playerResource = getAll("CCSPlayerResource")[1]
+        	local ping = getProp(playerResource, "m_iPing", localPlayer)
+			local fakelagEnabled = getUi(fakelagHk)
+        	local multiplier = (10.71428571428571)
+
+        	local fakelag, fakelagHk = referenceUi("AA", "Fake lag", "Enabled")
+
+        	if getUi(pingCheckbox, true) then
+        		if getUi(numbersCheckbox, true) then
+        			drawText(w - 82, h / 2 - 47, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
+        		else
+        			drawText(w - 82, h / 2 - 47, 255, 255, 255, 255, "cb", 0, "Ping")
+        		end
+
+				drawRectangle(w - 160, h / 2 - 35, 156, 32, 0, 0, 0, 200)
+	
+				if ping <= 50 then
+					drawRectangle(w - 157, h / 2 - 32, ping, 26, 0, 220, 0, 255)
+				elseif ping > 50 and ping < 100 then
+					drawRectangle(w - 157, h / 2 - 32, ping, 26, 190, 145, 0, 255)
+				elseif ping >= 100 and ping <= 150 then
+					drawRectangle(w - 157, h / 2 - 32, ping, 26, 220, 0, 0, 255)
+				elseif ping > 150 then
+					drawRectangle(w - 157, h / 2 - 32, 150, 26, 255, 0, 0, 255)
+				end
+        	end
+
+        	if getUi(latencyCheckbox, true) then
+        		if getUi(numbersCheckbox, true) then
+        			drawText(w - 82, h / 2 + 23, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
+        		else
+        			drawText(w - 82, h / 2 + 23, 255, 255, 255, 255, "cb", 0, "Latency")
+        		end
+
+        		drawRectangle(w - 160, h / 2 + 35, 156, 32, 0, 0, 0, 200)
+
+        		if latencyFixed == 0 then
+        		elseif latencyFixed < 7.5 then
+        			drawRectangle(w - 157, h / 2 + 38, latency * 1000, 26, 0, 220, 0, 255)
+        		elseif latencyFixed >= 7.5 and latencyFixed < 11.5 then
+        			drawRectangle(w - 157, h / 2 + 38, latency * 1000, 26, 190, 145, 0, 255)
+        		elseif latencyFixed >= 11.5 and latencyFixed <= 20.5 then
+        			drawRectangle(w - 157, h / 2 + 38, Latency * 1000, 26, 220, 0, 0, 255)
+        		elseif latencyFixed > 20.5 then
+        			drawRectangle(w - 157, h / 2 + 38, 150, 26, 255, 0, 0, 255)
+        		end
+        	end
+
+        	if getUi(chokeCheckbox, true) then
+        		local r, g, b, a = 255, 255, 255, 255
+
+        		if getUi(numbersCheckbox, true) then
+        			drawText(w - 82, h / 2 + 93, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
+        		else
+        			drawText(w - 82, h / 2 + 93, 255, 255, 255, 255, "cb", 0, "Choked")
+        		end
+
+        		if fakelagEnabled then
+					drawRectangle(w - 160, h / 2 + 105, 156, 32, 0, 0, 0, 200)
+	
+					if choked == 1 then
+						drawRectangle(w - 157, h / 2 + 108, choked * multiplier, 26, r, g, b, a)
+					elseif choked == 2 then
+						drawRectangle(w - 157, h / 2 + 108, choked * multiplier, 26, r, g, b, a)
+					elseif choked == 3 then
+						drawRectangle(w - 157, h / 2 + 108, choked * multiplier, 26, r, g, b, a)
+					elseif choked == 4 then
+						drawRectangle(w - 157, h / 2 + 108, choked * multiplier, 26, r, g, b, a)
+					elseif choked == 5 then
+						drawRectangle(w - 157, h / 2 + 108, choked * multiplier, 26, r, g, b, a)
+					elseif choked == 6 then
+						drawRectangle(w - 157, h / 2 + 108, choked * multiplier, 26, r, g, b, a)
+					elseif choked == 7 then
+						drawRectangle(w - 157, h / 2 + 108, choked * multiplier, 26, r, g, b, a)
+					elseif choked == 8 then
+						drawRectangle(w - 157, h / 2 + 108, choked * multiplier, 26, r, g, b, a)
+					elseif choked == 9 then
+						drawRectangle(w - 157, h / 2 + 108, choked * multiplier, 26, r, g, b, a)
+					elseif choked == 10 then
+						drawRectangle(w - 157, h / 2 + 108, choked * multiplier, 26, r, g, b, a)
+					elseif choked == 11 then
+						drawRectangle(w - 157, h / 2 + 108, choked * multiplier, 26, r, g, b, a)
+					elseif choked == 12 then
+						drawRectangle(w - 157, h / 2 + 108, choked * multiplier, 26, r, g, b, a)
+					elseif choked == 13 then
+						drawRectangle(w - 157, h / 2 + 108, choked * multiplier, 26, r, g, b, a)
+					elseif choked == 14 then
+						drawRectangle(w - 157, h / 2 + 108, choked * multiplier, 26, r, g, b, a)
+					end
+				end
+        	end
+
+        	if getUi(pingCheckbox, true) or getUi(latencyCheckbox, true) or getUi(chokeCheckbox, true) then
+        		visibility(numbersCheckbox, true)
+      		else
+      			visibility(numbersCheckbox, false)
+        	end
+        else
+        	visibility(pingCheckbox, false)
+        	visibility(chokeCheckbox, false)
+        	visibility(latencyCheckbox, false)
+        	visibility(numbersCheckbox, false)
+        end
+
 	else
+		--extras--
+		visibility(hudMultibox, false)
+
 		--keystroke--
 		visibility(whCheckbox, false)
 		visibility(shCheckbox, false)
@@ -393,6 +583,16 @@ local function on_paintExtras(ctx)
 		visibility(dmgIndcColorpicker, false)
 		visibility(hsCheckbox, false)
 		visibility(hsColorpicker, false)
+
+		--clantag--
+		--[[visibility(clantagCheckbox, false)
+		visibility(clantagTextbox, false)--]]
+
+		--netvar indc--
+		visibility(pingCheckbox, false)
+		visibility(chokeCheckbox, false)
+		visibility(latencyCheckbox, false)
+		visibility(numbersCheckbox, false)
 	end
 end
 
@@ -500,11 +700,12 @@ local deathError = callback('player_death', on_player_death)
 	end
 
 --resets hits/misses on connect
-callback("player_connect_full", function(e)
-	if userToIndex(e.userid) ~= localPlayer then
-		return
+local connectError = callback('player_connect_full', on_player_connect_full)
+	if connectError then
+		consoleLog("client.set_event_callback failed: ", error)
 	end
 
-    misses = 0
-	hits = 0
-end)
+local commandError = callback('run_command', on_run_command)
+	if commandError then
+		consoleLog("client.set_event_callback failed: ", error)
+	end
