@@ -33,6 +33,7 @@ local textbox = ui.new_textbox
 local setClantag = client.set_clan_tag
 local tickInterval = globals.tickinterval()
 local tickCount = globals.tickcount()
+local button = ui.new_button
 ----------------------------------------------------------------------------------------------------------------------------------
 
 local hudCheckbox = checkbox("Lua", "B", "Hud")
@@ -81,6 +82,7 @@ local clantagTextbox = textbox("Lua", "B", "Clantag")--]]
 ----------------------------------------------------------------------------------------------------------------------------------
 
 --choke/ping indc--
+local styleCombobox = combobox("Lua", "B", "Style", "Circles", "Boxes")
 local pingCheckbox = checkbox("Lua", "B", "Ping")
 local latencyCheckbox = checkbox("Lua", "B", "Latency")
 local chokeCheckbox = checkbox("Lua", "B", "Choke")
@@ -153,6 +155,7 @@ local function on_round_prestart(e)
 	playerDamage = {}
 	headshot = {}
 end
+
 ----------------------------------------------------------------------------------------------------------------------------------
 
 --clantag--
@@ -187,6 +190,16 @@ local function round(num, numDecimalPlaces)
 	else 
 		return math.ceil(num * mult - 0.5) / mult
 	end
+end
+
+local function draw_indicator_circle(ctx, x, y, r, g, b, a, percentage, outline)
+    local outline = outline == nil and true or outline
+    local radius = 36
+    local start_degrees = 0
+    if outline then
+        client.draw_circle_outline(ctx, x, y, 0, 0, 0, 200, radius, start_degrees, 1.0, 13)
+    end
+    client.draw_circle_outline(ctx, x, y, r, g, b, a, radius - 1, start_degrees, percentage, 11)
 end
 ----------------------------------------------------------------------------------------------------------------------------------
 
@@ -437,13 +450,14 @@ local function on_paintExtras(ctx)
         end
 
         if contains(hudExtras, "Netvar indicators") then
+        	visibility(styleCombobox, true)
         	visibility(pingCheckbox, true)
         	visibility(latencyCheckbox, true)
         	visibility(chokeCheckbox, true)
         	visibility(speedCheckbox, true)
 
         	local latency = client.latency()
-        	local latencyFixed = math.floor(latency * 100)
+        	local latencyFixed = math.floor(latency * 1000)
 
         	local fakelag, fakelagHk = referenceUi("AA", "Fake lag", "Enabled")
 
@@ -451,126 +465,177 @@ local function on_paintExtras(ctx)
         	local playerResource = getAll("CCSPlayerResource")[1]
         	local ping = getProp(playerResource, "m_iPing", localPlayer)
 			local fakelagEnabled = getUi(fakelagHk)
-        	local multiplier = (10.71428571428571)
+        	local multiplier = 10.71428571428571
         	local speed = 0
-
         	local x = 17
         	local y = 122
 
-        	local fakelag, fakelagHk = referenceUi("AA", "Fake lag", "Enabled")
+        	if getUi(styleCombobox) == "Circles" then
 
-        	if getUi(pingCheckbox, true) then
-        		if getUi(numbersCheckbox, true) then
-        			drawText(w - 82 - x, h / 2 - 47 - y, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
-        		else
-        			drawText(w - 82 - x, h / 2 - 47 - y, 255, 255, 255, 255, "cb", 0, "Ping")
+        		if getUi(pingCheckbox, true) then
+        			if getUi(numbersCheckbox, true) then
+        				drawText(w - 82 - x, h / 2 - 47 - y - 75, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
+        			else
+        				drawText(w - 82 - x, h / 2 - 47 - y - 75, 255, 255, 255, 255, "cb", 0, "Ping")
+        			end
+        			
+        			if ping <= 50 then
+        				r, g, b = 0, 220, 0
+        			elseif ping > 50 and ping < 100 then
+        				r, g, b = 190, 145, 0
+        			elseif ping >= 100 and ping <= 150 then
+        				r, g, b = 220, 100, 0
+        			elseif ping > 150 then
+        				r, g, b = 220, 0, 0
+        			end
+
+        			draw_indicator_circle(ctx, w - 82 - x, h / 2 - 47 - y - 30, r, g, b, 255, ping / 150, outline)
         		end
 
-				drawRectangle(w - 160 - x, h / 2 - 35 - y, 156, 32, 0, 0, 0, 200)
+        		if getUi(latencyCheckbox, true) then
+        			if getUi(numbersCheckbox, true) then
+        				drawText(w - 82 - x, h / 2 + 23 - y - 50, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
+        			else
+        				drawText(w - 82 - x, h / 2 + 23 - y - 50, 255, 255, 255, 255, "cb", 0, "Latency")
+        			end
+
+        			if latencyFixed < 50 then
+        				r, g, b = 0, 220, 0
+        			elseif latencyFixed >= 50 and latencyFixed < 100 then
+        				r, g, b = 190, 145, 0
+        			elseif latencyFixed >= 100 and latencyFixed < 150 then
+        				r, g, b = 220, 100, 0
+        			elseif latencyFixed >= 150 then
+        				r, g, b = 220, 0, 0
+        			end
+
+        			if latencyFixed == 0 then
+        				draw_indicator_circle(ctx, w - 82 - x, h / 2 + 23 - y - 5, r, g, b, 255, 0, outline)
+        			else
+        				draw_indicator_circle(ctx, w - 82 - x, h / 2 + 23 - y - 5, r, g, b, 255, latency * 6.666666666666667, outline)
+        			end
+        		end
+
+        		if getUi(chokeCheckbox, true) then
+        			if getUi(numbersCheckbox, true) then
+        				drawText(w - 82 - x, h / 2 + 93 - y - 20, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
+        			else
+        				drawText(w - 82 - x, h / 2 + 93 - y - 20, 255, 255, 255, 255, "cb", 0, "Choked")
+        			end
+
+        			if fakelagEnabled then
+        				draw_indicator_circle(ctx, w - 82 - x, h / 2 + 93 - y + 25, 255, 255, 255, 255, choked * multiplier / 150, outline)
+        			end
+        		end
+
+        		if getUi(speedCheckbox, true) then
+        			if vx ~= nil then
+						local velocity = math.sqrt(vx * vx + vy * vy)
+						velocity = math.min(9999, velocity) + 0.2
+						velocity = round(velocity, 0)
+
+						if getUi(numbersCheckbox, true) then
+							drawText(w - 82 - x, h / 2 + 163 - y + 5, 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
+						else
+							drawText(w - 82 - x, h / 2 + 163 - y + 5, 255, 255, 255, 255, "cb", 0, "Speed")
+						end
+
+						if velocity == 1 then
+							draw_indicator_circle(ctx, w - 82 - x, h / 2 + 163 - y + 50, 255, 255, 255, 255, 0, outline)
+						else
+							draw_indicator_circle(ctx, w - 82 - x, h / 2 + 163 - y + 50, 255, 255, 255, 255, velocity / 300, outline)
+						end
+					end
+        		end
+
+        	elseif getUi(styleCombobox) == "Boxes" then
+        		if getUi(pingCheckbox, true) then
+        			if getUi(numbersCheckbox, true) then
+        				drawText(w - 82 - x, h / 2 - 47 - y, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
+        			else
+        				drawText(w - 82 - x, h / 2 - 47 - y, 255, 255, 255, 255, "cb", 0, "Ping")
+        			end
+
+					drawRectangle(w - 160 - x, h / 2 - 35 - y, 156, 32, 0, 0, 0, 200)
 	
-				if ping <= 50 then
-					drawRectangle(w - 157 - x, h / 2 - 32 - y, ping, 26, 0, 220, 0, 255)
-				elseif ping > 50 and ping < 100 then
-					drawRectangle(w - 157 - x, h / 2 - 32 - y, ping, 26, 190, 145, 0, 255)
-				elseif ping >= 100 and ping <= 150 then
-					drawRectangle(w - 157 - x, h / 2 - 32 - y, ping, 26, 220, 0, 0, 255)
-				elseif ping > 150 then
-					drawRectangle(w - 157 - x, h / 2 - 32 - y, 150, 26, 255, 0, 0, 255)
-				end
-        	end
-
-        	if getUi(latencyCheckbox, true) then
-        		if getUi(numbersCheckbox, true) then
-        			drawText(w - 82 - x, h / 2 + 23 - y, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
-        		else
-        			drawText(w - 82 - x, h / 2 + 23 - y, 255, 255, 255, 255, "cb", 0, "Latency")
+					if ping <= 50 then
+						drawRectangle(w - 157 - x, h / 2 - 32 - y, ping, 26, 0, 220, 0, 255)
+					elseif ping > 50 and ping < 100 then
+						drawRectangle(w - 157 - x, h / 2 - 32 - y, ping, 26, 190, 145, 0, 255)
+					elseif ping >= 100 and ping <= 150 then
+						drawRectangle(w - 157 - x, h / 2 - 32 - y, ping, 26, 220, 100, 0, 255)
+					elseif ping > 150 then
+						drawRectangle(w - 157 - x, h / 2 - 32 - y, 150, 26, 220, 0, 0, 255)
+					end
         		end
 
-        		drawRectangle(w - 160 - x, h / 2 + 35 - y, 156, 32, 0, 0, 0, 200)
+        		if getUi(latencyCheckbox, true) then
+        			if getUi(numbersCheckbox, true) then
+        				drawText(w - 82 - x, h / 2 + 23 - y, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
+        			else
+        				drawText(w - 82 - x, h / 2 + 23 - y, 255, 255, 255, 255, "cb", 0, "Latency")
+        			end
 
-        		if latencyFixed == 0 then
-        		elseif latencyFixed < 7.5 then
-        			drawRectangle(w - 157 - x, h / 2 + 38 - y, latency * 1000, 26, 0, 220, 0, 255)
-        		elseif latencyFixed >= 7.5 and latencyFixed < 11.5 then
-        			drawRectangle(w - 157 - x, h / 2 + 38 - y, latency * 1000, 26, 190, 145, 0, 255)
-        		elseif latencyFixed >= 11.5 and latencyFixed <= 20.5 then
-        			drawRectangle(w - 157 - x, h / 2 + 38 - y, Latency * 1000, 26, 220, 0, 0, 255)
-        		elseif latencyFixed > 20.5 then
-        			drawRectangle(w - 157 - x, h / 2 + 38 - y, 150, 26, 255, 0, 0, 255)
-        		end
-        	end
+        			drawRectangle(w - 160 - x, h / 2 + 35 - y, 156, 32, 0, 0, 0, 200)
 
-        	if getUi(chokeCheckbox, true) then
-        		local r, g, b, a = 255, 255, 255, 255
-
-        		if getUi(numbersCheckbox, true) then
-        			drawText(w - 82 - x, h / 2 + 93 - y, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
-        		else
-        			drawText(w - 82 - x, h / 2 + 93 - y, 255, 255, 255, 255, "cb", 0, "Choked")
+        			if latencyFixed == 0 then
+        			elseif latencyFixed < 50 then
+        				drawRectangle(w - 157 - x, h / 2 + 38 - y, latency * 1000, 26, 0, 220, 0, 255)
+        			elseif latencyFixed >= 50 and latencyFixed < 100 then
+        				drawRectangle(w - 157 - x, h / 2 + 38 - y, latency * 1000, 26, 190, 145, 0, 255)
+        			elseif latencyFixed >= 100 and latencyFixed < 150 then
+        				drawRectangle(w - 157 - x, h / 2 + 38 - y, latency * 1000, 26, 220, 100, 0, 255)
+        			elseif latencyFixed >= 150 then
+        				drawRectangle(w - 157 - x, h / 2 + 38 - y, 150, 26, 220, 0, 0, 255)
+        			end
         		end
 
-        		if fakelagEnabled then
-					drawRectangle(w - 160 - x, h / 2 + 105 - y, 156, 32, 0, 0, 0, 200)
+        		if getUi(chokeCheckbox, true) then
+        			local r, g, b, a = 255, 255, 255, 255
+
+    				if getUi(numbersCheckbox, true) then
+        				drawText(w - 82 - x, h / 2 + 93 - y, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
+        			else
+        				drawText(w - 82 - x, h / 2 + 93 - y, 255, 255, 255, 255, "cb", 0, "Choked")
+        			end
+
+        			if fakelagEnabled then
+						drawRectangle(w - 160 - x, h / 2 + 105 - y, 156, 32, 0, 0, 0, 200)
 	
-					if choked == 1 then
-						drawRectangle(w - 157 - x, h / 2 + 108 - y, choked * multiplier, 26, r, g, b, a)
-					elseif choked == 2 then
-						drawRectangle(w - 157 - x, h / 2 + 108 - y, choked * multiplier, 26, r, g, b, a)
-					elseif choked == 3 then
-						drawRectangle(w - 157 - x, h / 2 + 108 - y, choked * multiplier, 26, r, g, b, a)
-					elseif choked == 4 then
-						drawRectangle(w - 157 - x, h / 2 + 108 - y, choked * multiplier, 26, r, g, b, a)
-					elseif choked == 5 then
-						drawRectangle(w - 157 - x, h / 2 + 108 - y, choked * multiplier, 26, r, g, b, a)
-					elseif choked == 6 then
-						drawRectangle(w - 157 - x, h / 2 + 108 - y, choked * multiplier, 26, r, g, b, a)
-					elseif choked == 7 then
-						drawRectangle(w - 157 - x, h / 2 + 108 - y, choked * multiplier, 26, r, g, b, a)
-					elseif choked == 8 then
-						drawRectangle(w - 157 - x, h / 2 + 108 - y, choked * multiplier, 26, r, g, b, a)
-					elseif choked == 9 then
-						drawRectangle(w - 157 - x, h / 2 + 108 - y, choked * multiplier, 26, r, g, b, a)
-					elseif choked == 10 then
-						drawRectangle(w - 157 - x, h / 2 + 108 - y, choked * multiplier, 26, r, g, b, a)
-					elseif choked == 11 then
-						drawRectangle(w - 157 - x, h / 2 + 108 - y, choked * multiplier, 26, r, g, b, a)
-					elseif choked == 12 then
-						drawRectangle(w - 157 - x, h / 2 + 108 - y, choked * multiplier, 26, r, g, b, a)
-					elseif choked == 13 then
-						drawRectangle(w - 157 - x, h / 2 + 108 - y, choked * multiplier, 26, r, g, b, a)
-					elseif choked == 14 then
 						drawRectangle(w - 157 - x, h / 2 + 108 - y, choked * multiplier, 26, r, g, b, a)
 					end
-				end
-        	end
+        		end
 
-        	if getUi(speedCheckbox, true) then
-        		if vx ~= nil then
-					local velocity = math.sqrt(vx * vx + vy * vy)
-					velocity = math.min(9999, velocity) + 0.2
-					velocity = round(velocity, 0)
+        		if getUi(speedCheckbox, true) then
+        			if vx ~= nil then
+						local velocity = math.sqrt(vx * vx + vy * vy)
+						velocity = math.min(9999, velocity) + 0.2
+						velocity = round(velocity, 0)
 
-					if getUi(numbersCheckbox, true) then
-						drawText(w - 82 - x, h / 2 + 163 - y, 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
-					else
-						drawText(w - 82 - x, h / 2 + 163 - y, 255, 255, 255, 255, "cb", 0, "Speed")
+						if getUi(numbersCheckbox, true) then
+							drawText(w - 82 - x, h / 2 + 163 - y, 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
+						else
+							drawText(w - 82 - x, h / 2 + 163 - y, 255, 255, 255, 255, "cb", 0, "Speed")
+						end
+
+						drawRectangle(w - 160 - x, h / 2 + 175 - y, 156, 32, 0, 0, 0, 200)
+
+						if velocity > 1 and velocity <= 300 then
+							drawRectangle(w - 157 - x, h / 2 + 178 - y, velocity / 2, 26, r, g, b, a)
+						elseif velocity > 300 then
+							drawRectangle(w - 157 - x, h / 2 + 178 - y, 150, 26, r, g, b, a)
+						end
 					end
+        		end
+      	 	end
 
-					drawRectangle(w - 160 - x, h / 2 + 175 - y, 156, 32, 0, 0, 0, 200)
-
-					if velocity > 1 and velocity <= 300 then
-						drawRectangle(w - 157 - x, h / 2 + 178 - y, velocity / 2, 26, r, g, b, a)
-					elseif velocity > 300 then
-						drawRectangle(w - 157 - x, h / 2 + 178 - y, 150, 26, r, g, b, a)
-					end
-				end
-        	end
 
         	if getUi(pingCheckbox, true) or getUi(latencyCheckbox, true) or getUi(chokeCheckbox, true) or getUi(speedCheckbox, true) then
-        		visibility(numbersCheckbox, true)
+       			visibility(numbersCheckbox, true)
       		else
       			visibility(numbersCheckbox, false)
-        	end
+       		end
+      
         else
         	visibility(pingCheckbox, false)
         	visibility(latencyCheckbox, false)
