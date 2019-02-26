@@ -37,6 +37,7 @@ local button = ui.new_button
 ----------------------------------------------------------------------------------------------------------------------------------
 
 local hudCheckbox = checkbox("Lua", "B", "Hud")
+--local hudFullCheckbox = checkbox("Lua", "B", "Full length")
 local hudMultibox = multibox("Lua", "B", "Extras", {"Keystroke indicator", "Damage indicator", "Fake duck indicator", "Hitrate indicator", "Netvar indicators"--[[, "Custom clantag"--]]})
 ----------------------------------------------------------------------------------------------------------------------------------
 
@@ -637,6 +638,7 @@ local function on_paintExtras(ctx)
        		end
       
         else
+        	visibility(styleCombobox, false)
         	visibility(pingCheckbox, false)
         	visibility(latencyCheckbox, false)
         	visibility(chokeCheckbox, false)
@@ -693,6 +695,7 @@ local function on_paintExtras(ctx)
 		visibility(clantagTextbox, false)--]]
 
 		--netvar indc--
+		visibility(styleCombobox, false)
 		visibility(pingCheckbox, false)
 		visibility(latencyCheckbox, false)
 		visibility(chokeCheckbox, false)
@@ -718,30 +721,34 @@ local function on_paintHud(ctx)
 	local maxW = 0
 	local w, h = screenSize()
 	local i = 1
+	local sf = 11
+	local df = 11
+	local tf = 1
 
 	if getUi(hudCheckbox, true) then
-		--Hud
+		--visibility(hudFullCheckbox, true)
+
 		setProp(localPlayer, "m_iHideHud", 8200)
 
 		if health > 0 then
 			--hp/armor--
-			drawRectangle(x, h - 68, 350, 68, 10, 10, 10, 255)
-			drawRectangle(x + 1, h - 67, 348, 66, 60, 60, 60, 255)
-			drawRectangle(x + 2, h - 66, 346, 64, 40, 40, 40, 255)
-			drawRectangle(x + 5, h - 64, 341, 60, 60, 60, 60, 255)
-			drawRectangle(x + 6, h - 63, 339, 58, 20, 20, 20, 255)
-			drawGradient(x + 7, h - 62, 339 / 2, 1, 56, 176, 218, 255, 201, 72, 205, 255, true)
-			drawGradient(x + 7 + (336 / 2), h - 62, 339 / 2, 1, 201, 72, 205, 255, 204, 227, 53, 255, true)
-			drawText(x + 75, h - 35, 108, 195, 18, a, flags, maxW, health)
-			drawText(x + 75, h - 17, r, g, b, a, "c", maxW, "Health")
-			drawText(x + 275, h - 35, 85, 155, 215, a, flags, maxW, armor)
-			drawText(x + 275, h - 17, r, g, b, a, "c", maxW, "Armor")
+			drawRectangle(x, h - 68 + df, 350, 68 - sf, 10, 10, 10, 255)
+			drawRectangle(x + 1, h - 67 + df, 348, 66 - sf, 60, 60, 60, 255)
+			drawRectangle(x + 2, h - 66 + df, 346, 64 - sf, 40, 40, 40, 255)
+			drawRectangle(x + 5, h - 64 + df, 341, 60 - sf, 60, 60, 60, 255)
+			drawRectangle(x + 6, h - 63 + df, 339, 58 - sf, 20, 20, 20, 255)
+			drawGradient(x + 7, h - 62 + df, 339 / 2, 1, 56, 176, 218, 255, 201, 72, 205, 255, true)
+			drawGradient(x + 7 + (336 / 2), h - 62 + df, 339 / 2, 1, 201, 72, 205, 255, 204, 227, 53, 255, true)
+			drawText(x + 75, h - 35 + tf, 108, 195, 18, a, flags, maxW, health)
+			drawText(x + 75, h - 17 + tf, r, g, b, a, "c", maxW, "Health")
+			drawText(x + 275, h - 35 + tf, 85, 155, 215, a, flags, maxW, armor)
+			drawText(x + 275, h - 17 + tf, r, g, b, a, "c", maxW, "Armor")
+
+			drawIndicator(r, g, b, 0, " ")
 
 			if inBuyzone == 1 then
 				--money--
 				drawIndicator(r, g, b, a, "$".. money)
-			else
-				drawIndicator(r, g, b, 0, "1")
 			end
 
 			if c4Holder == localPlayer then
@@ -750,7 +757,7 @@ local function on_paintHud(ctx)
 					--calculate x and y of the current image
 					local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
 					--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
-					local width, height = image:draw(x + 125, y + 1387, nil, 40, 255, 255, 255, 255)
+					local width, height = image:draw(x + 135, y + 1387 + 7, nil, 37, 255, 255, 255, 255)
 			end
 
 			if hasHelmet == 1 then
@@ -759,18 +766,18 @@ local function on_paintHud(ctx)
 				--calculate x and y of the current image
 				local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
 				--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
-				local width, height = image:draw(x + 175, y + 1387, nil, 40, 255, 255, 255, 255)
+				local width, height = image:draw(x + 180, y + 1387 + 10, nil, 32, 255, 255, 255, 255)
 			elseif armor > 0 and hasHelmet == 0 then
 				--loop through all elements in images_icons
 				local image = imageIcons["armor"]
 				--calculate x and y of the current image
 				local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
 				--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
-				local width, height = image:draw(x + 195, y + 1387, nil, 40, 255, 255, 255, 255)
+				local width, height = image:draw(x + 180, y + 1387 + 10, nil, 32, 255, 255, 255, 255)
 			end
-		elseif health <= 45 and health > 0 then
-			drawText(w / 2, h / 2 - 50, 255, 0, 0, 255, "c", 0, "Low Hp")
 		end
+	else
+		--visibility(hudFullCheckbox, false)
 	end
 end
 
