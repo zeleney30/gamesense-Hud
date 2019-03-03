@@ -34,32 +34,49 @@ local setClantag = client.set_clan_tag
 local tickInterval = globals.tickinterval()
 local tickCount = globals.tickcount()
 local button = ui.new_button
+local w, h = screenSize()
 ----------------------------------------------------------------------------------------------------------------------------------
 
 local hudCheckbox = checkbox("Lua", "B", "Hud")
---local hudFullCheckbox = checkbox("Lua", "B", "Full length")
+local reposHud = checkbox("Lua", "B", "Reposition hud")
+local hudSliderX = slider("Lua", "B", "Hud X", 0, w, 0, true)
+local hudSliderY = slider("Lua", "B", "Hud Y", 0, h, h, true)
+local hudFullCheckbox = checkbox("Lua", "B", "Full length")
 local hudMultibox = multibox("Lua", "B", "Extras", {"Keystroke indicator", "Damage indicator", "Fake duck indicator", "Hitrate indicator", "Netvar indicators"--[[, "Custom clantag"--]]})
 ----------------------------------------------------------------------------------------------------------------------------------
 
 --keystroke indc--
 local whCheckbox = checkbox("Lua", "B", "W")
 local wh = hotkey("Lua", "B", "W", true)
+local wSliderX = slider("Lua", "B", "W slider X", 0, w, w - 154, true)
+local wSliderY = slider("Lua", "B", "W slider Y", 0, h, h - 1345, true)
 local shCheckbox = checkbox("Lua", "B", "S")
 local sh = hotkey("Lua", "B", "S", true)
+local sSliderX = slider("Lua", "B", "S slider X", 0, w, w - 151, true)
+local sSliderY = slider("Lua", "B", "S slider Y", 0, h, h - 1266, true)
 local ahCheckbox = checkbox("Lua", "B", "A")
 local ah = hotkey("Lua", "B", "A", true)
+local aSliderX = slider("Lua", "B", "A slider X", 0, w, w - 231, true)
+local aSliderY = slider("Lua", "B", "A slider Y", 0, h, h - 1266, true)
 local dhCheckbox = checkbox("Lua", "B", "D")
 local dh = hotkey("Lua", "B", "D", true)
+local dSliderX = slider("Lua", "B", "D slider X", 0, w, w - 72, true)
+local dSliderY = slider("Lua", "B", "D slider Y", 0, h, h - 1266, true)
 local spacehCheckbox = checkbox("Lua", "B", "Space")
 local spaceh = hotkey("Lua", "B", "Space", true)
+local spaceSliderX = slider("Lua", "B", "Space slider X", 0, w, w - 145, true)
+local spaceSliderY = slider("Lua", "B", "Space slider Y", 0, h, h - 1190, true)
 local slowWalkhCheckbox = checkbox("Lua", "B", "Slow walk")
 local slowWalkh = hotkey("Lua", "B", "Slow walk", true)
+local slowWalkSliderX = slider("Lua", "B", "S slider X", 0, w, w - 145, true)
+local slowWalkSliderY = slider("Lua", "B", "S slider Y", 0, h, h - 1139, true)
 local boxColorCheckbox = checkbox("Lua", "B", "Box color")
 local boxColorPicker = colorPicker("Lua", "B", "Box color", 0, 0, 0, 220)
 local keyUnpressedColorCheckbox = checkbox("Lua", "B", "Key unpress color")
 local keyUnpressedColorPicker = colorPicker("Lua", "B", "Key press color", 255, 255, 255, 150)
 local keyPressedColorCheckbox = checkbox("Lua", "B", "Key press color")
 local keyPressedColorPicker = colorPicker("Lua", "B", "Key press color", 50, 255, 50, 220)
+local reposKeyindcCheckbox = checkbox("Lua", "B", "Reposition keystroke indicators")
 ----------------------------------------------------------------------------------------------------------------------------------
 
 --dmg/hitrate indc--
@@ -82,13 +99,22 @@ local headshot = {}
 local clantagTextbox = textbox("Lua", "B", "Clantag")--]]
 ----------------------------------------------------------------------------------------------------------------------------------
 
---choke/ping indc--
+--netvar indc--
 local styleCombobox = combobox("Lua", "B", "Style", "Circles", "Boxes")
 local pingCheckbox = checkbox("Lua", "B", "Ping")
+local pingSliderX = slider("Lua", "B", "Ping slider X", 0, w, w / 2, true)
+local pingSliderY = slider("Lua", "B", "Ping slider Y", 0, h, h / 2, true)
 local latencyCheckbox = checkbox("Lua", "B", "Latency")
+local latencySliderX = slider("Lua", "B", "Latency slider X", 0, w, w / 2, true)
+local latencySliderY = slider("Lua", "B", "Latency slider Y", 0, h, h / 2, true)
 local chokeCheckbox = checkbox("Lua", "B", "Choke")
+local chokeSliderX = slider("Lua", "B", "Choke slider X", 0, w, w / 2, true)
+local chokeSliderY = slider("Lua", "B", "Choke slider Y", 0, h, h / 2, true)
 local speedCheckbox = checkbox("Lua", "B", "Speed")
+local speedSliderX = slider("Lua", "B", "Speed slider X", 0, w, w / 2, true)
+local speedSliderY = slider("Lua", "B", "Speed slider Y", 0, h, h / 2, true)
 local numbersCheckbox = checkbox("Lua", "B", "Display numbers")
+local reposNetvarCheckbox = checkbox("Lua", "B", "Reposition netvar indicators")
 ----------------------------------------------------------------------------------------------------------------------------------
 
 local function contains(table, val)
@@ -202,20 +228,242 @@ local function draw_indicator_circle(ctx, x, y, r, g, b, a, percentage, outline)
     end
     client.draw_circle_outline(ctx, x, y, r, g, b, a, radius - 1, start_degrees, percentage, 11)
 end
-----------------------------------------------------------------------------------------------------------------------------------
 
-local function on_paintExtras(ctx)
+----------------------------------------------------------------------------------------------------------------------------------
+local function noVisible()
+	visibility(hudFullCheckbox, false)
+		visibility(reposHud, false)
+		visibility(hudSliderX, false)
+		visibility(hudSliderY, false)
+		visibility(hudMultibox, false)
+		visibility(wSliderX, false)
+		visibility(wSliderY, false)
+		visibility(whCheckbox, false)
+		visibility(shCheckbox, false)
+		visibility(ahCheckbox, false)
+		visibility(dhCheckbox, false)
+		visibility(spacehCheckbox, false)
+		visibility(slowWalkhCheckbox, false)
+		visibility(wh, false)
+		visibility(sh, false)
+		visibility(ah, false)
+		visibility(dh, false)
+		visibility(spaceh, false)
+		visibility(slowWalkh, false)
+		visibility(boxColorCheckbox, false)
+		visibility(boxColorPicker, false)
+		visibility(keyUnpressedColorCheckbox, false)
+		visibility(keyUnpressedColorPicker, false)
+		visibility(keyPressedColorCheckbox, false)
+		visibility(keyPressedColorPicker, false)
+		visibility(wSliderX, false)
+		visibility(wSliderY, false)
+		visibility(sSliderX, false)
+		visibility(sSliderY, false)
+		visibility(aSliderX, false)
+		visibility(aSliderY, false)
+		visibility(dSliderX, false)
+		visibility(dSliderY, false)
+		visibility(spaceSliderX, false)
+		visibility(spaceSliderY, false)
+		visibility(slowWalkSliderX, false)
+		visibility(slowWalkSliderY, false)
+		visibility(reposKeyindcCheckbox, false)
+		visibility(largeDmgIndcCheckbox, false)
+		visibility(dmgIndcColorpicker, false)
+		visibility(hsCheckbox, false)
+		visibility(hsColorpicker, false)
+		visibility(styleCombobox, false)
+		visibility(pingCheckbox, false)
+		visibility(pingSliderX, false)
+		visibility(pingSliderY, false)
+		visibility(latencyCheckbox, false)
+		visibility(latencySliderX, false)
+		visibility(latencySliderY, false)
+		visibility(chokeCheckbox, false)
+		visibility(chokeSliderX, false)
+		visibility(chokeSliderY, false)
+		visibility(speedCheckbox, false)
+		visibility(speedSliderX, false)
+		visibility(speedSliderY, false)
+		visibility(numbersCheckbox, false)
+		visibility(reposNetvarCheckbox, false)
+end
+
+----------------------------------------------------------------------------------------------------------------------------------
+local function on_paintHud(ctx)
 	local localPlayer = entity.get_local_player()
 	local health = getProp(localPlayer, "m_iHealth")
-	local hudExtras = getUi(hudMultibox)
-	local x, y = 0, 0
+	local armor = getProp(localPlayer, "m_ArmorValue")
+	local inBuyzone = getProp(localPlayer, "m_bInBuyZone")
+	local money = getProp(localPlayer, "m_iAccount")
+	local currentWeapon = getProp(localPlayer, "m_hActiveWeapon")
+	local playerResource = getAll("CCSPlayerResource")[1]
+	local c4Holder = getProp(playerResource, "m_iPlayerC4")
+	local hasHelmet = getProp(localPlayer, "m_bHasHelmet")
+	local ammo = getProp(getProp(localPlayer, "m_hActiveWeapon"), "m_iClip1")
+	local ammoReserve = getProp(getProp(localPlayer, "m_hActiveWeapon"), "m_iPrimaryReserveAmmoCount")
+
 	local r, g, b, a = 255, 255, 255, 255
 	local flags = "c+"
 	local maxW = 0
-	local w, h = screenSize()
+	local i = 1
+	local sf = 4
+	local df = 4
+	local tf = 3
 
 	if getUi(hudCheckbox, true) then
-		--master--
+		visibility(hudFullCheckbox, true)
+		visibility(reposHud, true)
+
+		setProp(localPlayer, "m_iHideHud", 8200)
+
+		if getUi(reposHud, true) then
+			visibility(hudSliderX, true)
+			visibility(hudSliderY, true)
+
+			x = getUi(hudSliderX)
+			h = getUi(hudSliderY)
+			y = 0
+		else
+			visibility(hudSliderX, false)
+			visibility(hudSliderY, false)
+
+			w, h = screenSize()
+			x, y = 0, 0
+		end
+
+		if health > 0 then
+			if getUi(hudFullCheckbox, true) then
+				--hp/armor--
+				drawRectangle(x, h - 68 + df, w, 68 - sf, 10, 10, 10, 255)
+				drawRectangle(x + 1, h - 67 + df, w - 2, 66 - sf, 60, 60, 60, 255)
+				drawRectangle(x + 2, h - 66 + df, w - 4, 64 - sf, 40, 40, 40, 255)
+				drawRectangle(x + 5, h - 64 + df, w - 9, 60 - sf, 60, 60, 60, 255)
+				drawRectangle(x + 6, h - 63 + df, w - 11, 58 - sf, 20, 20, 20, 255)
+				drawGradient(x + 7, h - 62 + df, w / 2 - 11, 1, 56, 176, 218, 255, 201, 72, 205, 255, true)
+				drawGradient(x + 7 + w / 2 - 13, h - 62 + df, w / 2, 1, 201, 72, 205, 255, 204, 227, 53, 255, true)
+				drawText(x + 75, h - 35 - tf, 108, 195, 18, a, flags, maxW, health)
+				drawText(x + 75, h - 16 - tf, r, g, b, a, "c", maxW, "Health")
+				drawText(x + 275, h - 35 - tf, 85, 155, 215, a, flags, maxW, armor)
+				drawText(x + 275, h - 16 - tf, r, g, b, a, "c", maxW, "Armor")
+
+				if ammo == -1 then
+				
+				elseif ammo >= 0 and ammo <10 and ammoReserve >= 0 and ammoReserve <10 then
+					drawText(w - 115, h - 32, r, g, b, a, "c+", 0, ammoReserve)
+					drawText(w - 135, h - 33, r, g, b, a, "c+", 0, "|")
+					drawText(w - 155, h - 32, r, g, b, a, "c+", 0, ammo)
+				elseif ammo >= 10 or ammoReserve >= 10 then
+					drawText(w - 110, h - 32, r, g, b, a, "c+", 0, ammoReserve)
+					drawText(w - 135, h - 33, r, g, b, a, "c+", 0, "|")
+					drawText(w - 160, h - 32, r, g, b, a, "c+", 0, ammo)
+				end
+
+				if inBuyzone == 1 then
+					--money--
+					drawIndicator(r, g, b, a, "$".. money)
+				end
+
+				if c4Holder == localPlayer then
+					--loop through all elements in images_icons
+						local image = imageIcons["c4"]
+						--calculate x and y of the current image
+						local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
+						--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
+						local width, height = image:draw(x + 135, h - 53 + 1, nil, 40, 255, 255, 255, 255)
+				end
+
+				if hasHelmet == 1 then
+					--loop through all elements in images_icons
+					local image = imageIcons["armor_helmet"]
+					--calculate x and y of the current image
+					local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
+					--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
+					local width, height = image:draw(x + 180, h - 53 + 7, nil, 32, 255, 255, 255, 255)
+				elseif armor > 0 and hasHelmet == 0 then
+					--loop through all elements in images_icons
+					local image = imageIcons["armor"]
+					--calculate x and y of the current image
+					local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
+					--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
+					local width, height = image:draw(x + 180, h - 53 + 7, nil, 32, 255, 255, 255, 255)
+				end
+
+			else
+				--hp/armor--
+				drawRectangle(x, h - 68 + df, 350, 68 - sf, 10, 10, 10, 255)
+				drawRectangle(x + 1, h - 67 + df, 348, 66 - sf, 60, 60, 60, 255)
+				drawRectangle(x + 2, h - 66 + df, 346, 64 - sf, 40, 40, 40, 255)
+				drawRectangle(x + 5, h - 64 + df, 341, 60 - sf, 60, 60, 60, 255)
+				drawRectangle(x + 6, h - 63 + df, 339, 58 - sf, 20, 20, 20, 255)
+				drawGradient(x + 7, h - 62 + df, 339 / 2, 1, 56, 176, 218, 255, 201, 72, 205, 255, true)
+				drawGradient(x + 7 + (336 / 2), h - 62 + df, 339 / 2, 1, 201, 72, 205, 255, 204, 227, 53, 255, true)
+				drawText(x + 75, h - 35 - tf, 108, 195, 18, a, flags, maxW, health)
+				drawText(x + 75, h - 16 - tf, r, g, b, a, "c", maxW, "Health")
+				drawText(x + 275, h - 35 - tf, 85, 155, 215, a, flags, maxW, armor)
+				drawText(x + 275, h - 16 - tf, r, g, b, a, "c", maxW, "Armor")
+	
+				drawIndicator(r, g, b, 0, " ")
+
+				if inBuyzone == 1 then
+					--money--
+					drawIndicator(r, g, b, a, "$".. money)
+				end
+
+				if c4Holder == localPlayer then
+					--loop through all elements in images_icons
+						local image = imageIcons["c4"]
+						--calculate x and y of the current image
+						local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
+						--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
+						local width, height = image:draw(x + 135, h - 53 + 1, nil, 40, 255, 255, 255, 255)
+				end
+
+				if hasHelmet == 1 then
+					--loop through all elements in images_icons
+					local image = imageIcons["armor_helmet"]
+					--calculate x and y of the current image
+					local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
+					--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
+					local width, height = image:draw(x + 180, h - 53 + 7, nil, 32, 255, 255, 255, 255)
+				elseif armor > 0 and hasHelmet == 0 then
+					--loop through all elements in images_icons
+					local image = imageIcons["armor"]
+					--calculate x and y of the current image
+					local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
+					--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
+					local width, height = image:draw(x + 180, h - 53 + 7, nil, 32, 255, 255, 255, 255)
+				end
+			end
+		end
+	else
+		noVisible()
+	end
+end
+
+local hudError = callback('paint', on_paintHud)
+	if hudError then
+		consoleLog("client.set_event_callback failed: ", error)
+	end
+
+----------------------------------------------------------------------------------------------------------------------------------
+local function on_paintIndc(ctx)
+	drawIndicator(255, 255, 255, 0, " ")
+end
+
+local indcError = callback('paint', on_paintIndc)
+	if indcError then
+		client.log(indcError)
+	end
+
+----------------------------------------------------------------------------------------------------------------------------------
+local function on_paintKeystroke(ctx)
+	local localPlayer = entity.get_local_player()
+	local health = getProp(localPlayer, "m_iHealth")
+	local hudExtras = getUi(hudMultibox)
+
+	if getUi(hudCheckbox, true) then
 		visibility(hudMultibox, true)
 
 		if health > 0 then
@@ -238,6 +486,62 @@ local function on_paintExtras(ctx)
 				visibility(keyUnpressedColorPicker, true)
 				visibility(keyPressedColorCheckbox, true)
 				visibility(keyPressedColorPicker, true)
+				visibility(reposKeyindcCheckbox, true)
+				visibility(reposKeyindcCheckbox, true)
+
+				if getUi(reposKeyindcCheckbox, true) then
+					visibility(wSliderX, true)
+					visibility(wSliderY, true)
+					visibility(sSliderX, true)
+					visibility(sSliderY, true)
+					visibility(aSliderX, true)
+					visibility(aSliderY, true)
+					visibility(dSliderX, true)
+					visibility(dSliderY, true)
+					visibility(spaceSliderX, true)
+					visibility(spaceSliderY, true)
+					visibility(slowWalkSliderX, true)
+					visibility(slowWalkSliderY, true)
+
+					wx = getUi(wSliderX)
+					wy = getUi(wSliderY)
+					sx = getUi(sSliderX)
+					sy = getUi(sSliderY)
+					ax = getUi(aSliderX)
+					ay = getUi(aSliderY)
+					dx = getUi(dSliderX)
+					dy = getUi(dSliderY)
+					spacex = getUi(spaceSliderX)
+					spacey = getUi(spaceSliderY)
+					slowWalkx = getUi(slowWalkSliderX)
+					slowWalky = getUi(slowWalkSliderY)
+				else
+					visibility(wSliderX, false)
+					visibility(wSliderY, false)
+					visibility(sSliderX, false)
+					visibility(sSliderY, false)
+					visibility(aSliderX, false)
+					visibility(aSliderY, false)
+					visibility(dSliderX, false)
+					visibility(dSliderY, false)
+					visibility(spaceSliderX, false)
+					visibility(spaceSliderY, false)
+					visibility(slowWalkSliderX, false)
+					visibility(slowWalkSliderY, false)
+
+					wx = w - 154
+					sx = w - 151
+					ax = w - 231
+					dx = w - 72
+					spacex = w - 145
+					slowWalkx = w - 145
+					wy = h - 1345
+					sy = h - 1266
+					ay = h - 1266
+					dy = h - 1266
+					spacey = h - 1190
+					slowWalky = h - 1139
+				end
 
 				if getUi(boxColorCheckbox, true) then
 					boxR, boxG, boxB, boxA = getUi(boxColorPicker)
@@ -258,56 +562,56 @@ local function on_paintExtras(ctx)
 				end
 
 				if getUi(whCheckbox, true) then
-					drawRectangle(w - 180, 70, 75, 75, boxR, boxG, boxB, boxA)
-					drawText(w - 154, 95, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "W")
+					drawRectangle(wx - 26, wy - 25, 75, 75, boxR, boxG, boxB, boxA)
+					drawText(wx, wy, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "W")
 
 					if getUi(wh) then
-						drawText(w - 154, 95, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "W")
+						drawText(wx, wy, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "W")
 					end
 				end
 
 				if getUi(shCheckbox, true) then
-					drawRectangle(w - 180, 150, 75, 75, boxR, boxG, boxB, boxA)
-					drawText(w - 151, 174, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "S")
+					drawRectangle(sx - 29, sy - 24, 75, 75, boxR, boxG, boxB, boxA)
+					drawText(sx, sy, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "S")
 
 					if getUi(sh) then
-						drawText(w - 151, 174, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "S")
+						drawText(sx, sy, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "S")
 					end
 				end
 
 				if getUi(ahCheckbox, true) then
-					drawRectangle(w - 260, 150, 75, 75, boxR, boxG, boxB, boxA)
-					drawText(w - 231, 174, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "A")
+					drawRectangle(ax - 29, ay - 24, 75, 75, boxR, boxG, boxB, boxA)
+					drawText(ax, ay, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "A")
 
 					if getUi(ah) then
-						drawText(w - 231, 174, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "A")
+						drawText(ax, ay, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "A")
 					end
 				end
 
 				if getUi(dhCheckbox, true) then
-					drawRectangle(w - 100, 150, 75, 75, boxR, boxG, boxB, boxA)
-					drawText(w - 72, 174, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "D")
+					drawRectangle(dx - 28, dy - 24, 75, 75, boxR, boxG, boxB, boxA)
+					drawText(dx, dy, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "D")
 
 					if getUi(dh) then
-						drawText(w - 72, 174, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "D")
+						drawText(dx, dy, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "D")
 					end
 				end
 
 				if getUi(spacehCheckbox, true) then
-					drawRectangle(w - 260, 230, 235, 45, boxR, boxG, boxB, boxA)
-					drawText(w - 145, 250, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "c+", 0, "Space")
+					drawRectangle(spacex - 115, spacey - 20, 235, 45, boxR, boxG, boxB, boxA)
+					drawText(spacex, spacey, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "c+", 0, "Space")
 
 					if getUi(spaceh) then
-						drawText(w - 145, 250, keyPressR, keyPressG, keyPressB, keyPressA, "c+", 0, "Space")
+						drawText(spacex, spacey, keyPressR, keyPressG, keyPressB, keyPressA, "c+", 0, "Space")
 					end
 				end
 
 				if getUi(slowWalkhCheckbox, true) then
-					drawRectangle(w - 260, 280, 235, 45, boxR, boxG, boxB, boxA)
-					drawText(w - 145, 301, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "c+", 0, "Slow Walk")
+					drawRectangle(slowWalkx - 115, slowWalky - 21, 235, 45, boxR, boxG, boxB, boxA)
+					drawText(slowWalkx, slowWalky, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "c+", 0, "Slow Walk")
 
 					if getUi(slowWalkh) then
-						drawText(w - 145, 301, keyPressR, keyPressG, keyPressB, keyPressA, "c+", 0, "Slow Walk")
+						drawText(slowWalkx, slowWalky, keyPressR, keyPressG, keyPressB, keyPressA, "c+", 0, "Slow Walk")
 					end
 				end
 			else
@@ -329,118 +633,164 @@ local function on_paintExtras(ctx)
 				visibility(keyUnpressedColorPicker, false)
 				visibility(keyPressedColorCheckbox, false)
 				visibility(keyPressedColorPicker, false)
+				visibility(wSliderX, false)
+				visibility(wSliderY, false)
+				visibility(sSliderX, false)
+				visibility(sSliderY, false)
+				visibility(aSliderX, false)
+				visibility(aSliderY, false)
+				visibility(dSliderX, false)
+				visibility(dSliderY, false)
+				visibility(spaceSliderX, false)
+				visibility(spaceSliderY, false)
+				visibility(slowWalkSliderX, false)
+				visibility(slowWalkSliderY, false)
+				visibility(reposKeyindcCheckbox, false)
 			end
 		end
+	end
+end
 
-		if getUi(hudCheckbox, true) and contains(hudExtras, "Damage indicator") then
-			visibility(largeDmgIndcCheckbox, true)
-			visibility(dmgIndcColorpicker, true)
-			visibility(hsCheckbox, true)
-			visibility(hsColorpicker, true)
+local keystrokeError = callback('paint', on_paintKeystroke)
+	if keystrokeError then
+		client.log(keystrokeError)
+	end
 
-			local r, g, b, a = getUi(dmgIndcColorpicker)
+----------------------------------------------------------------------------------------------------------------------------------
+local function on_paintDmgIndc(ctx)
+	local hudExtras = getUi(hudMultibox)
 
-			if getUi(largeDmgIndcCheckbox, true) then
-				flags = "c+"
-			else
-				flags = "cb"
-			end
+	if getUi(hudCheckbox, true) and contains(hudExtras, "Damage indicator") then
+		visibility(largeDmgIndcCheckbox, true)
+		visibility(dmgIndcColorpicker, true)
+		visibility(hsCheckbox, true)
+		visibility(hsColorpicker, true)
 
-			for i = 1, #playerDamage do
-        		if playerDamage[i][6] == true then
-            		if playerDamage[i][3] >= playerDamage[i][4] then
-                		playerDamage[i][6] = false
-            		end
+		local r, g, b, a = getUi(dmgIndcColorpicker)
 
-           		local x, y = worldToScreen(playerDamage[i][1], playerDamage[i][2], playerDamage[i][3])
-            	drawText(x, y, r, g, b, a, flags, 0, playerDamage[i][5])
-
-            	playerDamage[i][3] = playerDamage[i][3] + 0.35
-           		end
-			end
-
-			--hs indc--
-			if getUi(hsCheckbox, true) then
-				local r, g, b, a = getUi(hsColorpicker)
-
-    			for i = 1, #headshot do
-        			if headshot[i][5] == true then
-            			if realTime() >= headshot[i][4] then
-                			headshot[i][5] = false
-            			end
- 
-            			local x, y = worldToScreen(headshot[i][1], headshot[i][2], headshot[i][3])
-            			drawText(x, y, r, g, b, a, "cb", 0, "Headshot")
-        			end
-    			end
-    		end
-
+		if getUi(largeDmgIndcCheckbox, true) then
+			flags = "c+"
 		else
-			visibility(largeDmgIndcCheckbox, false)
-			visibility(dmgIndcColorpicker, false)
-			visibility(hsCheckbox, false)
-			visibility(hsColorpicker, false)
-        end
+			flags = "cb"
+		end
 
-		if contains(hudExtras, "Fake duck indicator") then
-			local storedTick = 0
-			local crouchedTicks = {}
-			local entityTable = entity.get_players(true)
-
-			function toBits(num)
-			   	local t={}
-			   	while num>0 do
-			       	rest=math.fmod(num,2)
-			       	t[#t+1]=rest
-			       	num=(num-rest)/2
-			   	end
-
-			   	return t
-
-			end
-
-        	for entid = 1, #entityTable do
-           		local ent = entityTable[entid]
-
-            	if ent ~= localPlayer then
-                	local m_flDuckAmount = getProp(ent, string.char(109,095,102,108,068,117,099,107,065,109,111,117,110,116))
-                	local m_flDuckSpeed = getProp(ent, string.char(109,095,102,108,068,117,099,107,083,112,101,101,100))
-                	local m_fFlags = getProp(ent, string.char(109,095,102,070,108,097,103,115))
-                
-                	if crouchedTicks[ent] == nil then
-                   		crouchedTicks[ent] = 0
-                	end
-                
-      		        if m_flDuckSpeed ~= nil and m_flDuckAmount ~= nil then
-                    	if m_flDuckSpeed == 8 and m_flDuckAmount <= 0.9 and m_flDuckAmount > 0.01 and toBits(m_fFlags)[1] == 1 then
-                        	if storedTick ~= tickCount then
-                            	crouchedTicks[ent] = crouchedTicks[ent] + 1
-                            	storedTick = tickCount
-                        	end
-                        
-                        	if crouchedTicks[ent] >= 1 then
-                            	local bone_x, bone_y, bone_z = entity.hitbox_position(ent, 3)
-                            	if bone_x ~= nil and bone_y ~= nil and bone_z ~= nil then
-                                	local w_bone_x, w_bone_y = renderer.world_to_screen(bone_x, bone_y, bone_z)
-                                	if w_bone_x ~= nil and w_bone_y ~= nil then
-                                    	drawText(w_bone_x, w_bone_y, 255, 50, 50, 255, "cb", 0, "Fake Ducking")
-                                	end
-                            	end
-                        	end
-                    	else
-                        	crouchedTicks[ent] = 0
-                    	end
-                	end
+		for i = 1, #playerDamage do
+        	if playerDamage[i][6] == true then
+            	if playerDamage[i][3] >= playerDamage[i][4] then
+                	playerDamage[i][6] = false
             	end
-            end
-        end
 
-        if contains(hudExtras, "Hitrate indicator") then
-        	local total = hits + misses
+           	local x, y = worldToScreen(playerDamage[i][1], playerDamage[i][2], playerDamage[i][3])
+            drawText(x, y, r, g, b, a, flags, 0, playerDamage[i][5])
+
+            playerDamage[i][3] = playerDamage[i][3] + 0.35
+           	end
+		end
+
+		--hs indc--
+		if getUi(hsCheckbox, true) then
+			local r, g, b, a = getUi(hsColorpicker)
+
+    		for i = 1, #headshot do
+        		if headshot[i][5] == true then
+            		if realTime() >= headshot[i][4] then
+                		headshot[i][5] = false
+            		end
+ 
+            		local x, y = worldToScreen(headshot[i][1], headshot[i][2], headshot[i][3])
+            		drawText(x, y, r, g, b, a, "cb", 0, "Headshot")
+        		end
+    		end
+    	end
+
+	else
+		visibility(largeDmgIndcCheckbox, false)
+		visibility(dmgIndcColorpicker, false)
+		visibility(hsCheckbox, false)
+		visibility(hsColorpicker, false)
+    end
+end
+
+local dmgIndcError = callback('paint', on_paintDmgIndc)
+	if dmgIndcError then
+		client.log(dmgIndcError)
+	end
+
+----------------------------------------------------------------------------------------------------------------------------------
+local function on_paintFdIndc(ctx)
+	local hudExtras = getUi(hudMultibox)
+	if contains(hudExtras, "Fake duck indicator") then
+		local storedTick = 0
+		local crouchedTicks = {}
+		local entityTable = entity.get_players(true)
+
+		function toBits(num)
+			local t={}
+			while num>0 do
+			   	rest=math.fmod(num,2)
+			   	t[#t+1]=rest
+			   	num=(num-rest)/2
+		 	end
+
+			return t
+
+		end
+
+        for entid = 1, #entityTable do
+           	local ent = entityTable[entid]
+
+           	if ent ~= localPlayer then
+               	local m_flDuckAmount = getProp(ent, string.char(109,095,102,108,068,117,099,107,065,109,111,117,110,116))
+               	local m_flDuckSpeed = getProp(ent, string.char(109,095,102,108,068,117,099,107,083,112,101,101,100))
+                local m_fFlags = getProp(ent, string.char(109,095,102,070,108,097,103,115))
+                
+                if crouchedTicks[ent] == nil then
+                  	crouchedTicks[ent] = 0
+                end
+                
+      		    if m_flDuckSpeed ~= nil and m_flDuckAmount ~= nil then
+                   	if m_flDuckSpeed == 8 and m_flDuckAmount <= 0.9 and m_flDuckAmount > 0.01 and toBits(m_fFlags)[1] == 1 then
+                       	if storedTick ~= tickCount then
+                           	crouchedTicks[ent] = crouchedTicks[ent] + 1
+                           	storedTick = tickCount
+                       	end
+                      
+                       	if crouchedTicks[ent] >= 1 then
+                           	local bone_x, bone_y, bone_z = entity.hitbox_position(ent, 3)
+                           	if bone_x ~= nil and bone_y ~= nil and bone_z ~= nil then
+                               	local w_bone_x, w_bone_y = renderer.world_to_screen(bone_x, bone_y, bone_z)
+                               	if w_bone_x ~= nil and w_bone_y ~= nil then
+                                   	drawText(w_bone_x, w_bone_y, 255, 50, 50, 255, "cb", 0, "Fake Ducking")
+                              	end
+                           	end
+                        end
+                    else
+                        crouchedTicks[ent] = 0
+                    end
+               	end
+           	end
+        end
+    end
+end
+
+local fdIndError = callback('paint', on_paintFdIndc)
+	if fdIndError then
+		client.log(fdIndError)
+	end
+
+----------------------------------------------------------------------------------------------------------------------------------
+local function on_paintHitrate(ctx)
+	local localPlayer = entity.get_local_player()
+	local health = getProp(localPlayer, "m_iHealth")
+	local hudExtras = getUi(hudMultibox)
+
+	if health > 0 then
+		if getUi(hudCheckbox, true) and contains(hudExtras, "Hitrate indicator") then
+       		local total = hits + misses
         	local hitPercent = hits / total
         	local hitPercentFixed = 0
 
-        	if (hitPercent > 0)  then
+       		if (hitPercent > 0)  then
 				hitPercentFixed = hitPercent * 100
 				hitPercentFixed = string.format("%2.1f", hitPercentFixed)
 			end
@@ -448,36 +798,105 @@ local function on_paintExtras(ctx)
 			drawIndicator(255, 255, 255, 255, "%: ".. hitPercentFixed)
 			drawIndicator(255, 50, 50, 255, "Misses: ".. misses)
 			drawIndicator(50, 255, 50, 255, "Hits: ".. hits)
-        end
+		end
+    end
+end
 
-        if contains(hudExtras, "Netvar indicators") then
+local hitrateError = callback('paint', on_paintHitrate)
+	if hitrateError then
+		client.log(hitrateError)
+	end
+
+----------------------------------------------------------------------------------------------------------------------------------
+local function on_paintNetvar(ctx)
+	local hudExtras = getUi(hudMultibox)
+	
+	if getUi(hudCheckbox, true) then
+		if contains(hudExtras, "Netvar indicators") then
         	visibility(styleCombobox, true)
         	visibility(pingCheckbox, true)
         	visibility(latencyCheckbox, true)
         	visibility(chokeCheckbox, true)
         	visibility(speedCheckbox, true)
 
+        	local hudExtras = getUi(hudMultibox)
         	local latency = client.latency()
         	local latencyFixed = math.floor(latency * 1000)
 
         	local fakelag, fakelagHk = referenceUi("AA", "Fake lag", "Enabled")
 
+        	local localPlayer = entity.get_local_player()
         	local vx, vy = getProp(localPlayer, "m_vecVelocity")
         	local playerResource = getAll("CCSPlayerResource")[1]
-        	local ping = getProp(playerResource, "m_iPing", localPlayer)
+       		local ping = getProp(playerResource, "m_iPing", localPlayer)
 			local fakelagEnabled = getUi(fakelagHk)
         	local multiplier = 10.71428571428571
         	local speed = 0
         	local x = 17
         	local y = 122
 
-        	if getUi(styleCombobox) == "Circles" then
+        	if getUi(reposNetvarCheckbox, true) then
+        		pxc = getUi(pingSliderX)
+        		pyc = getUi(pingSliderY)
+        		pxc = getUi(pingSliderX)
+        		pyc = getUi(pingSliderY)
+        		lxc = getUi(latencySliderX)
+        		lyc = getUi(latencySliderY)
+        		cxc = getUi(chokeSliderX)
+        		cyc = getUi(chokeSliderY)
+        		sxc = getUi(speedSliderX)
+        		syc = getUi(speedSliderY)
+        		pxb = getUi(pingSliderX)
+        		pyb = getUi(pingSliderY)
+        		lxb = getUi(latencySliderX)
+        		lyb = getUi(latencySliderY)
+        		cxb = getUi(chokeSliderX)
+        		cyb = getUi(chokeSliderY)
+        		sxb = getUi(speedSliderX)
+        		syb = getUi(speedSliderY)
 
+        		visibility(pingSliderX, true)
+        		visibility(pingSliderY, true)
+        		visibility(latencySliderX, true)
+        		visibility(latencySliderY, true)
+        		visibility(chokeSliderX, true)
+        		visibility(chokeSliderY, true)
+        		visibility(speedSliderX, true)
+        		visibility(speedSliderY, true)
+        	else
+        		pxc = w - 82 - x
+        		pyc = h / 2 - 47 - y - 30
+        		lxc = w - 82 - x
+        		lyc = h / 2 + 23 - y - 5
+        		cxc = w - 82 - x
+				cyc = h / 2 + 93 - y + 20
+				sxc = w - 82 - x
+				syc = h / 2 + 163 - y + 45
+				pxb = w - 82 - x
+        		pyb = h / 2 - 32 - y - 15
+        		lxb = w - 82 - x
+        		lyb = h / 2 + 23 - y
+        		cxb = w - 82 - x
+				cyb = h / 2 + 93 - y
+				sxb = w - 82 - x
+				syb = h / 2 + 163 - y
+
+        		visibility(pingSliderX, false)
+        		visibility(pingSliderY, false)
+        		visibility(latencySliderX, false)
+        		visibility(latencySliderY, false)
+        		visibility(chokeSliderX, false)
+        		visibility(chokeSliderY, false)
+        		visibility(speedSliderX, false)
+        		visibility(speedSliderY, false)
+        	end
+
+       		if getUi(styleCombobox) == "Circles" then
         		if getUi(pingCheckbox, true) then
         			if getUi(numbersCheckbox, true) then
-        				drawText(w - 82 - x, h / 2 - 47 - y - 75, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
+        				drawText(pxc, pyc - 45, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
         			else
-        				drawText(w - 82 - x, h / 2 - 47 - y - 75, 255, 255, 255, 255, "cb", 0, "Ping")
+        				drawText(pxc, pyc - 45, 255, 255, 255, 255, "cb", 0, "Ping")
         			end
         			
         			if ping <= 50 then
@@ -490,14 +909,14 @@ local function on_paintExtras(ctx)
         				r, g, b = 220, 0, 0
         			end
 
-        			draw_indicator_circle(ctx, w - 82 - x, h / 2 - 47 - y - 30, r, g, b, 255, ping / 150, outline)
+        			draw_indicator_circle(ctx, pxc, pyc, r, g, b, 255, ping / 150, outline)
         		end
 
         		if getUi(latencyCheckbox, true) then
         			if getUi(numbersCheckbox, true) then
-        				drawText(w - 82 - x, h / 2 + 23 - y - 50, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
+        				drawText(lxc, lyc - 45, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
         			else
-        				drawText(w - 82 - x, h / 2 + 23 - y - 50, 255, 255, 255, 255, "cb", 0, "Latency")
+        				drawText(lxc, lyc - 45, 255, 255, 255, 255, "cb", 0, "Latency")
         			end
 
         			if latencyFixed < 50 then
@@ -511,21 +930,21 @@ local function on_paintExtras(ctx)
         			end
 
         			if latencyFixed == 0 then
-        				draw_indicator_circle(ctx, w - 82 - x, h / 2 + 23 - y - 5, r, g, b, 255, 0, outline)
+        				draw_indicator_circle(ctx, lxc, lyc, r, g, b, 255, 0, outline)
         			else
-        				draw_indicator_circle(ctx, w - 82 - x, h / 2 + 23 - y - 5, r, g, b, 255, latency * 6.666666666666667, outline)
+        				draw_indicator_circle(ctx, lxc, lyc, r, g, b, 255, latency * 6.666666666666667, outline)
         			end
         		end
 
         		if getUi(chokeCheckbox, true) then
         			if getUi(numbersCheckbox, true) then
-        				drawText(w - 82 - x, h / 2 + 93 - y - 20, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
+        				drawText(cxc, cyc - 45, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
         			else
-        				drawText(w - 82 - x, h / 2 + 93 - y - 20, 255, 255, 255, 255, "cb", 0, "Choked")
+        				drawText(cxc, cyc - 45, 255, 255, 255, 255, "cb", 0, "Choked")
         			end
 
         			if fakelagEnabled then
-        				draw_indicator_circle(ctx, w - 82 - x, h / 2 + 93 - y + 25, 255, 255, 255, 255, choked * multiplier / 150, outline)
+        				draw_indicator_circle(ctx, cxc, cyc, 255, 255, 255, 255, choked * multiplier / 150, outline)
         			end
         		end
 
@@ -536,58 +955,58 @@ local function on_paintExtras(ctx)
 						velocity = round(velocity, 0)
 
 						if getUi(numbersCheckbox, true) then
-							drawText(w - 82 - x, h / 2 + 163 - y + 5, 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
+							drawText(sxc, syc - 45, 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
 						else
-							drawText(w - 82 - x, h / 2 + 163 - y + 5, 255, 255, 255, 255, "cb", 0, "Speed")
+							drawText(sxc, syc - 45, 255, 255, 255, 255, "cb", 0, "Speed")
 						end
 
 						if velocity == 1 then
-							draw_indicator_circle(ctx, w - 82 - x, h / 2 + 163 - y + 50, 255, 255, 255, 255, 0, outline)
+							draw_indicator_circle(ctx, sxc, syc, 255, 255, 255, 255, 0, outline)
 						else
-							draw_indicator_circle(ctx, w - 82 - x, h / 2 + 163 - y + 50, 255, 255, 255, 255, velocity / 300, outline)
+							draw_indicator_circle(ctx, sxc, syc, 255, 255, 255, 255, velocity / 300, outline)
 						end
 					end
         		end
 
-        	elseif getUi(styleCombobox) == "Boxes" then
+       		elseif getUi(styleCombobox) == "Boxes" then
         		if getUi(pingCheckbox, true) then
         			if getUi(numbersCheckbox, true) then
-        				drawText(w - 82 - x, h / 2 - 47 - y, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
+        				drawText(pxb, pyb, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
         			else
-        				drawText(w - 82 - x, h / 2 - 47 - y, 255, 255, 255, 255, "cb", 0, "Ping")
+        				drawText(pxb, pyb, 255, 255, 255, 255, "cb", 0, "Ping")
         			end
 
-					drawRectangle(w - 160 - x, h / 2 - 35 - y, 156, 32, 0, 0, 0, 200)
+					drawRectangle(pxb - 78, pyb + 12, 156, 32, 0, 0, 0, 200)
 	
 					if ping <= 50 then
-						drawRectangle(w - 157 - x, h / 2 - 32 - y, ping, 26, 0, 220, 0, 255)
+						drawRectangle(pxb - 75, pyb + 15, ping, 26, 0, 220, 0, 255)
 					elseif ping > 50 and ping < 100 then
-						drawRectangle(w - 157 - x, h / 2 - 32 - y, ping, 26, 190, 145, 0, 255)
+						drawRectangle(pxb - 75, pyb, ping, 26, 190, 145, 0, 255)
 					elseif ping >= 100 and ping <= 150 then
-						drawRectangle(w - 157 - x, h / 2 - 32 - y, ping, 26, 220, 100, 0, 255)
+						drawRectangle(pxb - 75, pyb, ping, 26, 220, 100, 0, 255)
 					elseif ping > 150 then
-						drawRectangle(w - 157 - x, h / 2 - 32 - y, 150, 26, 220, 0, 0, 255)
+						drawRectangle(pxb - 75, pyb, 150, 26, 220, 0, 0, 255)
 					end
         		end
 
         		if getUi(latencyCheckbox, true) then
         			if getUi(numbersCheckbox, true) then
-        				drawText(w - 82 - x, h / 2 + 23 - y, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
+        				drawText(lxb, lyb, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
         			else
-        				drawText(w - 82 - x, h / 2 + 23 - y, 255, 255, 255, 255, "cb", 0, "Latency")
+        				drawText(lxb, lyb, 255, 255, 255, 255, "cb", 0, "Latency")
         			end
 
-        			drawRectangle(w - 160 - x, h / 2 + 35 - y, 156, 32, 0, 0, 0, 200)
+        			drawRectangle(lxb - 78, lyb + 12, 156, 32, 0, 0, 0, 200)
 
-        			if latencyFixed == 0 then
+        		if latencyFixed == 0 then
         			elseif latencyFixed < 50 then
-        				drawRectangle(w - 157 - x, h / 2 + 38 - y, latency * 1000, 26, 0, 220, 0, 255)
+        				drawRectangle(lxb - 75, lyb + 15, latency * 1000, 26, 0, 220, 0, 255)
         			elseif latencyFixed >= 50 and latencyFixed < 100 then
-        				drawRectangle(w - 157 - x, h / 2 + 38 - y, latency * 1000, 26, 190, 145, 0, 255)
+        				drawRectangle(lxb - 75, lyb + 15, latency * 1000, 26, 190, 145, 0, 255)
         			elseif latencyFixed >= 100 and latencyFixed < 150 then
-        				drawRectangle(w - 157 - x, h / 2 + 38 - y, latency * 1000, 26, 220, 100, 0, 255)
+        				drawRectangle(lxb - 75, lyb + 15, latency * 1000, 26, 220, 100, 0, 255)
         			elseif latencyFixed >= 150 then
-        				drawRectangle(w - 157 - x, h / 2 + 38 - y, 150, 26, 220, 0, 0, 255)
+        				drawRectangle(lxb - 75, lyb + 15, 150, 26, 220, 0, 0, 255)
         			end
         		end
 
@@ -595,15 +1014,14 @@ local function on_paintExtras(ctx)
         			local r, g, b, a = 255, 255, 255, 255
 
     				if getUi(numbersCheckbox, true) then
-        				drawText(w - 82 - x, h / 2 + 93 - y, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
+        				drawText(cxb, cyb, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
         			else
-        				drawText(w - 82 - x, h / 2 + 93 - y, 255, 255, 255, 255, "cb", 0, "Choked")
+        				drawText(cxb, cyb, 255, 255, 255, 255, "cb", 0, "Choked")
         			end
 
         			if fakelagEnabled then
-						drawRectangle(w - 160 - x, h / 2 + 105 - y, 156, 32, 0, 0, 0, 200)
-	
-						drawRectangle(w - 157 - x, h / 2 + 108 - y, choked * multiplier, 26, r, g, b, a)
+						drawRectangle(cxb - 78, cyb + 12, 156, 32, 0, 0, 0, 200)
+						drawRectangle(cxb - 75, cyb + 15, choked * multiplier, 26, r, g, b, a)
 					end
         		end
 
@@ -614,183 +1032,56 @@ local function on_paintExtras(ctx)
 						velocity = round(velocity, 0)
 
 						if getUi(numbersCheckbox, true) then
-							drawText(w - 82 - x, h / 2 + 163 - y, 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
+							drawText(sxb, syb, 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
 						else
-							drawText(w - 82 - x, h / 2 + 163 - y, 255, 255, 255, 255, "cb", 0, "Speed")
+							drawText(sxb, syb, 255, 255, 255, 255, "cb", 0, "Speed")
 						end
 
-						drawRectangle(w - 160 - x, h / 2 + 175 - y, 156, 32, 0, 0, 0, 200)
+						drawRectangle(sxb - 78, syb + 12, 156, 32, 0, 0, 0, 200)
 
 						if velocity > 1 and velocity <= 300 then
-							drawRectangle(w - 157 - x, h / 2 + 178 - y, velocity / 2, 26, r, g, b, a)
+							drawRectangle(sxb - 75, syb - 15, velocity / 2, 26, r, g, b, a)
 						elseif velocity > 300 then
-							drawRectangle(w - 157 - x, h / 2 + 178 - y, 150, 26, r, g, b, a)
+							drawRectangle(sxb - 75, syb - 15, 150, 26, r, g, b, a)
 						end
 					end
         		end
-      	 	end
+      		end
 
-
-        	if getUi(pingCheckbox, true) or getUi(latencyCheckbox, true) or getUi(chokeCheckbox, true) or getUi(speedCheckbox, true) then
-       			visibility(numbersCheckbox, true)
+       		if getUi(pingCheckbox, true) or getUi(latencyCheckbox, true) or getUi(chokeCheckbox, true) or getUi(speedCheckbox, true) then
+       				visibility(numbersCheckbox, true)
+       				visibility(reposNetvarCheckbox, true)
       		else
       			visibility(numbersCheckbox, false)
+      			visibility(reposNetvarCheckbox, false)
        		end
-      
-        else
+
+    	else
         	visibility(styleCombobox, false)
         	visibility(pingCheckbox, false)
         	visibility(latencyCheckbox, false)
         	visibility(chokeCheckbox, false)
         	visibility(speedCheckbox, false)
-        	visibility(numbersCheckbox, false)
-        end
-
-        --[[if contains(hudExtras, "Custom clantag") then
-        	visibility(clantagCheckbox, true)
-
-        	if getUi(clantagCheckbox, true) then
-        		visibility(clantagTextbox, true)
-
-        		local clantagTextbox = ClantagAnimation(getUi(clantagTextbox), {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 11, 11, 11, 11, 11, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22})
-
-        		if clantagTextbox ~= "" then
-        			setClantag(getUi(clantagTextbox))
-        		end
-        	end
-        end--]]
-
-	else
-		--extras--
-		visibility(hudMultibox, false)
-
-		--keystroke--
-		visibility(whCheckbox, false)
-		visibility(shCheckbox, false)
-		visibility(ahCheckbox, false)
-		visibility(dhCheckbox, false)
-		visibility(spacehCheckbox, false)
-		visibility(slowWalkhCheckbox, false)
-		visibility(wh, false)
-		visibility(sh, false)
-		visibility(ah, false)
-		visibility(dh, false)
-		visibility(spaceh, false)
-		visibility(slowWalkh, false)
-		visibility(boxColorCheckbox, false)
-		visibility(boxColorPicker, false)
-		visibility(keyUnpressedColorCheckbox, false)
-		visibility(keyUnpressedColorPicker, false)
-		visibility(keyPressedColorCheckbox, false)
-		visibility(keyPressedColorPicker, false)
-		
-		--dmg indc--
-		visibility(largeDmgIndcCheckbox, false)
-		visibility(dmgIndcColorpicker, false)
-		visibility(hsCheckbox, false)
-		visibility(hsColorpicker, false)
-
-		--clantag--
-		--[[visibility(clantagCheckbox, false)
-		visibility(clantagTextbox, false)--]]
-
-		--netvar indc--
-		visibility(styleCombobox, false)
-		visibility(pingCheckbox, false)
-		visibility(latencyCheckbox, false)
-		visibility(chokeCheckbox, false)
-		visibility(speedCheckbox, false)
-		visibility(numbersCheckbox, false)
+        	visibility(pingSliderX, false)
+        	visibility(pingSliderY, false)
+        	visibility(latencySliderX, false)
+        	visibility(latencySliderY, false)
+        	visibility(chokeSliderX, false)
+        	visibility(chokeSliderY, false)
+        	visibility(speedSliderX, false)
+        	visibility(speedSliderY, false)
+       	 	visibility(numbersCheckbox, false)
+       	 	visibility(reposNetvarCheckbox, false)
+    	end
 	end
 end
 
-local function on_paintHud(ctx)
-	local localPlayer = entity.get_local_player()
-	local health = getProp(localPlayer, "m_iHealth")
-	local armor = getProp(localPlayer, "m_ArmorValue")
-	local inBuyzone = getProp(localPlayer, "m_bInBuyZone")
-	local money = getProp(localPlayer, "m_iAccount")
-	local currentWeapon = getProp(localPlayer, "m_hActiveWeapon")
-	local playerResource = getAll("CCSPlayerResource")[1]
-	local c4Holder = getProp(playerResource, "m_iPlayerC4")
-	local hasHelmet = getProp(localPlayer, "m_bHasHelmet")
-
-	local x, y = 0, 0
-	local r, g, b, a = 255, 255, 255, 255
-	local flags = "c+"
-	local maxW = 0
-	local w, h = screenSize()
-	local i = 1
-	local sf = 11
-	local df = 11
-	local tf = 1
-
-	if getUi(hudCheckbox, true) then
-		--visibility(hudFullCheckbox, true)
-
-		setProp(localPlayer, "m_iHideHud", 8200)
-
-		if health > 0 then
-			--hp/armor--
-			drawRectangle(x, h - 68 + df, 350, 68 - sf, 10, 10, 10, 255)
-			drawRectangle(x + 1, h - 67 + df, 348, 66 - sf, 60, 60, 60, 255)
-			drawRectangle(x + 2, h - 66 + df, 346, 64 - sf, 40, 40, 40, 255)
-			drawRectangle(x + 5, h - 64 + df, 341, 60 - sf, 60, 60, 60, 255)
-			drawRectangle(x + 6, h - 63 + df, 339, 58 - sf, 20, 20, 20, 255)
-			drawGradient(x + 7, h - 62 + df, 339 / 2, 1, 56, 176, 218, 255, 201, 72, 205, 255, true)
-			drawGradient(x + 7 + (336 / 2), h - 62 + df, 339 / 2, 1, 201, 72, 205, 255, 204, 227, 53, 255, true)
-			drawText(x + 75, h - 35 + tf, 108, 195, 18, a, flags, maxW, health)
-			drawText(x + 75, h - 17 + tf, r, g, b, a, "c", maxW, "Health")
-			drawText(x + 275, h - 35 + tf, 85, 155, 215, a, flags, maxW, armor)
-			drawText(x + 275, h - 17 + tf, r, g, b, a, "c", maxW, "Armor")
-
-			drawIndicator(r, g, b, 0, " ")
-
-			if inBuyzone == 1 then
-				--money--
-				drawIndicator(r, g, b, a, "$".. money)
-			end
-
-			if c4Holder == localPlayer then
-				--loop through all elements in images_icons
-					local image = imageIcons["c4"]
-					--calculate x and y of the current image
-					local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
-					--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
-					local width, height = image:draw(x + 135, y + 1387 + 7, nil, 37, 255, 255, 255, 255)
-			end
-
-			if hasHelmet == 1 then
-				--loop through all elements in images_icons
-				local image = imageIcons["armor_helmet"]
-				--calculate x and y of the current image
-				local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
-				--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
-				local width, height = image:draw(x + 180, y + 1387 + 10, nil, 32, 255, 255, 255, 255)
-			elseif armor > 0 and hasHelmet == 0 then
-				--loop through all elements in images_icons
-				local image = imageIcons["armor"]
-				--calculate x and y of the current image
-				local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
-				--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
-				local width, height = image:draw(x + 180, y + 1387 + 10, nil, 32, 255, 255, 255, 255)
-			end
-		end
-	else
-		--visibility(hudFullCheckbox, false)
-	end
-end
-
-local hudError = callback('paint', on_paintHud)
-	if hudError then
-		consoleLog("client.set_event_callback failed: ", error)
+local netvarError = callback('paint', on_paintNetvar)
+	if netvarError then
+		client.log(netvarError)
 	end
 
-local extrasError = callback('paint', on_paintExtras)
-	if extrasError then
-		consoleLog("client.set_event_callback failed: ", error)
-	end
-
+----------------------------------------------------------------------------------------------------------------------------------
 local hurtError = callback('player_hurt', on_player_hurt)
 	if hurtError then
 		consoleLog("client.set_event_callback failed: ", error)
