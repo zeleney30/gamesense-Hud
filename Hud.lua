@@ -102,17 +102,17 @@ local clantagTextbox = textbox("Lua", "B", "Clantag")--]]
 --netvar indc--
 local styleCombobox = combobox("Lua", "B", "Style", "Circles", "Boxes")
 local pingCheckbox = checkbox("Lua", "B", "Ping")
-local pingSliderX = slider("Lua", "B", "Ping slider X", 0, w, w / 2, true)
-local pingSliderY = slider("Lua", "B", "Ping slider Y", 0, h, h / 2, true)
+local pingSliderX = slider("Lua", "B", "Ping X slider", 0, w, w / 2, true)
+local pingSliderY = slider("Lua", "B", "Ping Y slider", 0, h, h / 2, true)
 local latencyCheckbox = checkbox("Lua", "B", "Latency")
-local latencySliderX = slider("Lua", "B", "Latency slider X", 0, w, w / 2, true)
-local latencySliderY = slider("Lua", "B", "Latency slider Y", 0, h, h / 2, true)
+local latencySliderX = slider("Lua", "B", "Latency X slider", 0, w, w / 2, true)
+local latencySliderY = slider("Lua", "B", "Latency Y slider", 0, h, h / 2, true)
 local chokeCheckbox = checkbox("Lua", "B", "Choke")
-local chokeSliderX = slider("Lua", "B", "Choke slider X", 0, w, w / 2, true)
-local chokeSliderY = slider("Lua", "B", "Choke slider Y", 0, h, h / 2, true)
+local chokeSliderX = slider("Lua", "B", "Choke X slider", 0, w, w / 2, true)
+local chokeSliderY = slider("Lua", "B", "Choke Y slider", 0, h, h / 2, true)
 local speedCheckbox = checkbox("Lua", "B", "Speed")
-local speedSliderX = slider("Lua", "B", "Speed slider X", 0, w, w / 2, true)
-local speedSliderY = slider("Lua", "B", "Speed slider Y", 0, h, h / 2, true)
+local speedSliderX = slider("Lua", "B", "Speed X slider", 0, w, w / 2, true)
+local speedSliderY = slider("Lua", "B", "Speed Y slider", 0, h, h / 2, true)
 local numbersCheckbox = checkbox("Lua", "B", "Display numbers")
 local reposNetvarCheckbox = checkbox("Lua", "B", "Reposition netvar indicators")
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -981,11 +981,11 @@ local function on_paintNetvar(ctx)
 					if ping <= 50 then
 						drawRectangle(pxb - 75, pyb + 15, ping, 26, 0, 220, 0, 255)
 					elseif ping > 50 and ping < 100 then
-						drawRectangle(pxb - 75, pyb, ping, 26, 190, 145, 0, 255)
+						drawRectangle(pxb - 75, pyb + 15, ping, 26, 190, 145, 0, 255)
 					elseif ping >= 100 and ping <= 150 then
-						drawRectangle(pxb - 75, pyb, ping, 26, 220, 100, 0, 255)
+						drawRectangle(pxb - 75, pyb + 15, ping, 26, 220, 100, 0, 255)
 					elseif ping > 150 then
-						drawRectangle(pxb - 75, pyb, 150, 26, 220, 0, 0, 255)
+						drawRectangle(pxb - 75, pyb + 15, 150, 26, 220, 0, 0, 255)
 					end
         		end
 
