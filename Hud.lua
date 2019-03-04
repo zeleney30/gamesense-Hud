@@ -1040,9 +1040,9 @@ local function on_paintNetvar(ctx)
 						drawRectangle(sxb - 78, syb + 12, 156, 32, 0, 0, 0, 200)
 
 						if velocity > 1 and velocity <= 300 then
-							drawRectangle(sxb - 75, syb - 15, velocity / 2, 26, r, g, b, a)
+							drawRectangle(sxb - 75, syb + 15, velocity / 2, 26, 255, 255, 255, 255)
 						elseif velocity > 300 then
-							drawRectangle(sxb - 75, syb - 15, 150, 26, r, g, b, a)
+							drawRectangle(sxb - 75, syb + 15, 150, 26, 255, 255, 255, 255)
 						end
 					end
         		end
