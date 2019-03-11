@@ -9,6 +9,7 @@ local drawText = renderer.text
 local drawLine = renderer.line
 local checkbox = ui.new_checkbox
 local getUi = ui.get
+local setUi = ui.set
 local entityClass = entity.get_classname
 local getProp = entity.get_prop
 local setProp = entity.set_prop
@@ -115,6 +116,25 @@ local speedSliderX = slider("Lua", "B", "Speed X slider", 0, w, w / 2, true)
 local speedSliderY = slider("Lua", "B", "Speed Y slider", 0, h, h / 2, true)
 local numbersCheckbox = checkbox("Lua", "B", "Display numbers")
 local reposNetvarCheckbox = checkbox("Lua", "B", "Reposition netvar indicators")
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+--health hands--
+local healthHandCheckbox = checkbox("Lua", "B", "Health based hand chams")
+----------------------------------------------------------------------------------------------------------------------------------
+
+--bomb timer--
+local bombTimeCheckbox = checkbox("Lua", "B", "Bomb timer")
+
+local function get_bombTime(bomb)
+	local bombTime = getProp(bomb, "m_flC4Blow") - globals.curtime()
+	return bombTime or 0
+end
+
+local function roundToFifth(num)
+	num = round(num, 2)
+	return num
+end
 ----------------------------------------------------------------------------------------------------------------------------------
 
 local function contains(table, val)
@@ -1082,6 +1102,76 @@ local netvarError = callback('paint', on_paintNetvar)
 	end
 
 ----------------------------------------------------------------------------------------------------------------------------------
+
+local function on_paintHealthHands(ctx)
+	local localPlayer = entity.get_local_player()
+	local hp = getProp(localPlayer, "m_iHealth")
+	
+	local hands, handsColor = referenceUi("Visuals", "Colored Models", "Hands")
+
+	if getUi(hudCheckbox, true) then
+		visibility(healthHandCheckbox, true)
+		if getUi(healthHandCheckbox, true) then
+
+			setUi(hands, true)
+
+			if hp >= 100 then
+				setUi(handsColor, 25, 175, 0, 255)
+			elseif hp < 100 and hp >= 75 then
+				setUi(handsColor, 150, 150, 0, 255)
+			elseif hp < 75 and hp >= 50 then
+				setUi(handsColor, 175, 125, 0, 255)
+			elseif hp < 50 and hp >= 25 then
+				setUi(handsColor, 225, 100, 0, 255)
+			elseif hp < 25 and hp >= 0 then
+				setUi(handsColor, 175, 50, 0, 255)
+			end
+		end
+	else
+		visibility(healthHandCheckbox, false)
+	end
+end
+
+local healthHandsError = callback('paint', on_paintHealthHands)
+	if healthHandsError then
+		consoleLog("client.set_event_callback failed: ", error)
+	end
+----------------------------------------------------------------------------------------------------------------------------------
+
+local function on_paintBombTime(ctx)
+	local C4 = getAll("CPlantedC4")[1]
+
+	if getUi(hudCheckbox, true) then
+		visibility(bombTimeCheckbox, true)
+		if getUi(bombTimeCheckbox, true) then
+			if C4 ~= nil and getProp(C4, "m_bBombDefused") == 0 and get_bombTime(C4) > 0 then
+				local c4x, c4y, c4z = getProp(C4, "m_vecOrigin")
+				local lpx, lpy, lpz = getProp(localPlayer, "m_vecOrigin")
+
+				local wx, wy = worldToScreen( c4x, c4y, c4z)
+
+				if wx ~= nil then
+					drawRectangle(wx - 23, wy - 50, 45, 20, 0, 0, 0, 200)
+
+					if get_bombTime(C4) >= 10 then
+						drawText(wx - 16, wy - 47, 255, 255, 255, 255, "", 0, roundToFifth(get_bombTime(C4)))
+					else
+						drawText(wx - 13, wy - 47, 255, 100, 100, 255, "", 0, roundToFifth(get_bombTime(C4)))
+					end
+				end
+			end
+		end
+	else
+		visibility(bombTimeCheckbox, false)
+	end
+end
+
+local bombTimeError = callback('paint', on_paintBombTime)
+	if bombTimeError then
+		consoleLog("client.set_event_callback failed: ", error)
+	end
+----------------------------------------------------------------------------------------------------------------------------------
+
 local hurtError = callback('player_hurt', on_player_hurt)
 	if hurtError then
 		consoleLog("client.set_event_callback failed: ", error)
