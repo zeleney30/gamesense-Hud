@@ -378,6 +378,7 @@ local function on_paintHud(ctx)
 				drawText(x + 75, h - 16 - tf, r, g, b, a, "c", maxW, "Health")
 				drawText(x + 275, h - 35 - tf, 85, 155, 215, a, flags, maxW, armor)
 				drawText(x + 275, h - 16 - tf, r, g, b, a, "c", maxW, "Armor")
+				drawIndicator(r, g, b, 0, " ")
 
 				if ammo == -1 then
 				
