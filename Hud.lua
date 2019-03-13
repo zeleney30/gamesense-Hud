@@ -80,11 +80,19 @@ local keyPressedColorPicker = colorPicker("Lua", "B", "Key press color", 50, 255
 local reposKeyindcCheckbox = checkbox("Lua", "B", "Reposition keystroke indicators")
 ----------------------------------------------------------------------------------------------------------------------------------
 
---dmg/hitrate indc--
+--dmg--
 local largeDmgIndcCheckbox = checkbox("Lua", "B", "Large damage indicators")
 local dmgIndcColorpicker = colorPicker("Lua", "B", "Large damage indicators", 255, 255, 255, 255)
 local hsCheckbox = checkbox("Lua", "B", "Headshot indicator")
 local hsColorpicker = colorPicker("Lua", "B", "Headshot indicator")
+
+--hitrate indc--
+local hitsCheckbox = checkbox("Lua", "B", "Hits")
+local hitsColorPicker = colorPicker("Lua", "B", "Hits", 50, 255, 50, 255)
+local missesCheckbox = checkbox("Lua", "B", "Misses")
+local missesColorPicker = colorPicker("Lua", "B", "Misses", 255, 50, 50, 255)
+local percentCheckbox = checkbox("Lua", "B", "Percent")
+local percentColorPicker = colorPicker("Lua", "B", "Percent", 255, 255, 255, 255)
 
 --player_hurt(e)--
 local hits = 0
@@ -109,9 +117,11 @@ local latencyCheckbox = checkbox("Lua", "B", "Latency")
 local latencySliderX = slider("Lua", "B", "Latency X slider", 0, w, w / 2, true)
 local latencySliderY = slider("Lua", "B", "Latency Y slider", 0, h, h / 2, true)
 local chokeCheckbox = checkbox("Lua", "B", "Choke")
+local chokeColorPicker = colorPicker("Lua", "B", "Choke", 255, 255, 255, 255)
 local chokeSliderX = slider("Lua", "B", "Choke X slider", 0, w, w / 2, true)
 local chokeSliderY = slider("Lua", "B", "Choke Y slider", 0, h, h / 2, true)
 local speedCheckbox = checkbox("Lua", "B", "Speed")
+local speedColorPicker = colorPicker("Lua", "B", "Speed", 255, 255, 255, 255)
 local speedSliderX = slider("Lua", "B", "Speed X slider", 0, w, w / 2, true)
 local speedSliderY = slider("Lua", "B", "Speed Y slider", 0, h, h / 2, true)
 local numbersCheckbox = checkbox("Lua", "B", "Display numbers")
@@ -255,7 +265,6 @@ local function noVisible()
 		visibility(reposHud, false)
 		visibility(hudSliderX, false)
 		visibility(hudSliderY, false)
-		visibility(hudMultibox, false)
 		visibility(wSliderX, false)
 		visibility(wSliderY, false)
 		visibility(whCheckbox, false)
@@ -301,9 +310,11 @@ local function noVisible()
 		visibility(latencySliderX, false)
 		visibility(latencySliderY, false)
 		visibility(chokeCheckbox, false)
+		visibility(chokeColorPicker, false)
 		visibility(chokeSliderX, false)
 		visibility(chokeSliderY, false)
 		visibility(speedCheckbox, false)
+		visibility(speedColorPicker, false)
 		visibility(speedSliderX, false)
 		visibility(speedSliderY, false)
 		visibility(numbersCheckbox, false)
@@ -483,176 +494,56 @@ local function on_paintKeystroke(ctx)
 	local health = getProp(localPlayer, "m_iHealth")
 	local hudExtras = getUi(hudMultibox)
 
-	if getUi(hudCheckbox, true) then
-		visibility(hudMultibox, true)
+	if health > 0 then
+		if contains(hudExtras, "Keystroke indicator") then
+			visibility(whCheckbox, true)
+			visibility(shCheckbox, true)
+			visibility(ahCheckbox, true)
+			visibility(dhCheckbox, true)
+			visibility(spacehCheckbox, true)
+			visibility(slowWalkhCheckbox, true)
+			visibility(wh, true)
+			visibility(sh, true)
+			visibility(ah, true)
+			visibility(dh, true)
+			visibility(spaceh, true)
+			visibility(slowWalkh, true)
+			visibility(boxColorCheckbox, true)
+			visibility(boxColorPicker, true)
+			visibility(keyUnpressedColorCheckbox, true)
+			visibility(keyUnpressedColorPicker, true)
+			visibility(keyPressedColorCheckbox, true)
+			visibility(keyPressedColorPicker, true)
+			visibility(reposKeyindcCheckbox, true)
+			visibility(reposKeyindcCheckbox, true)
 
-		if health > 0 then
-			if getUi(hudCheckbox, true) and contains(hudExtras, "Keystroke indicator") then
-				visibility(whCheckbox, true)
-				visibility(shCheckbox, true)
-				visibility(ahCheckbox, true)
-				visibility(dhCheckbox, true)
-				visibility(spacehCheckbox, true)
-				visibility(slowWalkhCheckbox, true)
-				visibility(wh, true)
-				visibility(sh, true)
-				visibility(ah, true)
-				visibility(dh, true)
-				visibility(spaceh, true)
-				visibility(slowWalkh, true)
-				visibility(boxColorCheckbox, true)
-				visibility(boxColorPicker, true)
-				visibility(keyUnpressedColorCheckbox, true)
-				visibility(keyUnpressedColorPicker, true)
-				visibility(keyPressedColorCheckbox, true)
-				visibility(keyPressedColorPicker, true)
-				visibility(reposKeyindcCheckbox, true)
-				visibility(reposKeyindcCheckbox, true)
+			if getUi(reposKeyindcCheckbox, true) then
+				visibility(wSliderX, true)
+				visibility(wSliderY, true)
+				visibility(sSliderX, true)
+				visibility(sSliderY, true)
+				visibility(aSliderX, true)
+				visibility(aSliderY, true)
+				visibility(dSliderX, true)
+				visibility(dSliderY, true)
+				visibility(spaceSliderX, true)
+				visibility(spaceSliderY, true)
+				visibility(slowWalkSliderX, true)
+				visibility(slowWalkSliderY, true)
 
-				if getUi(reposKeyindcCheckbox, true) then
-					visibility(wSliderX, true)
-					visibility(wSliderY, true)
-					visibility(sSliderX, true)
-					visibility(sSliderY, true)
-					visibility(aSliderX, true)
-					visibility(aSliderY, true)
-					visibility(dSliderX, true)
-					visibility(dSliderY, true)
-					visibility(spaceSliderX, true)
-					visibility(spaceSliderY, true)
-					visibility(slowWalkSliderX, true)
-					visibility(slowWalkSliderY, true)
-
-					wx = getUi(wSliderX)
-					wy = getUi(wSliderY)
-					sx = getUi(sSliderX)
-					sy = getUi(sSliderY)
-					ax = getUi(aSliderX)
-					ay = getUi(aSliderY)
-					dx = getUi(dSliderX)
-					dy = getUi(dSliderY)
-					spacex = getUi(spaceSliderX)
-					spacey = getUi(spaceSliderY)
-					slowWalkx = getUi(slowWalkSliderX)
-					slowWalky = getUi(slowWalkSliderY)
-				else
-					visibility(wSliderX, false)
-					visibility(wSliderY, false)
-					visibility(sSliderX, false)
-					visibility(sSliderY, false)
-					visibility(aSliderX, false)
-					visibility(aSliderY, false)
-					visibility(dSliderX, false)
-					visibility(dSliderY, false)
-					visibility(spaceSliderX, false)
-					visibility(spaceSliderY, false)
-					visibility(slowWalkSliderX, false)
-					visibility(slowWalkSliderY, false)
-
-					wx = w - 154
-					sx = w - 151
-					ax = w - 231
-					dx = w - 72
-					spacex = w - 145
-					slowWalkx = w - 145
-					wy = h - 1345
-					sy = h - 1266
-					ay = h - 1266
-					dy = h - 1266
-					spacey = h - 1190
-					slowWalky = h - 1139
-				end
-
-				if getUi(boxColorCheckbox, true) then
-					boxR, boxG, boxB, boxA = getUi(boxColorPicker)
-				else
-					boxR, boxG, boxB, boxA = 0, 0, 0, 220
-				end
-
-				if getUi(keyUnpressedColorCheckbox, true) then
-					keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA = getUi(keyUnpressedColorPicker)
-				else
-					keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA = 255, 255, 255, 150
-				end
-
-				if getUi(keyPressedColorCheckbox, true) then
-					keyPressR, keyPressG, keyPressB, keyPressA = getUi(keyPressedColorPicker)
-				else
-					keyPressR, keyPressG, keyPressB, keyPressA = 50, 255, 50, 220
-				end
-
-				if getUi(whCheckbox, true) then
-					drawRectangle(wx - 26, wy - 25, 75, 75, boxR, boxG, boxB, boxA)
-					drawText(wx, wy, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "W")
-
-					if getUi(wh) then
-						drawText(wx, wy, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "W")
-					end
-				end
-
-				if getUi(shCheckbox, true) then
-					drawRectangle(sx - 29, sy - 24, 75, 75, boxR, boxG, boxB, boxA)
-					drawText(sx, sy, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "S")
-
-					if getUi(sh) then
-						drawText(sx, sy, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "S")
-					end
-				end
-
-				if getUi(ahCheckbox, true) then
-					drawRectangle(ax - 29, ay - 24, 75, 75, boxR, boxG, boxB, boxA)
-					drawText(ax, ay, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "A")
-
-					if getUi(ah) then
-						drawText(ax, ay, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "A")
-					end
-				end
-
-				if getUi(dhCheckbox, true) then
-					drawRectangle(dx - 28, dy - 24, 75, 75, boxR, boxG, boxB, boxA)
-					drawText(dx, dy, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "D")
-
-					if getUi(dh) then
-						drawText(dx, dy, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "D")
-					end
-				end
-
-				if getUi(spacehCheckbox, true) then
-					drawRectangle(spacex - 115, spacey - 20, 235, 45, boxR, boxG, boxB, boxA)
-					drawText(spacex, spacey, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "c+", 0, "Space")
-
-					if getUi(spaceh) then
-						drawText(spacex, spacey, keyPressR, keyPressG, keyPressB, keyPressA, "c+", 0, "Space")
-					end
-				end
-
-				if getUi(slowWalkhCheckbox, true) then
-					drawRectangle(slowWalkx - 115, slowWalky - 21, 235, 45, boxR, boxG, boxB, boxA)
-					drawText(slowWalkx, slowWalky, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "c+", 0, "Slow Walk")
-
-					if getUi(slowWalkh) then
-						drawText(slowWalkx, slowWalky, keyPressR, keyPressG, keyPressB, keyPressA, "c+", 0, "Slow Walk")
-					end
-				end
+				wx = getUi(wSliderX)
+				wy = getUi(wSliderY)
+				sx = getUi(sSliderX)
+				sy = getUi(sSliderY)
+				ax = getUi(aSliderX)
+				ay = getUi(aSliderY)
+				dx = getUi(dSliderX)
+				dy = getUi(dSliderY)
+				spacex = getUi(spaceSliderX)
+				spacey = getUi(spaceSliderY)
+				slowWalkx = getUi(slowWalkSliderX)
+				slowWalky = getUi(slowWalkSliderY)
 			else
-				visibility(whCheckbox, false)
-				visibility(shCheckbox, false)
-				visibility(ahCheckbox, false)
-				visibility(dhCheckbox, false)
-				visibility(spacehCheckbox, false)
-				visibility(slowWalkhCheckbox, false)
-				visibility(wh, false)
-				visibility(sh, false)
-				visibility(ah, false)
-				visibility(dh, false)
-				visibility(spaceh, false)
-				visibility(slowWalkh, false)
-				visibility(boxColorCheckbox, false)
-				visibility(boxColorPicker, false)
-				visibility(keyUnpressedColorCheckbox, false)
-				visibility(keyUnpressedColorPicker, false)
-				visibility(keyPressedColorCheckbox, false)
-				visibility(keyPressedColorPicker, false)
 				visibility(wSliderX, false)
 				visibility(wSliderY, false)
 				visibility(sSliderX, false)
@@ -665,8 +556,124 @@ local function on_paintKeystroke(ctx)
 				visibility(spaceSliderY, false)
 				visibility(slowWalkSliderX, false)
 				visibility(slowWalkSliderY, false)
-				visibility(reposKeyindcCheckbox, false)
+
+				wx = w - 154
+				sx = w - 151
+				ax = w - 231
+				dx = w - 72
+				spacex = w - 145
+				slowWalkx = w - 145
+				wy = h - 1345
+				sy = h - 1266
+				ay = h - 1266
+				dy = h - 1266
+				spacey = h - 1190
+				slowWalky = h - 1139
 			end
+
+			if getUi(boxColorCheckbox, true) then
+				boxR, boxG, boxB, boxA = getUi(boxColorPicker)
+			else
+				boxR, boxG, boxB, boxA = 0, 0, 0, 220
+			end
+
+			if getUi(keyUnpressedColorCheckbox, true) then
+				keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA = getUi(keyUnpressedColorPicker)
+			else
+				keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA = 255, 255, 255, 150
+			end
+
+			if getUi(keyPressedColorCheckbox, true) then
+				keyPressR, keyPressG, keyPressB, keyPressA = getUi(keyPressedColorPicker)
+			else
+				keyPressR, keyPressG, keyPressB, keyPressA = 50, 255, 50, 220
+			end
+
+			if getUi(whCheckbox, true) then
+				drawRectangle(wx - 26, wy - 25, 75, 75, boxR, boxG, boxB, boxA)
+				drawText(wx, wy, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "W")
+
+				if getUi(wh) then
+					drawText(wx, wy, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "W")
+				end
+			end
+
+			if getUi(shCheckbox, true) then
+				drawRectangle(sx - 29, sy - 24, 75, 75, boxR, boxG, boxB, boxA)
+				drawText(sx, sy, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "S")
+
+				if getUi(sh) then
+					drawText(sx, sy, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "S")
+				end
+			end
+
+			if getUi(ahCheckbox, true) then
+				drawRectangle(ax - 29, ay - 24, 75, 75, boxR, boxG, boxB, boxA)
+				drawText(ax, ay, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "A")
+
+				if getUi(ah) then
+					drawText(ax, ay, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "A")
+				end
+			end
+
+			if getUi(dhCheckbox, true) then
+				drawRectangle(dx - 28, dy - 24, 75, 75, boxR, boxG, boxB, boxA)
+				drawText(dx, dy, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "D")
+
+				if getUi(dh) then
+					drawText(dx, dy, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "D")
+				end
+			end
+
+			if getUi(spacehCheckbox, true) then
+				drawRectangle(spacex - 115, spacey - 20, 235, 45, boxR, boxG, boxB, boxA)
+				drawText(spacex, spacey, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "c+", 0, "Space")
+
+				if getUi(spaceh) then
+					drawText(spacex, spacey, keyPressR, keyPressG, keyPressB, keyPressA, "c+", 0, "Space")
+				end
+			end
+
+			if getUi(slowWalkhCheckbox, true) then
+				drawRectangle(slowWalkx - 115, slowWalky - 21, 235, 45, boxR, boxG, boxB, boxA)
+				drawText(slowWalkx, slowWalky, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "c+", 0, "Slow Walk")
+
+				if getUi(slowWalkh) then
+					drawText(slowWalkx, slowWalky, keyPressR, keyPressG, keyPressB, keyPressA, "c+", 0, "Slow Walk")
+				end
+			end
+		else
+			visibility(whCheckbox, false)
+			visibility(shCheckbox, false)
+			visibility(ahCheckbox, false)
+			visibility(dhCheckbox, false)
+			visibility(spacehCheckbox, false)
+			visibility(slowWalkhCheckbox, false)
+			visibility(wh, false)
+			visibility(sh, false)
+			visibility(ah, false)
+			visibility(dh, false)
+			visibility(spaceh, false)
+			visibility(slowWalkh, false)
+			visibility(boxColorCheckbox, false)
+			visibility(boxColorPicker, false)
+			visibility(keyUnpressedColorCheckbox, false)
+			visibility(keyUnpressedColorPicker, false)
+			visibility(keyPressedColorCheckbox, false)
+			visibility(keyPressedColorPicker, false)
+			visibility(wSliderX, false)
+			visibility(wSliderY, false)
+			visibility(sSliderX, false)
+			visibility(sSliderY, false)
+			visibility(aSliderX, false)
+			visibility(aSliderY, false)
+			visibility(dSliderX, false)
+			visibility(dSliderY, false)
+			visibility(spaceSliderX, false)
+			visibility(spaceSliderY, false)
+			visibility(slowWalkSliderX, false)
+			visibility(slowWalkSliderY, false)
+			visibility(reposKeyindcCheckbox, false)
 		end
 	end
 end
@@ -680,7 +687,7 @@ local keystrokeError = callback('paint', on_paintKeystroke)
 local function on_paintDmgIndc(ctx)
 	local hudExtras = getUi(hudMultibox)
 
-	if getUi(hudCheckbox, true) and contains(hudExtras, "Damage indicator") then
+	if contains(hudExtras, "Damage indicator") then
 		visibility(largeDmgIndcCheckbox, true)
 		visibility(dmgIndcColorpicker, true)
 		visibility(hsCheckbox, true)
@@ -739,6 +746,7 @@ local dmgIndcError = callback('paint', on_paintDmgIndc)
 ----------------------------------------------------------------------------------------------------------------------------------
 local function on_paintFdIndc(ctx)
 	local hudExtras = getUi(hudMultibox)
+
 	if contains(hudExtras, "Fake duck indicator") then
 		local storedTick = 0
 		local crouchedTicks = {}
@@ -805,7 +813,11 @@ local function on_paintHitrate(ctx)
 	local hudExtras = getUi(hudMultibox)
 
 	if health > 0 then
-		if getUi(hudCheckbox, true) and contains(hudExtras, "Hitrate indicator") then
+		if contains(hudExtras, "Hitrate indicator") then
+			visibility(hitsCheckbox, true)
+			visibility(missesCheckbox, true)
+			visibility(percentCheckbox, true)
+
        		local total = hits + misses
         	local hitPercent = hits / total
         	local hitPercentFixed = 0
@@ -815,9 +827,36 @@ local function on_paintHitrate(ctx)
 				hitPercentFixed = string.format("%2.1f", hitPercentFixed)
 			end
 
-			drawIndicator(255, 255, 255, 255, "%: ".. hitPercentFixed)
-			drawIndicator(255, 50, 50, 255, "Misses: ".. misses)
-			drawIndicator(50, 255, 50, 255, "Hits: ".. hits)
+			if getUi(percentCheckbox, true) then
+				visibility(percentColorPicker, true)
+
+				local r, g, b, a = getUi(percentColorPicker)
+				drawIndicator(r, g, b, a, "%: ".. hitPercentFixed)
+			else
+				visibility(percentColorPicker, false)
+			end
+
+			if getUi(missesCheckbox, true) then
+				visibility(missesColorPicker, true)
+
+				local r, g, b, a = getUi(missesColorPicker)
+				drawIndicator(r, g, b, a, "Misses: ".. misses)
+			else
+				visibility(missesColorPicker, false)
+			end
+
+			if getUi(hitsCheckbox, true) then
+				visibility(hitsColorPicker, true)
+
+				local r, g, b, a = getUi(hitsColorPicker)
+				drawIndicator(r, g, b, a, "Hits: ".. hits)
+			else
+				visibility(hitsColorPicker, false)
+			end
+		else
+			visibility(hitsCheckbox, false)
+			visibility(missesCheckbox, false)
+			visibility(percentCheckbox, false)
 		end
     end
 end
@@ -831,268 +870,281 @@ local hitrateError = callback('paint', on_paintHitrate)
 local function on_paintNetvar(ctx)
 	local hudExtras = getUi(hudMultibox)
 	
-	if getUi(hudCheckbox, true) then
-		if contains(hudExtras, "Netvar indicators") then
-        	visibility(styleCombobox, true)
-        	visibility(pingCheckbox, true)
-        	visibility(latencyCheckbox, true)
-        	visibility(chokeCheckbox, true)
-        	visibility(speedCheckbox, true)
+	if contains(hudExtras, "Netvar indicators") then
+    	visibility(styleCombobox, true)
+    	visibility(pingCheckbox, true)
+    	visibility(latencyCheckbox, true)
+    	visibility(chokeCheckbox, true)
+    	visibility(chokeColorPicker, true)
+    	visibility(speedCheckbox, true)
+    	visibility(speedColorPicker, true)
 
-        	local hudExtras = getUi(hudMultibox)
-        	local latency = client.latency()
-        	local latencyFixed = math.floor(latency * 1000)
+    	local hudExtras = getUi(hudMultibox)
+    	local latency = client.latency()
+    	local latencyFixed = math.floor(latency * 1000)
 
-        	local fakelag, fakelagHk = referenceUi("AA", "Fake lag", "Enabled")
+    	local fakelag, fakelagHk = referenceUi("AA", "Fake lag", "Enabled")
 
-        	local localPlayer = entity.get_local_player()
-        	local vx, vy = getProp(localPlayer, "m_vecVelocity")
-        	local playerResource = getAll("CCSPlayerResource")[1]
-       		local ping = getProp(playerResource, "m_iPing", localPlayer)
-			local fakelagEnabled = getUi(fakelagHk)
-        	local multiplier = 10.71428571428571
-        	local speed = 0
-        	local x = 17
-        	local y = 122
+    	local localPlayer = entity.get_local_player()
+    	local vx, vy = getProp(localPlayer, "m_vecVelocity")
+    	local playerResource = getAll("CCSPlayerResource")[1]
+   		local ping = getProp(playerResource, "m_iPing", localPlayer)
+		local fakelagEnabled = getUi(fakelagHk)
+    	local multiplier = 10.71428571428571
+    	local speed = 0
+    	local x = 17
+    	local y = 122
 
-        	if getUi(reposNetvarCheckbox, true) then
-        		pxc = getUi(pingSliderX)
-        		pyc = getUi(pingSliderY)
-        		pxc = getUi(pingSliderX)
-        		pyc = getUi(pingSliderY)
-        		lxc = getUi(latencySliderX)
-        		lyc = getUi(latencySliderY)
-        		cxc = getUi(chokeSliderX)
-        		cyc = getUi(chokeSliderY)
-        		sxc = getUi(speedSliderX)
-        		syc = getUi(speedSliderY)
-        		pxb = getUi(pingSliderX)
-        		pyb = getUi(pingSliderY)
-        		lxb = getUi(latencySliderX)
-        		lyb = getUi(latencySliderY)
-        		cxb = getUi(chokeSliderX)
-        		cyb = getUi(chokeSliderY)
-        		sxb = getUi(speedSliderX)
-        		syb = getUi(speedSliderY)
+    	if getUi(reposNetvarCheckbox, true) then
+    		pxc = getUi(pingSliderX)
+    		pyc = getUi(pingSliderY)
+    		pxc = getUi(pingSliderX)
+    		pyc = getUi(pingSliderY)
+    		lxc = getUi(latencySliderX)
+    		lyc = getUi(latencySliderY)
+    		cxc = getUi(chokeSliderX)
+    		cyc = getUi(chokeSliderY)
+    		sxc = getUi(speedSliderX)
+    		syc = getUi(speedSliderY)
+    		pxb = getUi(pingSliderX)
+    		pyb = getUi(pingSliderY)
+    		lxb = getUi(latencySliderX)
+    		lyb = getUi(latencySliderY)
+    		cxb = getUi(chokeSliderX)
+    		cyb = getUi(chokeSliderY)
+    		sxb = getUi(speedSliderX)
+    		syb = getUi(speedSliderY)
 
-        		visibility(pingSliderX, true)
-        		visibility(pingSliderY, true)
-        		visibility(latencySliderX, true)
-        		visibility(latencySliderY, true)
-        		visibility(chokeSliderX, true)
-        		visibility(chokeSliderY, true)
-        		visibility(speedSliderX, true)
-        		visibility(speedSliderY, true)
-        	else
-        		pxc = w - 82 - x
-        		pyc = h / 2 - 47 - y - 30
-        		lxc = w - 82 - x
-        		lyc = h / 2 + 23 - y - 5
-        		cxc = w - 82 - x
-				cyc = h / 2 + 93 - y + 20
-				sxc = w - 82 - x
-				syc = h / 2 + 163 - y + 45
-				pxb = w - 82 - x
-        		pyb = h / 2 - 32 - y - 15
-        		lxb = w - 82 - x
-        		lyb = h / 2 + 23 - y
-        		cxb = w - 82 - x
-				cyb = h / 2 + 93 - y
-				sxb = w - 82 - x
-				syb = h / 2 + 163 - y
-
-        		visibility(pingSliderX, false)
-        		visibility(pingSliderY, false)
-        		visibility(latencySliderX, false)
-        		visibility(latencySliderY, false)
-        		visibility(chokeSliderX, false)
-        		visibility(chokeSliderY, false)
-        		visibility(speedSliderX, false)
-        		visibility(speedSliderY, false)
-        	end
-
-       		if getUi(styleCombobox) == "Circles" then
-        		if getUi(pingCheckbox, true) then
-        			if getUi(numbersCheckbox, true) then
-        				drawText(pxc, pyc - 45, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
-        			else
-        				drawText(pxc, pyc - 45, 255, 255, 255, 255, "cb", 0, "Ping")
-        			end
-        			
-        			if ping <= 50 then
-        				r, g, b = 0, 220, 0
-        			elseif ping > 50 and ping < 100 then
-        				r, g, b = 190, 145, 0
-        			elseif ping >= 100 and ping <= 150 then
-        				r, g, b = 220, 100, 0
-        			elseif ping > 150 then
-        				r, g, b = 220, 0, 0
-        			end
-
-        			draw_indicator_circle(ctx, pxc, pyc, r, g, b, 255, ping / 150, outline)
-        		end
-
-        		if getUi(latencyCheckbox, true) then
-        			if getUi(numbersCheckbox, true) then
-        				drawText(lxc, lyc - 45, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
-        			else
-        				drawText(lxc, lyc - 45, 255, 255, 255, 255, "cb", 0, "Latency")
-        			end
-
-        			if latencyFixed < 50 then
-        				r, g, b = 0, 220, 0
-        			elseif latencyFixed >= 50 and latencyFixed < 100 then
-        				r, g, b = 190, 145, 0
-        			elseif latencyFixed >= 100 and latencyFixed < 150 then
-        				r, g, b = 220, 100, 0
-        			elseif latencyFixed >= 150 then
-        				r, g, b = 220, 0, 0
-        			end
-
-        			if latencyFixed == 0 then
-        				draw_indicator_circle(ctx, lxc, lyc, r, g, b, 255, 0, outline)
-        			else
-        				draw_indicator_circle(ctx, lxc, lyc, r, g, b, 255, latency * 6.666666666666667, outline)
-        			end
-        		end
-
-        		if getUi(chokeCheckbox, true) then
-        			if getUi(numbersCheckbox, true) then
-        				drawText(cxc, cyc - 45, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
-        			else
-        				drawText(cxc, cyc - 45, 255, 255, 255, 255, "cb", 0, "Choked")
-        			end
-
-        			if fakelagEnabled then
-        				draw_indicator_circle(ctx, cxc, cyc, 255, 255, 255, 255, choked * multiplier / 150, outline)
-        			end
-        		end
-
-        		if getUi(speedCheckbox, true) then
-        			if vx ~= nil then
-						local velocity = math.sqrt(vx * vx + vy * vy)
-						velocity = math.min(9999, velocity) + 0.2
-						velocity = round(velocity, 0)
-
-						if getUi(numbersCheckbox, true) then
-							drawText(sxc, syc - 45, 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
-						else
-							drawText(sxc, syc - 45, 255, 255, 255, 255, "cb", 0, "Speed")
-						end
-
-						if velocity == 1 then
-							draw_indicator_circle(ctx, sxc, syc, 255, 255, 255, 255, 0, outline)
-						else
-							draw_indicator_circle(ctx, sxc, syc, 255, 255, 255, 255, velocity / 300, outline)
-						end
-					end
-        		end
-
-       		elseif getUi(styleCombobox) == "Boxes" then
-        		if getUi(pingCheckbox, true) then
-        			if getUi(numbersCheckbox, true) then
-        				drawText(pxb, pyb, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
-        			else
-        				drawText(pxb, pyb, 255, 255, 255, 255, "cb", 0, "Ping")
-        			end
-
-					drawRectangle(pxb - 78, pyb + 12, 156, 32, 0, 0, 0, 200)
-	
-					if ping <= 50 then
-						drawRectangle(pxb - 75, pyb + 15, ping, 26, 0, 220, 0, 255)
-					elseif ping > 50 and ping < 100 then
-						drawRectangle(pxb - 75, pyb + 15, ping, 26, 190, 145, 0, 255)
-					elseif ping >= 100 and ping <= 150 then
-						drawRectangle(pxb - 75, pyb + 15, ping, 26, 220, 100, 0, 255)
-					elseif ping > 150 then
-						drawRectangle(pxb - 75, pyb + 15, 150, 26, 220, 0, 0, 255)
-					end
-        		end
-
-        		if getUi(latencyCheckbox, true) then
-        			if getUi(numbersCheckbox, true) then
-        				drawText(lxb, lyb, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
-        			else
-        				drawText(lxb, lyb, 255, 255, 255, 255, "cb", 0, "Latency")
-        			end
-
-        			drawRectangle(lxb - 78, lyb + 12, 156, 32, 0, 0, 0, 200)
-
-        		if latencyFixed == 0 then
-        			elseif latencyFixed < 50 then
-        				drawRectangle(lxb - 75, lyb + 15, latency * 1000, 26, 0, 220, 0, 255)
-        			elseif latencyFixed >= 50 and latencyFixed < 100 then
-        				drawRectangle(lxb - 75, lyb + 15, latency * 1000, 26, 190, 145, 0, 255)
-        			elseif latencyFixed >= 100 and latencyFixed < 150 then
-        				drawRectangle(lxb - 75, lyb + 15, latency * 1000, 26, 220, 100, 0, 255)
-        			elseif latencyFixed >= 150 then
-        				drawRectangle(lxb - 75, lyb + 15, 150, 26, 220, 0, 0, 255)
-        			end
-        		end
-
-        		if getUi(chokeCheckbox, true) then
-        			local r, g, b, a = 255, 255, 255, 255
-
-    				if getUi(numbersCheckbox, true) then
-        				drawText(cxb, cyb, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
-        			else
-        				drawText(cxb, cyb, 255, 255, 255, 255, "cb", 0, "Choked")
-        			end
-
-        			if fakelagEnabled then
-						drawRectangle(cxb - 78, cyb + 12, 156, 32, 0, 0, 0, 200)
-						drawRectangle(cxb - 75, cyb + 15, choked * multiplier, 26, r, g, b, a)
-					end
-        		end
-
-        		if getUi(speedCheckbox, true) then
-        			if vx ~= nil then
-						local velocity = math.sqrt(vx * vx + vy * vy)
-						velocity = math.min(9999, velocity) + 0.2
-						velocity = round(velocity, 0)
-
-						if getUi(numbersCheckbox, true) then
-							drawText(sxb, syb, 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
-						else
-							drawText(sxb, syb, 255, 255, 255, 255, "cb", 0, "Speed")
-						end
-
-						drawRectangle(sxb - 78, syb + 12, 156, 32, 0, 0, 0, 200)
-
-						if velocity > 1 and velocity <= 300 then
-							drawRectangle(sxb - 75, syb + 15, velocity / 2, 26, 255, 255, 255, 255)
-						elseif velocity > 300 then
-							drawRectangle(sxb - 75, syb + 15, 150, 26, 255, 255, 255, 255)
-						end
-					end
-        		end
-      		end
-
-       		if getUi(pingCheckbox, true) or getUi(latencyCheckbox, true) or getUi(chokeCheckbox, true) or getUi(speedCheckbox, true) then
-       				visibility(numbersCheckbox, true)
-       				visibility(reposNetvarCheckbox, true)
-      		else
-      			visibility(numbersCheckbox, false)
-      			visibility(reposNetvarCheckbox, false)
-       		end
-
+    		visibility(pingSliderX, true)
+    		visibility(pingSliderY, true)
+    		visibility(latencySliderX, true)
+    		visibility(latencySliderY, true)
+    		visibility(chokeSliderX, true)
+    		visibility(chokeSliderY, true)
+    		visibility(speedSliderX, true)
+    		visibility(speedSliderY, true)
     	else
-        	visibility(styleCombobox, false)
-        	visibility(pingCheckbox, false)
-        	visibility(latencyCheckbox, false)
-        	visibility(chokeCheckbox, false)
-        	visibility(speedCheckbox, false)
-        	visibility(pingSliderX, false)
-        	visibility(pingSliderY, false)
-        	visibility(latencySliderX, false)
-        	visibility(latencySliderY, false)
-        	visibility(chokeSliderX, false)
-        	visibility(chokeSliderY, false)
-        	visibility(speedSliderX, false)
-        	visibility(speedSliderY, false)
-       	 	visibility(numbersCheckbox, false)
-       	 	visibility(reposNetvarCheckbox, false)
+    		pxc = w - 82 - x
+    		pyc = h / 2 - 47 - y - 30
+    		lxc = w - 82 - x
+    		lyc = h / 2 + 23 - y - 5
+    		cxc = w - 82 - x
+			cyc = h / 2 + 93 - y + 20
+			sxc = w - 82 - x
+			syc = h / 2 + 163 - y + 45
+			pxb = w - 82 - x
+    		pyb = h / 2 - 32 - y - 15
+    		lxb = w - 82 - x
+    		lyb = h / 2 + 23 - y
+    		cxb = w - 82 - x
+			cyb = h / 2 + 93 - y
+			sxb = w - 82 - x
+			syb = h / 2 + 163 - y
+
+    		visibility(pingSliderX, false)
+    		visibility(pingSliderY, false)
+    		visibility(latencySliderX, false)
+    		visibility(latencySliderY, false)
+    		visibility(chokeSliderX, false)
+    		visibility(chokeSliderY, false)
+    		visibility(speedSliderX, false)
+    		visibility(speedSliderY, false)
     	end
+
+   		if getUi(styleCombobox) == "Circles" then
+    		if getUi(pingCheckbox, true) then
+    			if getUi(numbersCheckbox, true) then
+    				drawText(pxc, pyc - 45, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
+    			else
+    				drawText(pxc, pyc - 45, 255, 255, 255, 255, "cb", 0, "Ping")
+    			end
+    			
+    			if ping <= 50 then
+    				r, g, b = 0, 220, 0
+    			elseif ping > 50 and ping < 100 then
+    				r, g, b = 190, 145, 0
+    			elseif ping >= 100 and ping <= 150 then
+    				r, g, b = 220, 100, 0
+    			elseif ping > 150 then
+    				r, g, b = 220, 0, 0
+    			end
+
+    			draw_indicator_circle(ctx, pxc, pyc, r, g, b, 255, ping / 150, outline)
+    		end
+
+    		if getUi(latencyCheckbox, true) then
+    			if getUi(numbersCheckbox, true) then
+    				drawText(lxc, lyc - 45, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
+    			else
+    				drawText(lxc, lyc - 45, 255, 255, 255, 255, "cb", 0, "Latency")
+    			end
+
+    			if latencyFixed < 50 then
+    				r, g, b = 0, 220, 0
+    			elseif latencyFixed >= 50 and latencyFixed < 100 then
+    				r, g, b = 190, 145, 0
+    			elseif latencyFixed >= 100 and latencyFixed < 150 then
+    				r, g, b = 220, 100, 0
+    			elseif latencyFixed >= 150 then
+    				r, g, b = 220, 0, 0
+    			end
+
+    			if latencyFixed == 0 then
+    				draw_indicator_circle(ctx, lxc, lyc, r, g, b, 255, 0, outline)
+    			else
+    				draw_indicator_circle(ctx, lxc, lyc, r, g, b, 255, latency * 6.666666666666667, outline)
+    			end
+    		end
+
+    		if getUi(chokeCheckbox, true) then
+    			local r, g, b, a = getUi(chokeColorPicker)
+
+    			if getUi(numbersCheckbox, true) then
+    				drawText(cxc, cyc - 45, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
+    			else
+    				drawText(cxc, cyc - 45, 255, 255, 255, 255, "cb", 0, "Choked")
+    			end
+
+    			if fakelagEnabled then
+    				draw_indicator_circle(ctx, cxc, cyc, r, g, b, a, choked * multiplier / 150, outline)
+    			end
+    		else
+				visibility(chokeColorPicker, false)
+    		end
+
+    		if getUi(speedCheckbox, true) then
+    			if vx ~= nil then
+					local velocity = math.sqrt(vx * vx + vy * vy)
+					velocity = math.min(9999, velocity) + 0.2
+					velocity = round(velocity, 0)
+					local r, g, b, a = getUi(speedColorPicker)
+
+					if getUi(numbersCheckbox, true) then
+						drawText(sxc, syc - 45, 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
+					else
+						drawText(sxc, syc - 45, 255, 255, 255, 255, "cb", 0, "Speed")
+					end
+
+					if velocity == 1 then
+						draw_indicator_circle(ctx, sxc, syc, r, g, b, a, 0, outline)
+					else
+						draw_indicator_circle(ctx, sxc, syc, r, g, b, a, velocity / 300, outline)
+					end
+				end
+			else
+				visibility(speedColorPicker, false)
+    		end
+
+   		elseif getUi(styleCombobox) == "Boxes" then
+    		if getUi(pingCheckbox, true) then
+    			if getUi(numbersCheckbox, true) then
+    				drawText(pxb, pyb, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
+    			else
+    				drawText(pxb, pyb, 255, 255, 255, 255, "cb", 0, "Ping")
+    			end
+
+				drawRectangle(pxb - 78, pyb + 12, 156, 32, 0, 0, 0, 200)
+
+				if ping <= 50 then
+					drawRectangle(pxb - 75, pyb + 15, ping, 26, 0, 220, 0, 255)
+				elseif ping > 50 and ping < 100 then
+					drawRectangle(pxb - 75, pyb + 15, ping, 26, 190, 145, 0, 255)
+				elseif ping >= 100 and ping <= 150 then
+					drawRectangle(pxb - 75, pyb + 15, ping, 26, 220, 100, 0, 255)
+				elseif ping > 150 then
+					drawRectangle(pxb - 75, pyb + 15, 150, 26, 220, 0, 0, 255)
+				end
+    		end
+
+    		if getUi(latencyCheckbox, true) then
+    			if getUi(numbersCheckbox, true) then
+    				drawText(lxb, lyb, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
+    			else
+    				drawText(lxb, lyb, 255, 255, 255, 255, "cb", 0, "Latency")
+    			end
+
+    			drawRectangle(lxb - 78, lyb + 12, 156, 32, 0, 0, 0, 200)
+
+    		if latencyFixed == 0 then
+    			elseif latencyFixed < 50 then
+    				drawRectangle(lxb - 75, lyb + 15, latency * 1000, 26, 0, 220, 0, 255)
+    			elseif latencyFixed >= 50 and latencyFixed < 100 then
+    				drawRectangle(lxb - 75, lyb + 15, latency * 1000, 26, 190, 145, 0, 255)
+    			elseif latencyFixed >= 100 and latencyFixed < 150 then
+    				drawRectangle(lxb - 75, lyb + 15, latency * 1000, 26, 220, 100, 0, 255)
+    			elseif latencyFixed >= 150 then
+    				drawRectangle(lxb - 75, lyb + 15, 150, 26, 220, 0, 0, 255)
+    			end
+    		end
+
+    		if getUi(chokeCheckbox, true) then
+    			local r, g, b, a = getUi(chokeColorPicker)
+
+				if getUi(numbersCheckbox, true) then
+    				drawText(cxb, cyb, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
+    			else
+    				drawText(cxb, cyb, 255, 255, 255, 255, "cb", 0, "Choked")
+    			end
+
+    			if fakelagEnabled then
+					drawRectangle(cxb - 78, cyb + 12, 156, 32, 0, 0, 0, 200)
+					drawRectangle(cxb - 75, cyb + 15, choked * multiplier, 26, r, g, b, a)
+				end
+			else
+				visibility(chokeColorPicker, false)
+    		end
+
+    		if getUi(speedCheckbox, true) then
+    			if vx ~= nil then
+					local velocity = math.sqrt(vx * vx + vy * vy)
+					velocity = math.min(9999, velocity) + 0.2
+					velocity = round(velocity, 0)
+					local r, g, b, a = getUi(speedColorPicker)
+
+					if getUi(numbersCheckbox, true) then
+						drawText(sxb, syb, 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
+					else
+						drawText(sxb, syb, 255, 255, 255, 255, "cb", 0, "Speed")
+					end
+
+					drawRectangle(sxb - 78, syb + 12, 156, 32, 0, 0, 0, 200)
+
+					if velocity > 1 and velocity <= 300 then
+						drawRectangle(sxb - 75, syb + 15, velocity / 2, 26, r, g, b, a)
+					elseif velocity > 300 then
+						drawRectangle(sxb - 75, syb + 15, 150, 26, r, g, b, a)
+					end
+				end
+			else
+				visibility(speedColorPicker, false)
+    		end
+  		end
+
+   		if getUi(pingCheckbox, true) or getUi(latencyCheckbox, true) or getUi(chokeCheckbox, true) or getUi(speedCheckbox, true) then
+   				visibility(numbersCheckbox, true)
+   				visibility(reposNetvarCheckbox, true)
+  		else
+  			visibility(numbersCheckbox, false)
+  			visibility(reposNetvarCheckbox, false)
+   		end
+	else
+    	visibility(styleCombobox, false)
+    	visibility(pingCheckbox, false)
+    	visibility(latencyCheckbox, false)
+    	visibility(chokeCheckbox, false)
+    	visibility(chokeColorPicker, false)
+    	visibility(speedCheckbox, false)
+    	visibility(speedColorPicker, false)
+    	visibility(pingSliderX, false)
+    	visibility(pingSliderY, false)
+    	visibility(latencySliderX, false)
+    	visibility(latencySliderY, false)
+    	visibility(chokeSliderX, false)
+    	visibility(chokeSliderY, false)
+    	visibility(speedSliderX, false)
+    	visibility(speedSliderY, false)
+   	 	visibility(numbersCheckbox, false)
+   	 	visibility(reposNetvarCheckbox, false)
 	end
 end
 
@@ -1109,26 +1161,21 @@ local function on_paintHealthHands(ctx)
 	
 	local hands, handsColor = referenceUi("Visuals", "Colored Models", "Hands")
 
-	if getUi(hudCheckbox, true) then
-		visibility(healthHandCheckbox, true)
-		if getUi(healthHandCheckbox, true) then
+	if getUi(healthHandCheckbox, true) then
 
-			setUi(hands, true)
+		setUi(hands, true)
 
-			if hp >= 100 then
-				setUi(handsColor, 25, 175, 0, 255)
-			elseif hp < 100 and hp >= 75 then
-				setUi(handsColor, 150, 150, 0, 255)
-			elseif hp < 75 and hp >= 50 then
-				setUi(handsColor, 175, 125, 0, 255)
-			elseif hp < 50 and hp >= 25 then
-				setUi(handsColor, 225, 100, 0, 255)
-			elseif hp < 25 and hp >= 0 then
-				setUi(handsColor, 175, 50, 0, 255)
-			end
+		if hp >= 100 then
+			setUi(handsColor, 25, 175, 0, 255)
+		elseif hp < 100 and hp >= 75 then
+			setUi(handsColor, 150, 150, 0, 255)
+		elseif hp < 75 and hp >= 50 then
+			setUi(handsColor, 175, 125, 0, 255)
+		elseif hp < 50 and hp >= 25 then
+			setUi(handsColor, 225, 100, 0, 255)
+		elseif hp < 25 and hp >= 0 then
+			setUi(handsColor, 175, 50, 0, 255)
 		end
-	else
-		visibility(healthHandCheckbox, false)
 	end
 end
 
@@ -1141,28 +1188,23 @@ local healthHandsError = callback('paint', on_paintHealthHands)
 local function on_paintBombTime(ctx)
 	local C4 = getAll("CPlantedC4")[1]
 
-	if getUi(hudCheckbox, true) then
-		visibility(bombTimeCheckbox, true)
-		if getUi(bombTimeCheckbox, true) then
-			if C4 ~= nil and getProp(C4, "m_bBombDefused") == 0 and get_bombTime(C4) > 0 then
-				local c4x, c4y, c4z = getProp(C4, "m_vecOrigin")
-				local lpx, lpy, lpz = getProp(localPlayer, "m_vecOrigin")
+	if getUi(bombTimeCheckbox, true) then
+		if C4 ~= nil and getProp(C4, "m_bBombDefused") == 0 and get_bombTime(C4) > 0 then
+			local c4x, c4y, c4z = getProp(C4, "m_vecOrigin")
+			local lpx, lpy, lpz = getProp(localPlayer, "m_vecOrigin")
 
-				local wx, wy = worldToScreen( c4x, c4y, c4z)
+			local wx, wy = worldToScreen( c4x, c4y, c4z)
 
-				if wx ~= nil then
-					drawRectangle(wx - 23, wy - 50, 45, 20, 0, 0, 0, 200)
+			if wx ~= nil then
+				drawRectangle(wx - 23, wy - 50, 45, 20, 0, 0, 0, 200)
 
-					if get_bombTime(C4) >= 10 then
-						drawText(wx - 16, wy - 47, 255, 255, 255, 255, "", 0, roundToFifth(get_bombTime(C4)))
-					else
-						drawText(wx - 13, wy - 47, 255, 100, 100, 255, "", 0, roundToFifth(get_bombTime(C4)))
-					end
+				if get_bombTime(C4) >= 10 then
+					drawText(wx - 16, wy - 47, 255, 255, 255, 255, "", 0, roundToFifth(get_bombTime(C4)))
+				else
+					drawText(wx - 13, wy - 47, 255, 100, 100, 255, "", 0, roundToFifth(get_bombTime(C4)))
 				end
 			end
 		end
-	else
-		visibility(bombTimeCheckbox, false)
 	end
 end
 
