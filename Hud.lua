@@ -1250,6 +1250,7 @@ local function on_paintNetvar(ctx)
 		local fakelagEnabled = getUi(fakelagHk)
     	local multiplier = 10.71428571428571
     	local speed = 0
+    	local w, h = screenSize()
     	local x = 17
     	local y = 122
 
