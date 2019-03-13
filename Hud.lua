@@ -141,6 +141,15 @@ local function get_bombTime(bomb)
 	return bombTime or 0
 end
 
+local function round(num, numDecimalPlaces)
+	local mult = 10 ^ (numDecimalPlaces or 0)
+
+	if num >= 0 then return math.floor(num * mult + 0.5) / mult
+	else 
+		return math.ceil(num * mult - 0.5) / mult
+	end
+end
+
 local function roundToFifth(num)
 	num = round(num, 2)
 	return num
@@ -238,15 +247,6 @@ local choked = 0
 
 local function on_run_command(c)
     choked = c.chokedcommands
-end
-
-local function round(num, numDecimalPlaces)
-	local mult = 10 ^ (numDecimalPlaces or 0)
-
-	if num >= 0 then return math.floor(num * mult + 0.5) / mult
-	else 
-		return math.ceil(num * mult - 0.5) / mult
-	end
 end
 
 local function draw_indicator_circle(ctx, x, y, r, g, b, a, percentage, outline)
