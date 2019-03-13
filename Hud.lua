@@ -855,8 +855,11 @@ local function on_paintHitrate(ctx)
 			end
 		else
 			visibility(hitsCheckbox, false)
+			visibility(hitsColorPicker, false)
 			visibility(missesCheckbox, false)
+			visibility(missesColorPicker, false)
 			visibility(percentCheckbox, false)
+			visibility(percentColorPicker, false)
 		end
     end
 end
