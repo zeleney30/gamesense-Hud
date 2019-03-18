@@ -98,6 +98,7 @@ local percentColorPicker = colorPicker("Lua", "B", "Percent", 255, 255, 255, 255
 local hits = 0
 local misses = 0
 local playerDamage = {}
+local damageQueue = {}
 
 --player_death(e)
 local headshot = {}
@@ -109,7 +110,7 @@ local clantagTextbox = textbox("Lua", "B", "Clantag")--]]
 ----------------------------------------------------------------------------------------------------------------------------------
 
 --netvar indc--
-local styleCombobox = combobox("Lua", "B", "Style", "Circles", "Boxes")
+local styleCombobox = combobox("Lua", "B", "Style", "Circles", "Horizontal box", "Vertical box")
 local pingCheckbox = checkbox("Lua", "B", "Ping")
 local pingSliderX = slider("Lua", "B", "Ping X slider", 0, w, w / 2, true)
 local pingSliderY = slider("Lua", "B", "Ping Y slider", 0, h, h / 2, true)
@@ -168,6 +169,8 @@ end
 ----------------------------------------------------------------------------------------------------------------------------------
 
 --hit rate/dmg indc--
+local playerDamaged = false
+
 local function on_player_hurt(e)
 	local localPlayer = entity.get_local_player()
 	local attacker = userToIndex(e.attacker)
@@ -177,6 +180,7 @@ local function on_player_hurt(e)
         local duckAmount = getProp(userToIndex(e.userid), "m_flDuckAmount")
  
         playerDamage[#playerDamage + 1] = {x, y, z + (46 + (1 - duckAmount) * 18), (z + (46 + (1 - duckAmount) * 18)) + 50, e.dmg_health, true}
+        playerDamaged = true
     end
 
     if attacker == nil then
@@ -220,8 +224,8 @@ end
 local function on_round_prestart(e)
 	playerDamage = {}
 	headshot = {}
+	damageQueue = {}
 end
-
 ----------------------------------------------------------------------------------------------------------------------------------
 
 --clantag--
@@ -1039,6 +1043,7 @@ local keystrokeError = callback('paint', on_paintKeystroke)
 	end
 
 ----------------------------------------------------------------------------------------------------------------------------------
+
 local function on_paintDmgIndc(ctx)
 	local hudExtras = getUi(hudMultibox)
 
@@ -1394,7 +1399,7 @@ local function on_paintNetvar(ctx)
 				visibility(speedColorPicker, false)
     		end
 
-   		elseif getUi(styleCombobox) == "Boxes" then
+   		elseif getUi(styleCombobox) == "Horizontal box" then
     		if getUi(pingCheckbox, true) then
     			if getUi(numbersCheckbox, true) then
     				drawText(pxb, pyb, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
@@ -1472,6 +1477,90 @@ local function on_paintNetvar(ctx)
 						drawRectangle(sxb - 75, syb + 15, velocity / 2, 26, r, g, b, a)
 					elseif velocity > 300 then
 						drawRectangle(sxb - 75, syb + 15, 150, 26, r, g, b, a)
+					end
+				end
+			else
+				visibility(speedColorPicker, false)
+    		end
+
+    	elseif getUi(styleCombobox) == "Vertical box" then
+    		if getUi(pingCheckbox, true) then
+    			if getUi(numbersCheckbox, true) then
+    				drawText(pxb, pyb - 122, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
+    			else
+    				drawText(pxb, pyb - 122, 255, 255, 255, 255, "cb", 0, "Ping")
+    			end
+
+    			drawRectangle(pxb - 17, pyb - 110, 32, 156, 0, 0, 0, 200)
+
+				if ping <= 50 then
+					drawRectangle(pxb - 14, pyb - 107, 26, ping, 0, 220, 0, 255)
+				elseif ping > 50 and ping < 100 then
+					drawRectangle(pxb - 14, pyb - 107, 26, ping, 190, 145, 0, 255)
+				elseif ping >= 100 and ping <= 150 then
+					drawRectangle(pxb - 14, pyb - 107, 26, ping, 220, 100, 0, 255)
+				elseif ping > 150 then
+					drawRectangle(pxb - 14, pyb - 107, 26, 150, 220, 0, 0, 255)
+				end
+    		end
+
+    		if getUi(latencyCheckbox, true) then
+    			if getUi(numbersCheckbox, true) then
+    				drawText(lxb, lyb - 15, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
+    			else
+    				drawText(lxb, lyb - 15, 255, 255, 255, 255, "cb", 0, "Latency")
+    			end
+
+    			drawRectangle(lxb - 17, lyb - 3, 32, 156, 0, 0, 0, 200)
+
+    		if latencyFixed == 0 then
+    			elseif latencyFixed < 50 then
+    				drawRectangle(lxb - 14, lyb - 0, 26, latency * 1000, 0, 220, 0, 255)
+    			elseif latencyFixed >= 50 and latencyFixed < 100 then
+    				drawRectangle(lxb - 14, lyb - 0, 26, latency * 1000, 190, 145, 0, 255)
+    			elseif latencyFixed >= 100 and latencyFixed < 150 then
+    				drawRectangle(lxb - 14, lyb - 0, 26, latency * 1000, 220, 100, 0, 255)
+    			elseif latencyFixed >= 150 then
+    				drawRectangle(lxb - 14, lyb - 0, 16, 150, 220, 0, 0, 255)
+    			end
+    		end
+
+    		if getUi(chokeCheckbox, true) then
+    			local r, g, b, a = getUi(chokeColorPicker)
+
+				if getUi(numbersCheckbox, true) then
+    				drawText(cxb, cyb + 92, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
+    			else
+    				drawText(cxb, cyb + 92, 255, 255, 255, 255, "cb", 0, "Choked")
+    			end
+
+    			if fakelagEnabled then
+					drawRectangle(cxb - 17, cyb + 104, 32, 156, 0, 0, 0, 200)
+					drawRectangle(cxb - 14, cyb + 107, 26, choked * multiplier, r, g, b, a)
+				end
+			else
+				visibility(chokeColorPicker, false)
+    		end
+
+    		if getUi(speedCheckbox, true) then
+    			if vx ~= nil then
+					local velocity = math.sqrt(vx * vx + vy * vy)
+					velocity = math.min(9999, velocity) + 0.2
+					velocity = round(velocity, 0)
+					local r, g, b, a = getUi(speedColorPicker)
+
+					if getUi(numbersCheckbox, true) then
+						drawText(sxb, syb + 199, 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
+					else
+						drawText(sxb, syb + 199, 255, 255, 255, 255, "cb", 0, "Speed")
+					end
+
+					drawRectangle(sxb - 17, syb + 211, 32, 156, 0, 0, 0, 200)
+
+					if velocity > 1 and velocity <= 300 then
+						drawRectangle(sxb - 14, syb + 214, 26, velocity / 2, r, g, b, a)
+					elseif velocity > 300 then
+						drawRectangle(sxb - 14, syb + 214, 26, 150, r, g, b, a)
 					end
 				end
 			else
