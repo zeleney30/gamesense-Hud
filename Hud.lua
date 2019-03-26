@@ -858,6 +858,8 @@ local function on_paintKeystroke(ctx)
 		if contains(hudExtras, "Keystroke indicator") then
 			visibility(m1Checkbox, true)
 			visibility(m2Checkbox, true)
+			visibility(m1h, true)
+			visibility(m2h, true)
 			visibility(whCheckbox, true)
 			visibility(shCheckbox, true)
 			visibility(ahCheckbox, true)
