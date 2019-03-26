@@ -39,6 +39,9 @@ local w, h = screenSize()
 ----------------------------------------------------------------------------------------------------------------------------------
 
 local hudCheckbox = checkbox("Lua", "B", "Hud")
+local resizeHud = checkbox("Lua", "B", "Resize hud")
+local hudW = slider("Lua", "B", "Hud width", 0, w, w - 350, true)
+local hudH = slider("Lua", "B", "Hud height", 0, h, h - 64, true)
 local reposHud = checkbox("Lua", "B", "Reposition hud")
 local hudSliderX = slider("Lua", "B", "Hud X", 0, w, 0, true)
 local hudSliderY = slider("Lua", "B", "Hud Y", 0, h, h, true)
@@ -47,6 +50,14 @@ local hudMultibox = multibox("Lua", "B", "Extras", {"Keystroke indicator", "Dama
 ----------------------------------------------------------------------------------------------------------------------------------
 
 --keystroke indc--
+local m1Checkbox = checkbox("Lua", "B", "M1")
+local m1h = hotkey("Lua", "B", "M1", true)
+local m1SliderX = slider("Lua", "B", "M1 slider X", 0, w, w - 231, true)
+local m1SliderY = slider("Lua", "B", "M1 slider Y", 0, h, h - 1345, true)
+local m2Checkbox = checkbox("Lua", "B", "M2")
+local m2h = hotkey("Lua", "B", "M2", true)
+local m2SliderX = slider("Lua", "B", "M2 slider X", 0, w, w - 72, true)
+local m2SliderY = slider("Lua", "B", "M2 slider Y", 0, h, h - 1345, true)
 local whCheckbox = checkbox("Lua", "B", "W")
 local wh = hotkey("Lua", "B", "W", true)
 local wSliderX = slider("Lua", "B", "W slider X", 0, w, w - 154, true)
@@ -81,10 +92,11 @@ local reposKeyindcCheckbox = checkbox("Lua", "B", "Reposition keystroke indicato
 ----------------------------------------------------------------------------------------------------------------------------------
 
 --dmg--
-local largeDmgIndcCheckbox = checkbox("Lua", "B", "Large damage indicators")
+local largeDmgIndcCombobox = combobox("Lua", "B", "Damage indicator style", { "Normal", "Bold", "Large" } )
 local dmgIndcColorpicker = colorPicker("Lua", "B", "Large damage indicators", 255, 255, 255, 255)
 local hsCheckbox = checkbox("Lua", "B", "Headshot indicator")
 local hsColorpicker = colorPicker("Lua", "B", "Headshot indicator")
+local hsStyleCombobox = combobox("Lua", "B", "Headshot indicator style", { "Normal", "Bold", "Large" } )
 
 --hitrate indc--
 local hitsCheckbox = checkbox("Lua", "B", "Hits")
@@ -112,20 +124,31 @@ local clantagTextbox = textbox("Lua", "B", "Clantag")--]]
 --netvar indc--
 local styleCombobox = combobox("Lua", "B", "Style", "Circles", "Horizontal box", "Vertical box")
 local pingCheckbox = checkbox("Lua", "B", "Ping")
+local pingSliderWv = slider("Lua", "B", "Ping width", 0, 500, 32, true)
+local pingSliderHv = slider("Lua", "B", "Ping height", 0, 500, 32, true)
 local pingSliderX = slider("Lua", "B", "Ping X slider", 0, w, w / 2, true)
 local pingSliderY = slider("Lua", "B", "Ping Y slider", 0, h, h / 2, true)
 local latencyCheckbox = checkbox("Lua", "B", "Latency")
+local latencySliderWv = slider("Lua", "B", "Latency width", 0, 500, 32, true)
+local latencySliderHv = slider("Lua", "B", "Latency height", 0, 500, 32, true)
 local latencySliderX = slider("Lua", "B", "Latency X slider", 0, w, w / 2, true)
 local latencySliderY = slider("Lua", "B", "Latency Y slider", 0, h, h / 2, true)
 local chokeCheckbox = checkbox("Lua", "B", "Choke")
+local chokeSliderWv = slider("Lua", "B", "Choke width", 0, 500, 32, true)
+local chokeSliderHv = slider("Lua", "B", "Choke height", 0, 500, 32, true)
 local chokeColorPicker = colorPicker("Lua", "B", "Choke", 255, 255, 255, 255)
 local chokeSliderX = slider("Lua", "B", "Choke X slider", 0, w, w / 2, true)
 local chokeSliderY = slider("Lua", "B", "Choke Y slider", 0, h, h / 2, true)
 local speedCheckbox = checkbox("Lua", "B", "Speed")
+local speedSliderWv = slider("Lua", "B", "Speed width", 0, 500, 32, true)
+local speedSliderHv = slider("Lua", "B", "Speed height", 0, 500, 32, true)
 local speedColorPicker = colorPicker("Lua", "B", "Speed", 255, 255, 255, 255)
 local speedSliderX = slider("Lua", "B", "Speed X slider", 0, w, w / 2, true)
 local speedSliderY = slider("Lua", "B", "Speed Y slider", 0, h, h / 2, true)
 local numbersCheckbox = checkbox("Lua", "B", "Display numbers")
+local resizeNetvarCheckbox = checkbox("Lua", "B", "Resize netvar indicators")
+local resizeCircleSlider = slider("Lua", "B", "Size", 0, 100, 36, true)
+local resizeCircleThiccnessSlider = slider("Lua", "B", "Thickness", 0, 100, 13, true)
 local reposNetvarCheckbox = checkbox("Lua", "B", "Reposition netvar indicators")
 
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -255,12 +278,26 @@ end
 
 local function draw_indicator_circle(ctx, x, y, r, g, b, a, percentage, outline)
     local outline = outline == nil and true or outline
-    local radius = 36
     local start_degrees = 0
-    if outline then
-        client.draw_circle_outline(ctx, x, y, 0, 0, 0, 200, radius, start_degrees, 1.0, 13)
+
+    if getUi(resizeNetvarCheckbox, true) then
+    	visibility(resizeCircleSlider, true)
+    	visibility(resizeCircleThiccnessSlider, true)
+
+    	radius = getUi(resizeCircleSlider)
+    	thiccness = getUi(resizeCircleThiccnessSlider)
+    else
+    	visibility(resizeCircleSlider, false)
+    	visibility(resizeCircleThiccnessSlider, false)
+
+    	radius = 36
+    	thiccness = 13
     end
-    client.draw_circle_outline(ctx, x, y, r, g, b, a, radius - 1, start_degrees, percentage, 11)
+
+    if outline then
+        client.draw_circle_outline(ctx, x, y, 0, 0, 0, 200, radius, start_degrees, 1.0, thiccness)
+    end
+    client.draw_circle_outline(ctx, x, y, r, g, b, a, radius - 1, start_degrees, percentage, thiccness - 2)
 end
 ----------------------------------------------------------------------------------------------------------------------------------
 
@@ -631,68 +668,7 @@ local indicatorError = callback('paint', on_paintIndicators)
 		client.log(indicatorError)
 	end
 ----------------------------------------------------------------------------------------------------------------------------------
-local function noVisible()
-	visibility(hudFullCheckbox, false)
-	visibility(reposHud, false)
-	visibility(hudSliderX, false)
-	visibility(hudSliderY, false)
-	visibility(wSliderX, false)
-	visibility(wSliderY, false)
-	visibility(whCheckbox, false)
-	visibility(shCheckbox, false)
-	visibility(ahCheckbox, false)
-	visibility(dhCheckbox, false)
-	visibility(spacehCheckbox, false)
-	visibility(slowWalkhCheckbox, false)
-	visibility(wh, false)
-	visibility(sh, false)
-	visibility(ah, false)
-	visibility(dh, false)
-	visibility(spaceh, false)
-	visibility(slowWalkh, false)
-	visibility(boxColorCheckbox, false)
-	visibility(boxColorPicker, false)
-	visibility(keyUnpressedColorCheckbox, false)
-	visibility(keyUnpressedColorPicker, false)
-	visibility(keyPressedColorCheckbox, false)
-	visibility(keyPressedColorPicker, false)
-	visibility(wSliderX, false)
-	visibility(wSliderY, false)
-	visibility(sSliderX, false)
-	visibility(sSliderY, false)
-	visibility(aSliderX, false)
-	visibility(aSliderY, false)
-	visibility(dSliderX, false)
-	visibility(dSliderY, false)
-	visibility(spaceSliderX, false)
-	visibility(spaceSliderY, false)
-	visibility(slowWalkSliderX, false)
-	visibility(slowWalkSliderY, false)
-	visibility(reposKeyindcCheckbox, false)
-	visibility(largeDmgIndcCheckbox, false)
-	visibility(dmgIndcColorpicker, false)
-	visibility(hsCheckbox, false)
-	visibility(hsColorpicker, false)
-	visibility(styleCombobox, false)
-	visibility(pingCheckbox, false)
-	visibility(pingSliderX, false)
-	visibility(pingSliderY, false)
-	visibility(latencyCheckbox, false)
-	visibility(latencySliderX, false)
-	visibility(latencySliderY, false)
-	visibility(chokeCheckbox, false)
-	visibility(chokeColorPicker, false)
-	visibility(chokeSliderX, false)
-	visibility(chokeSliderY, false)
-	visibility(speedCheckbox, false)
-	visibility(speedColorPicker, false)
-	visibility(speedSliderX, false)
-	visibility(speedSliderY, false)
-	visibility(numbersCheckbox, false)
-	visibility(reposNetvarCheckbox, false)
-end
 
-----------------------------------------------------------------------------------------------------------------------------------
 local function on_paintHud(ctx)
 	local localPlayer = entity.get_local_player()
 	local health = getProp(localPlayer, "m_iHealth")
@@ -716,9 +692,24 @@ local function on_paintHud(ctx)
 
 	if getUi(hudCheckbox, true) then
 		visibility(hudFullCheckbox, true)
+		visibility(resizeHud, true)
 		visibility(reposHud, true)
 
 		setProp(localPlayer, "m_iHideHud", 8200)
+
+		if getUi(resizeHud, true) then
+			visibility(hudW, true)
+			visibility(hudH, true)
+
+			hudWidth = getUi(hudW)
+			hudHeight = getUi(hudH)
+		else
+			visibility(hudW, false)
+			visibility(hudH, false)
+
+			hudWidth = 350
+			hudHeight = 64
+		end
 
 		if getUi(reposHud, true) then
 			visibility(hudSliderX, true)
@@ -735,100 +726,110 @@ local function on_paintHud(ctx)
 			x, y = 0, 0
 		end
 
-		if health > 0 then
-			if getUi(hudFullCheckbox, true) then
-				--hp/armor--
-				drawRectangle(x, h - 68 + df, w, 68 - sf, 10, 10, 10, 255)
-				drawRectangle(x + 1, h - 67 + df, w - 2, 66 - sf, 60, 60, 60, 255)
-				drawRectangle(x + 2, h - 66 + df, w - 4, 64 - sf, 40, 40, 40, 255)
-				drawRectangle(x + 5, h - 64 + df, w - 9, 60 - sf, 60, 60, 60, 255)
-				drawRectangle(x + 6, h - 63 + df, w - 11, 58 - sf, 20, 20, 20, 255)
-				drawGradient(x + 7, h - 62 + df, w / 2 - 11, 1, 56, 176, 218, 255, 201, 72, 205, 255, true)
-				drawGradient(x + 7 + w / 2 - 13, h - 62 + df, w / 2, 1, 201, 72, 205, 255, 204, 227, 53, 255, true)
-				drawText(x + 75, h - 35 - tf, 108, 195, 18, a, flags, maxW, health)
-				drawText(x + 75, h - 16 - tf, r, g, b, a, "c", maxW, "Health")
-				drawText(x + 275, h - 35 - tf, 85, 155, 215, a, flags, maxW, armor)
-				drawText(x + 275, h - 16 - tf, r, g, b, a, "c", maxW, "Armor")
+		if getUi(hudFullCheckbox, true) then
+			visibility(resizeHud, false)
+			visibility(hudW, false)
+			visibility(hudH, false)
 
-				if ammo == -1 then
-				
-				elseif ammo >= 0 and ammo <10 and ammoReserve >= 0 and ammoReserve <10 then
-					drawText(w - 115, h - 32, r, g, b, a, "c+", 0, ammoReserve)
-					drawText(w - 135, h - 33, r, g, b, a, "c+", 0, "|")
-					drawText(w - 155, h - 32, r, g, b, a, "c+", 0, ammo)
-				elseif ammo >= 10 or ammoReserve >= 10 then
-					drawText(w - 110, h - 32, r, g, b, a, "c+", 0, ammoReserve)
-					drawText(w - 135, h - 33, r, g, b, a, "c+", 0, "|")
-					drawText(w - 160, h - 32, r, g, b, a, "c+", 0, ammo)
-				end
+			--hp/armor--
+			drawRectangle(x, h - 68 + df, w, 68 - sf, 10, 10, 10, 255)
+			drawRectangle(x + 1, h - 67 + df, w - 2, 66 - sf, 60, 60, 60, 255)
+			drawRectangle(x + 2, h - 66 + df, w - 4, 64 - sf, 40, 40, 40, 255)
+			drawRectangle(x + 5, h - 64 + df, w - 9, 60 - sf, 60, 60, 60, 255)
+			drawRectangle(x + 6, h - 63 + df, w - 11, 58 - sf, 20, 20, 20, 255)
+			drawGradient(x + 7, h - 62 + df, w / 2 - 11, 1, 56, 176, 218, 255, 201, 72, 205, 255, true)
+			drawGradient(x + 7 + w / 2 - 13, h - 62 + df, w / 2, 1, 201, 72, 205, 255, 204, 227, 53, 255, true)
+			drawText(x + 75, h - 35 - tf, 108, 195, 18, a, flags, maxW, health)
+			drawText(x + 75, h - 16 - tf, r, g, b, a, "c", maxW, "Health")
+			drawText(x + 275, h - 35 - tf, 85, 155, 215, a, flags, maxW, armor)
+			drawText(x + 275, h - 16 - tf, r, g, b, a, "c", maxW, "Armor")
 
-				if c4Holder == localPlayer then
-					--loop through all elements in images_icons
-						local image = imageIcons["c4"]
-						--calculate x and y of the current image
-						local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
-						--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
-						local width, height = image:draw(x + 135, h - 53 + 1, nil, 40, 255, 255, 255, 255)
-				end
+			if ammo == -1 then
+			
+			elseif ammo >= 0 and ammo <10 and ammoReserve >= 0 and ammoReserve <10 then
+				drawText(w - 115, h - 32, r, g, b, a, "c+", 0, ammoReserve)
+				drawText(w - 135, h - 33, r, g, b, a, "c+", 0, "|")
+				drawText(w - 155, h - 32, r, g, b, a, "c+", 0, ammo)
+			elseif ammo >= 10 or ammoReserve >= 10 then
+				drawText(w - 110, h - 32, r, g, b, a, "c+", 0, ammoReserve)
+				drawText(w - 135, h - 33, r, g, b, a, "c+", 0, "|")
+				drawText(w - 160, h - 32, r, g, b, a, "c+", 0, ammo)
+			end
 
-				if hasHelmet == 1 then
-					--loop through all elements in images_icons
-					local image = imageIcons["armor_helmet"]
+			if c4Holder == localPlayer then
+				--loop through all elements in images_icons
+					local image = imageIcons["c4"]
 					--calculate x and y of the current image
 					local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
 					--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
-					local width, height = image:draw(x + 180, h - 53 + 7, nil, 32, 255, 255, 255, 255)
-				elseif armor > 0 and hasHelmet == 0 then
-					--loop through all elements in images_icons
-					local image = imageIcons["armor"]
+					local width, height = image:draw(x + 135, h - 53 + 1, nil, 40, 255, 255, 255, 255)
+			end
+
+			if hasHelmet == 1 then
+				--loop through all elements in images_icons
+				local image = imageIcons["armor_helmet"]
+				--calculate x and y of the current image
+				local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
+				--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
+				local width, height = image:draw(x + 180, h - 53 + 7, nil, 32, 255, 255, 255, 255)
+			elseif armor > 0 and hasHelmet == 0 then
+				--loop through all elements in images_icons
+				local image = imageIcons["armor"]
+				--calculate x and y of the current image
+				local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
+				--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
+				local width, height = image:draw(x + 180, h - 53 + 7, nil, 32, 255, 255, 255, 255)
+			end
+
+		else
+			visibility(resizeHud, true)
+
+			--hp/armor--
+			drawRectangle(x, h - 68 + df, hudWidth, hudHeight --[[64--]], 10, 10, 10, 255)
+			drawRectangle(x + 1, h - 67 + df, hudWidth - 2, hudHeight - 2, 60, 60, 60, 255)
+			drawRectangle(x + 2, h - 66 + df, hudWidth - 4, hudHeight - 4, 40, 40, 40, 255)
+			drawRectangle(x + 5, h - 64 + df, hudWidth - 9, hudHeight - 8, 60, 60, 60, 255)
+			drawRectangle(x + 6, h - 63 + df, hudWidth - 11, hudHeight - 10, 20, 20, 20, 255)
+			drawGradient(x + 7, h - 62 + df, (hudWidth - 11) / 2, 1, 56, 176, 218, 255, 201, 72, 205, 255, true)
+			drawGradient(x + 7 + ((hudWidth - 14) / 2), h - 62 + df, (hudWidth - 11) / 2, 1, 201, 72, 205, 255, 204, 227, 53, 255, true)
+			drawText(x + 75, h - 35 - tf, 108, 195, 18, a, flags, maxW, health)
+			drawText(x + 75, h - 16 - tf, r, g, b, a, "c", maxW, "Health")
+			drawText(x + 275, h - 35 - tf, 85, 155, 215, a, flags, maxW, armor)
+			drawText(x + 275, h - 16 - tf, r, g, b, a, "c", maxW, "Armor")
+
+			if c4Holder == localPlayer then
+				--loop through all elements in images_icons
+					local image = imageIcons["c4"]
 					--calculate x and y of the current image
 					local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
 					--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
-					local width, height = image:draw(x + 180, h - 53 + 7, nil, 32, 255, 255, 255, 255)
-				end
+					local width, height = image:draw(x + 135, h - 53 + 1, nil, 40, 255, 255, 255, 255)
+			end
 
-			else
-				--hp/armor--
-				drawRectangle(x, h - 68 + df, 350, 68 - sf, 10, 10, 10, 255)
-				drawRectangle(x + 1, h - 67 + df, 348, 66 - sf, 60, 60, 60, 255)
-				drawRectangle(x + 2, h - 66 + df, 346, 64 - sf, 40, 40, 40, 255)
-				drawRectangle(x + 5, h - 64 + df, 341, 60 - sf, 60, 60, 60, 255)
-				drawRectangle(x + 6, h - 63 + df, 339, 58 - sf, 20, 20, 20, 255)
-				drawGradient(x + 7, h - 62 + df, 339 / 2, 1, 56, 176, 218, 255, 201, 72, 205, 255, true)
-				drawGradient(x + 7 + (336 / 2), h - 62 + df, 339 / 2, 1, 201, 72, 205, 255, 204, 227, 53, 255, true)
-				drawText(x + 75, h - 35 - tf, 108, 195, 18, a, flags, maxW, health)
-				drawText(x + 75, h - 16 - tf, r, g, b, a, "c", maxW, "Health")
-				drawText(x + 275, h - 35 - tf, 85, 155, 215, a, flags, maxW, armor)
-				drawText(x + 275, h - 16 - tf, r, g, b, a, "c", maxW, "Armor")
-
-				if c4Holder == localPlayer then
-					--loop through all elements in images_icons
-						local image = imageIcons["c4"]
-						--calculate x and y of the current image
-						local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
-						--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
-						local width, height = image:draw(x + 135, h - 53 + 1, nil, 40, 255, 255, 255, 255)
-				end
-
-				if hasHelmet == 1 then
-					--loop through all elements in images_icons
-					local image = imageIcons["armor_helmet"]
-					--calculate x and y of the current image
-					local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
-					--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
-					local width, height = image:draw(x + 180, h - 53 + 7, nil, 32, 255, 255, 255, 255)
-				elseif armor > 0 and hasHelmet == 0 then
-					--loop through all elements in images_icons
-					local image = imageIcons["armor"]
-					--calculate x and y of the current image
-					local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
-					--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
-					local width, height = image:draw(x + 180, h - 53 + 7, nil, 32, 255, 255, 255, 255)
-				end
+			if hasHelmet == 1 then
+				--loop through all elements in images_icons
+				local image = imageIcons["armor_helmet"]
+				--calculate x and y of the current image
+				local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
+				--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
+				local width, height = image:draw(x + 180, h - 53 + 7, nil, 32, 255, 255, 255, 255)
+			elseif armor > 0 and hasHelmet == 0 then
+				--loop through all elements in images_icons
+				local image = imageIcons["armor"]
+				--calculate x and y of the current image
+				local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
+				--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
+				local width, height = image:draw(x + 180, h - 53 + 7, nil, 32, 255, 255, 255, 255)
 			end
 		end
 	else
-		noVisible()
+		visibility(resizeHud, false)
+		visibility(hudW, false)
+		visibility(hudH, false)
+		visibility(reposHud, false)
+		visibility(hudSliderX, false)
+		visibility(hudSliderY, false)
+		visibility(hudFullCheckbox, false)
 	end
 end
 
@@ -855,6 +856,8 @@ local function on_paintKeystroke(ctx)
 
 	if health > 0 then
 		if contains(hudExtras, "Keystroke indicator") then
+			visibility(m1Checkbox, true)
+			visibility(m2Checkbox, true)
 			visibility(whCheckbox, true)
 			visibility(shCheckbox, true)
 			visibility(ahCheckbox, true)
@@ -877,6 +880,10 @@ local function on_paintKeystroke(ctx)
 			visibility(reposKeyindcCheckbox, true)
 
 			if getUi(reposKeyindcCheckbox, true) then
+				visibility(m1SliderX, true)
+				visibility(m1SliderY, true)
+				visibility(m2SliderX, true)
+				visibility(m2SliderY, true)
 				visibility(wSliderX, true)
 				visibility(wSliderY, true)
 				visibility(sSliderX, true)
@@ -890,6 +897,10 @@ local function on_paintKeystroke(ctx)
 				visibility(slowWalkSliderX, true)
 				visibility(slowWalkSliderY, true)
 
+				m1x = getUi(m1SliderX)
+				m1y = getUi(m1SliderY)
+				m2x = getUi(m2SliderX)
+				m2y = getUi(m2SliderY)
 				wx = getUi(wSliderX)
 				wy = getUi(wSliderY)
 				sx = getUi(sSliderX)
@@ -903,6 +914,10 @@ local function on_paintKeystroke(ctx)
 				slowWalkx = getUi(slowWalkSliderX)
 				slowWalky = getUi(slowWalkSliderY)
 			else
+				visibility(m1SliderX, false)
+				visibility(m1SliderY, false)
+				visibility(m2SliderX, false)
+				visibility(m2SliderY, false)
 				visibility(wSliderX, false)
 				visibility(wSliderY, false)
 				visibility(sSliderX, false)
@@ -916,6 +931,10 @@ local function on_paintKeystroke(ctx)
 				visibility(slowWalkSliderX, false)
 				visibility(slowWalkSliderY, false)
 
+				m2x = w - 72
+				m2y = h - 1345
+				m1x = w - 231
+				m1y = h - 1345
 				wx = w - 154
 				sx = w - 151
 				ax = w - 231
@@ -946,6 +965,24 @@ local function on_paintKeystroke(ctx)
 				keyPressR, keyPressG, keyPressB, keyPressA = getUi(keyPressedColorPicker)
 			else
 				keyPressR, keyPressG, keyPressB, keyPressA = 50, 255, 50, 220
+			end
+
+			if getUi(m1Checkbox, true) then
+				drawRectangle(m1x - 29, m1y - 24, 75, 75, boxR, boxG, boxB, boxA)
+				drawText(m1x - 8, m1y, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "M1")
+
+				if getUi(m1h, true) then
+					drawText(m1x - 8, m1y, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "M1")
+				end
+			end
+
+			if getUi(m2Checkbox, true) then
+				drawRectangle(m2x - 28, m2y - 24, 75, 75, boxR, boxG, boxB, boxA)
+				drawText(m2x - 8, m2y, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "M2")
+
+				if getUi(m2h, true) then
+					drawText(m2x - 8, m2y, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "M2")
+				end
 			end
 
 			if getUi(whCheckbox, true) then
@@ -1002,6 +1039,14 @@ local function on_paintKeystroke(ctx)
 				end
 			end
 		else
+			visibility(m1Checkbox, false)
+			visibility(m1h, false)
+			visibility(m1SliderX, false)
+			visibility(m1SliderY, false)
+			visibility(m2Checkbox, false)
+			visibility(m2h, false)
+			visibility(m2SliderX, false)
+			visibility(m2SliderY, false)
 			visibility(whCheckbox, false)
 			visibility(shCheckbox, false)
 			visibility(ahCheckbox, false)
@@ -1048,17 +1093,27 @@ local function on_paintDmgIndc(ctx)
 	local hudExtras = getUi(hudMultibox)
 
 	if contains(hudExtras, "Damage indicator") then
-		visibility(largeDmgIndcCheckbox, true)
+		visibility(largeDmgIndcCombobox, true)
 		visibility(dmgIndcColorpicker, true)
 		visibility(hsCheckbox, true)
 		visibility(hsColorpicker, true)
 
 		local r, g, b, a = getUi(dmgIndcColorpicker)
 
-		if getUi(largeDmgIndcCheckbox, true) then
-			flags = "c+"
-		else
-			flags = "cb"
+		if getUi(largeDmgIndcCombobox) == "Normal" then
+			dmgFlag = "c"
+		elseif getUi(largeDmgIndcCombobox) == "Bold" then
+			dmgFlag = "cb"
+		elseif getUi(largeDmgIndcCombobox) == "Large" then
+			dmgFlag = "c+"
+		end
+
+		if getUi(hsStyleCombobox) == "Normal" then
+			hsFlag = "c"
+		elseif getUi(hsStyleCombobox) == "Bold" then
+			hsFlag = "cb"
+		elseif getUi(hsStyleCombobox) == "Large" then
+			hsFlag = "c+"
 		end
 
 		for i = 1, #playerDamage do
@@ -1068,7 +1123,7 @@ local function on_paintDmgIndc(ctx)
             	end
 
            	local x, y = worldToScreen(playerDamage[i][1], playerDamage[i][2], playerDamage[i][3])
-            drawText(x, y, r, g, b, a, flags, 0, playerDamage[i][5])
+            drawText(x, y, r, g, b, a, dmgFlag, 0, playerDamage[i][5])
 
             playerDamage[i][3] = playerDamage[i][3] + 0.35
            	end
@@ -1076,6 +1131,8 @@ local function on_paintDmgIndc(ctx)
 
 		--hs indc--
 		if getUi(hsCheckbox, true) then
+			visibility(hsStyleCombobox, true)
+
 			local r, g, b, a = getUi(hsColorpicker)
 
     		for i = 1, #headshot do
@@ -1085,16 +1142,19 @@ local function on_paintDmgIndc(ctx)
             		end
  
             		local x, y = worldToScreen(headshot[i][1], headshot[i][2], headshot[i][3])
-            		drawText(x, y, r, g, b, a, "cb", 0, "Headshot")
+            		drawText(x, y, r, g, b, a, hsFlag, 0, "Headshot")
         		end
     		end
+    	else
+    		visibility(hsStyleCombobox, false)
     	end
 
 	else
-		visibility(largeDmgIndcCheckbox, false)
+		visibility(largeDmgIndcCombobox, false)
 		visibility(dmgIndcColorpicker, false)
 		visibility(hsCheckbox, false)
 		visibility(hsColorpicker, false)
+		visibility(hsStyleCombobox, false)
     end
 end
 
@@ -1241,6 +1301,7 @@ local function on_paintNetvar(ctx)
     	visibility(chokeColorPicker, true)
     	visibility(speedCheckbox, true)
     	visibility(speedColorPicker, true)
+    	visibility(resizeNetvarCheckbox, true)
 
     	local hudExtras = getUi(hudMultibox)
     	local latency = client.latency()
@@ -1258,6 +1319,26 @@ local function on_paintNetvar(ctx)
     	local w, h = screenSize()
     	local x = 17
     	local y = 122
+
+    	if getUi(resizeNetvarCheckbox, true) then
+    		pw = getUi(pingSliderWv)
+    		ph = getUi(pingSliderHv)
+    		lw = getUi(latencySliderWv)
+    		lh = getUi(latencySliderHv)
+    		cw = getUi(chokeSliderWv)
+    		ch = getUi(chokeSliderHv)
+    		sw = getUi(speedSliderWv)
+    		sH = getUi(speedSliderHv)
+    	else
+    		pw = 32
+    		ph = 32
+    		lw = 32
+    		lh = 32
+    		cw = 32
+    		ch = 32
+    		sw = 32
+    		sH = 32
+    	end
 
     	if getUi(reposNetvarCheckbox, true) then
     		pxc = getUi(pingSliderX)
@@ -1279,14 +1360,37 @@ local function on_paintNetvar(ctx)
     		sxb = getUi(speedSliderX)
     		syb = getUi(speedSliderY)
 
-    		visibility(pingSliderX, true)
-    		visibility(pingSliderY, true)
-    		visibility(latencySliderX, true)
-    		visibility(latencySliderY, true)
-    		visibility(chokeSliderX, true)
-    		visibility(chokeSliderY, true)
-    		visibility(speedSliderX, true)
-    		visibility(speedSliderY, true)
+    		if getUi(pingCheckbox, true) then
+    			visibility(pingSliderX, true)
+	    		visibility(pingSliderY, true)
+	    	else
+	    		visibility(pingSliderX, false)
+	    		visibility(pingSliderY, false)
+	    	end
+
+	    	if getUi(latencyCheckbox, true) then
+	    		visibility(latencySliderX, true)
+	    		visibility(latencySliderY, true)
+	    	else
+	    		visibility(latencySliderX, false)
+	    		visibility(latencySliderY, false)
+	    	end
+
+	    	if getUi(chokeCheckbox, true) then
+	    		visibility(chokeSliderX, true)
+    			visibility(chokeSliderY, true)
+	    	else
+	    		visibility(chokeSliderX, false)
+    			visibility(chokeSliderY, false)
+	    	end
+
+	    	if getUi(speedCheckbox, true) then
+	    		visibility(speedSliderX, true)
+    			visibility(speedSliderY, true)
+	    	else
+	    		visibility(speedSliderX, false)
+    			visibility(speedSliderY, false)
+	    	end
     	else
     		pxc = w - 82 - x
     		pyc = h / 2 - 47 - y - 30
@@ -1305,22 +1409,31 @@ local function on_paintNetvar(ctx)
 			sxb = w - 82 - x
 			syb = h / 2 + 163 - y
 
-    		visibility(pingSliderX, false)
+			visibility(pingSliderX, false)
     		visibility(pingSliderY, false)
     		visibility(latencySliderX, false)
     		visibility(latencySliderY, false)
     		visibility(chokeSliderX, false)
-    		visibility(chokeSliderY, false)
-    		visibility(speedSliderX, false)
-    		visibility(speedSliderY, false)
+			visibility(chokeSliderY, false)
+			visibility(speedSliderX, false)
+			visibility(speedSliderY, false)
     	end
 
    		if getUi(styleCombobox) == "Circles" then
+   			visibility(pingSliderWv, false)
+   			visibility(latencySliderWv, false)
+   			visibility(chokeSliderWv, false)
+   			visibility(speedSliderWv, false)
+   			visibility(pingSliderHv, false)
+   			visibility(latencySliderHv, false)
+   			visibility(chokeSliderHv, false)
+   			visibility(speedSliderHv, false)
+
     		if getUi(pingCheckbox, true) then
     			if getUi(numbersCheckbox, true) then
-    				drawText(pxc, pyc - 45, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
+    				drawText(pxc, pyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
     			else
-    				drawText(pxc, pyc - 45, 255, 255, 255, 255, "cb", 0, "Ping")
+    				drawText(pxc, pyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Ping")
     			end
     			
     			if ping <= 50 then
@@ -1338,9 +1451,9 @@ local function on_paintNetvar(ctx)
 
     		if getUi(latencyCheckbox, true) then
     			if getUi(numbersCheckbox, true) then
-    				drawText(lxc, lyc - 45, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
+    				drawText(lxc, lyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
     			else
-    				drawText(lxc, lyc - 45, 255, 255, 255, 255, "cb", 0, "Latency")
+    				drawText(lxc, lyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Latency")
     			end
 
     			if latencyFixed < 50 then
@@ -1364,9 +1477,9 @@ local function on_paintNetvar(ctx)
     			local r, g, b, a = getUi(chokeColorPicker)
 
     			if getUi(numbersCheckbox, true) then
-    				drawText(cxc, cyc - 45, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
+    				drawText(cxc, cyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
     			else
-    				drawText(cxc, cyc - 45, 255, 255, 255, 255, "cb", 0, "Choked")
+    				drawText(cxc, cyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Choked")
     			end
 
     			if fakelagEnabled then
@@ -1384,9 +1497,9 @@ local function on_paintNetvar(ctx)
 					local r, g, b, a = getUi(speedColorPicker)
 
 					if getUi(numbersCheckbox, true) then
-						drawText(sxc, syc - 45, 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
+						drawText(sxc, syc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
 					else
-						drawText(sxc, syc - 45, 255, 255, 255, 255, "cb", 0, "Speed")
+						drawText(sxc, syc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Speed")
 					end
 
 					if velocity == 1 then
@@ -1400,49 +1513,75 @@ local function on_paintNetvar(ctx)
     		end
 
    		elseif getUi(styleCombobox) == "Horizontal box" then
+   			visibility(resizeNetvarCheckbox, true)
+   			visibility(pingSliderWv, false)
+   			visibility(latencySliderWv, false)
+   			visibility(chokeSliderWv, false)
+   			visibility(speedSliderWv, false)
+   			visibility(resizeCircleSlider, false)
+    		visibility(resizeCircleThiccnessSlider, false)
+
     		if getUi(pingCheckbox, true) then
+    			if getUi(resizeNetvarCheckbox, true) then
+    				visibility(pingSliderHv, true)
+    			else
+    				visibility(pingSliderHv, false)
+    			end
+
     			if getUi(numbersCheckbox, true) then
     				drawText(pxb, pyb, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
     			else
     				drawText(pxb, pyb, 255, 255, 255, 255, "cb", 0, "Ping")
     			end
 
-				drawRectangle(pxb - 78, pyb + 12, 156, 32, 0, 0, 0, 200)
+				drawRectangle(pxb - 78, pyb + 12, 156, ph, 0, 0, 0, 200)
 
 				if ping <= 50 then
-					drawRectangle(pxb - 75, pyb + 15, ping, 26, 0, 220, 0, 255)
+					drawRectangle(pxb - 75, pyb + 15, ping, ph - 6, 0, 220, 0, 255)
 				elseif ping > 50 and ping < 100 then
-					drawRectangle(pxb - 75, pyb + 15, ping, 26, 190, 145, 0, 255)
+					drawRectangle(pxb - 75, pyb + 15, ping, ph - 6, 190, 145, 0, 255)
 				elseif ping >= 100 and ping <= 150 then
-					drawRectangle(pxb - 75, pyb + 15, ping, 26, 220, 100, 0, 255)
+					drawRectangle(pxb - 75, pyb + 15, ping, ph - 6, 220, 100, 0, 255)
 				elseif ping > 150 then
-					drawRectangle(pxb - 75, pyb + 15, 150, 26, 220, 0, 0, 255)
+					drawRectangle(pxb - 75, pyb + 15, 150, ph - 6, 220, 0, 0, 255)
 				end
     		end
 
     		if getUi(latencyCheckbox, true) then
+    			if getUi(resizeNetvarCheckbox, true) then
+    				visibility(latencySliderHv, true)
+    			else
+    				visibility(latencySliderHv, false)
+    			end
+
     			if getUi(numbersCheckbox, true) then
     				drawText(lxb, lyb, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
     			else
     				drawText(lxb, lyb, 255, 255, 255, 255, "cb", 0, "Latency")
     			end
 
-    			drawRectangle(lxb - 78, lyb + 12, 156, 32, 0, 0, 0, 200)
+    			drawRectangle(lxb - 78, lyb + 12, 156, lh, 0, 0, 0, 200)
 
     		if latencyFixed == 0 then
     			elseif latencyFixed < 50 then
-    				drawRectangle(lxb - 75, lyb + 15, latency * 1000, 26, 0, 220, 0, 255)
+    				drawRectangle(lxb - 75, lyb + 15, latency * 1000, lh - 6, 0, 220, 0, 255)
     			elseif latencyFixed >= 50 and latencyFixed < 100 then
-    				drawRectangle(lxb - 75, lyb + 15, latency * 1000, 26, 190, 145, 0, 255)
+    				drawRectangle(lxb - 75, lyb + 15, latency * 1000, lh - 6, 190, 145, 0, 255)
     			elseif latencyFixed >= 100 and latencyFixed < 150 then
-    				drawRectangle(lxb - 75, lyb + 15, latency * 1000, 26, 220, 100, 0, 255)
+    				drawRectangle(lxb - 75, lyb + 15, latency * 1000, lh - 6, 220, 100, 0, 255)
     			elseif latencyFixed >= 150 then
-    				drawRectangle(lxb - 75, lyb + 15, 150, 26, 220, 0, 0, 255)
+    				drawRectangle(lxb - 75, lyb + 15, 150, lh - 6, 220, 0, 0, 255)
     			end
     		end
 
     		if getUi(chokeCheckbox, true) then
     			local r, g, b, a = getUi(chokeColorPicker)
+
+    			if getUi(resizeNetvarCheckbox, true) then
+    				visibility(chokeSliderHv, true)
+    			else
+    				visibility(chokeSliderHv, false)
+    			end
 
 				if getUi(numbersCheckbox, true) then
     				drawText(cxb, cyb, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
@@ -1451,8 +1590,8 @@ local function on_paintNetvar(ctx)
     			end
 
     			if fakelagEnabled then
-					drawRectangle(cxb - 78, cyb + 12, 156, 32, 0, 0, 0, 200)
-					drawRectangle(cxb - 75, cyb + 15, choked * multiplier, 26, r, g, b, a)
+					drawRectangle(cxb - 78, cyb + 12, 156, ch, 0, 0, 0, 200)
+					drawRectangle(cxb - 75, cyb + 15, choked * multiplier, ch - 6, r, g, b, a)
 				end
 			else
 				visibility(chokeColorPicker, false)
@@ -1465,18 +1604,24 @@ local function on_paintNetvar(ctx)
 					velocity = round(velocity, 0)
 					local r, g, b, a = getUi(speedColorPicker)
 
+					if getUi(resizeNetvarCheckbox, true) then
+						visibility(speedSliderHv, true)
+					else
+						visibility(speedSliderHv, false)
+					end
+
 					if getUi(numbersCheckbox, true) then
 						drawText(sxb, syb, 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
 					else
 						drawText(sxb, syb, 255, 255, 255, 255, "cb", 0, "Speed")
 					end
 
-					drawRectangle(sxb - 78, syb + 12, 156, 32, 0, 0, 0, 200)
+					drawRectangle(sxb - 78, syb + 12, 156, sH, 0, 0, 0, 200)
 
 					if velocity > 1 and velocity <= 300 then
-						drawRectangle(sxb - 75, syb + 15, velocity / 2, 26, r, g, b, a)
+						drawRectangle(sxb - 75, syb + 15, velocity / 2, sH - 6, r, g, b, a)
 					elseif velocity > 300 then
-						drawRectangle(sxb - 75, syb + 15, 150, 26, r, g, b, a)
+						drawRectangle(sxb - 75, syb + 15, 150, sH - 6, r, g, b, a)
 					end
 				end
 			else
@@ -1484,49 +1629,75 @@ local function on_paintNetvar(ctx)
     		end
 
     	elseif getUi(styleCombobox) == "Vertical box" then
+    		visibility(resizeNetvarCheckbox, true)
+    		visibility(pingSliderHv, false)
+   			visibility(latencySliderHv, false)
+   			visibility(chokeSliderHv, false)
+   			visibility(speedSliderHv, false)
+   			visibility(resizeCircleSlider, false)
+    		visibility(resizeCircleThiccnessSlider, false)
+
     		if getUi(pingCheckbox, true) then
+    			if getUi(resizeNetvarCheckbox, true) then
+    				visibility(pingSliderWv, true)
+    			else
+    				visibility(pingSliderWv, false)
+    			end
+
     			if getUi(numbersCheckbox, true) then
     				drawText(pxb, pyb - 182, 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
     			else
     				drawText(pxb, pyb - 182, 255, 255, 255, 255, "cb", 0, "Ping")
     			end
 
-    			drawRectangle(pxb - 17, pyb - 170, 32, 156, 0, 0, 0, 200)
+    			drawRectangle(pxb - 17, pyb - 170, pw, 156, 0, 0, 0, 200)
 
 				if ping <= 50 then
-					drawRectangle(pxb - 14, pyb - 167, 26, ping, 0, 220, 0, 255)
+					drawRectangle(pxb - 14, pyb - 167, pw - 6, ping, 0, 220, 0, 255)
 				elseif ping > 50 and ping < 100 then
-					drawRectangle(pxb - 14, pyb - 167, 26, ping, 190, 145, 0, 255)
+					drawRectangle(pxb - 14, pyb - 167, pw - 6, ping, 190, 145, 0, 255)
 				elseif ping >= 100 and ping <= 150 then
-					drawRectangle(pxb - 14, pyb - 167, 26, ping, 220, 100, 0, 255)
+					drawRectangle(pxb - 14, pyb - 167, pw - 6, ping, 220, 100, 0, 255)
 				elseif ping > 150 then
-					drawRectangle(pxb - 14, pyb - 167, 26, 150, 220, 0, 0, 255)
+					drawRectangle(pxb - 14, pyb - 167, pw - 6, 150, 220, 0, 0, 255)
 				end
     		end
 
     		if getUi(latencyCheckbox, true) then
+    			if getUi(resizeNetvarCheckbox, true) then
+    				visibility(latencySliderWv, true)
+    			else
+    				visibility(latencySliderWv, false)
+    			end
+
     			if getUi(numbersCheckbox, true) then
     				drawText(lxb, lyb - 75, 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
     			else
     				drawText(lxb, lyb - 75, 255, 255, 255, 255, "cb", 0, "Latency")
     			end
 
-    			drawRectangle(lxb - 17, lyb - 63, 32, 156, 0, 0, 0, 200)
+    			drawRectangle(lxb - 17, lyb - 63, lw, 156, 0, 0, 0, 200)
 
     		if latencyFixed == 0 then
     			elseif latencyFixed < 50 then
-    				drawRectangle(lxb - 14, lyb - 60, 26, latency * 1000, 0, 220, 0, 255)
+    				drawRectangle(lxb - 14, lyb - 60, lw - 6, latency * 1000, 0, 220, 0, 255)
     			elseif latencyFixed >= 50 and latencyFixed < 100 then
-    				drawRectangle(lxb - 14, lyb - 60, 26, latency * 1000, 190, 145, 0, 255)
+    				drawRectangle(lxb - 14, lyb - 60, lw - 6, latency * 1000, 190, 145, 0, 255)
     			elseif latencyFixed >= 100 and latencyFixed < 150 then
-    				drawRectangle(lxb - 14, lyb - 60, 26, latency * 1000, 220, 100, 0, 255)
+    				drawRectangle(lxb - 14, lyb - 60, lw - 6, latency * 1000, 220, 100, 0, 255)
     			elseif latencyFixed >= 150 then
-    				drawRectangle(lxb - 14, lyb - 60, 16, 150, 220, 0, 0, 255)
+    				drawRectangle(lxb - 14, lyb - 60, lw - 6, 150, 220, 0, 0, 255)
     			end
     		end
 
     		if getUi(chokeCheckbox, true) then
     			local r, g, b, a = getUi(chokeColorPicker)
+
+    			if getUi(resizeNetvarCheckbox, true) then
+    				visibility(chokeSliderWv, true)
+    			else
+    				visibility(chokeSliderWv, false)
+    			end
 
 				if getUi(numbersCheckbox, true) then
     				drawText(cxb, cyb + 32, 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
@@ -1535,8 +1706,8 @@ local function on_paintNetvar(ctx)
     			end
 
     			if fakelagEnabled then
-					drawRectangle(cxb - 17, cyb + 44, 32, 156, 0, 0, 0, 200)
-					drawRectangle(cxb - 14, cyb + 47, 26, choked * multiplier, r, g, b, a)
+					drawRectangle(cxb - 17, cyb + 44, cw, 156, 0, 0, 0, 200)
+					drawRectangle(cxb - 14, cyb + 47, cw - 6, choked * multiplier, r, g, b, a)
 				end
 			else
 				visibility(chokeColorPicker, false)
@@ -1549,18 +1720,24 @@ local function on_paintNetvar(ctx)
 					velocity = round(velocity, 0)
 					local r, g, b, a = getUi(speedColorPicker)
 
+					if getUi(resizeNetvarCheckbox, true) then
+						visibility(speedSliderWv, true)
+					else
+						visibility(speedSliderWv, false)
+					end
+
 					if getUi(numbersCheckbox, true) then
 						drawText(sxb, syb + 139, 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
 					else
 						drawText(sxb, syb + 139, 255, 255, 255, 255, "cb", 0, "Speed")
 					end
 
-					drawRectangle(sxb - 17, syb + 151, 32, 156, 0, 0, 0, 200)
+					drawRectangle(sxb - 17, syb + 151, sw, 156, 0, 0, 0, 200)
 
 					if velocity > 1 and velocity <= 300 then
-						drawRectangle(sxb - 14, syb + 154, 26, velocity / 2, r, g, b, a)
+						drawRectangle(sxb - 14, syb + 154, sw - 6, velocity / 2, r, g, b, a)
 					elseif velocity > 300 then
-						drawRectangle(sxb - 14, syb + 154, 26, 150, r, g, b, a)
+						drawRectangle(sxb - 14, syb + 154, sw - 6, 150, r, g, b, a)
 					end
 				end
 			else
@@ -1573,6 +1750,7 @@ local function on_paintNetvar(ctx)
    				visibility(reposNetvarCheckbox, true)
   		else
   			visibility(numbersCheckbox, false)
+  			visibility(resizeNetvarCheckbox, false)
   			visibility(reposNetvarCheckbox, false)
    		end
 	else
@@ -1593,6 +1771,17 @@ local function on_paintNetvar(ctx)
     	visibility(speedSliderY, false)
    	 	visibility(numbersCheckbox, false)
    	 	visibility(reposNetvarCheckbox, false)
+   	 	visibility(resizeNetvarCheckbox, false)
+   	 	visibility(pingSliderWv, false)
+		visibility(pingSliderHv, false)
+		visibility(latencySliderWv, false)
+		visibility(latencySliderHv, false)
+		visibility(chokeSliderWv, false)
+		visibility(chokeSliderHv, false)
+		visibility(speedSliderWv, false)
+		visibility(speedSliderHv, false)
+		visibility(resizeCircleSlider, false)
+    	visibility(resizeCircleThiccnessSlider, false)
 	end
 end
 
