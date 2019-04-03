@@ -1449,6 +1449,7 @@ local function on_paintNetvar(ctx)
    			visibility(boxColorCombobox, false)
 
    			visibility(circleColorCombobox, true)
+   			visibility(resizeNetvarCheckbox, true)
 
     		if getUi(pingCheckbox, true) then
     			if getUi(numbersCheckbox, true) then
@@ -1627,6 +1628,7 @@ local function on_paintNetvar(ctx)
     		end
 
     	elseif getUi(styleCombobox) == "Circle" then
+    		visibility(resizeNetvarCheckbox, false)
     		visibility(pingSliderWv, false)
    			visibility(latencySliderWv, false)
    			visibility(chokeSliderWv, false)
@@ -1636,6 +1638,12 @@ local function on_paintNetvar(ctx)
    			visibility(chokeSliderHv, false)
    			visibility(speedSliderHv, false)
    			visibility(boxColorCombobox, false)
+   			visibility(pingSliderWv, false)
+   			visibility(latencySliderWv, false)
+   			visibility(chokeSliderWv, false)
+   			visibility(speedSliderWv, false)
+   			visibility(resizeCircleSlider, false)
+    		visibility(resizeCircleThiccnessSlider, false)
 
    			visibility(circleColorCombobox, true)
 
@@ -1833,6 +1841,7 @@ local function on_paintNetvar(ctx)
     		visibility(circleColorCombobox, false)
 
     		visibility(boxColorCombobox, true)
+    		visibility(resizeNetvarCheckbox, true)
 
     		if getUi(pingCheckbox, true) then
     			if getUi(resizeNetvarCheckbox, true) then
@@ -2149,6 +2158,7 @@ local function on_paintNetvar(ctx)
     		visibility(circleColorCombobox, false)
 
     		visibility(boxColorCombobox, true)
+    		visibility(resizeNetvarCheckbox, true)
 
     		if getUi(pingCheckbox, true) then
     			if getUi(resizeNetvarCheckbox, true) then
