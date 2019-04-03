@@ -123,12 +123,16 @@ local clantagTextbox = textbox("Lua", "B", "Clantag")--]]
 
 --netvar indc--
 local styleCombobox = combobox("Lua", "B", "Style", "Circles", "Horizontal box", "Vertical box")
+local circleColorCombobox = combobox("Lua", "B", "Color style", "Default", "Old", "Custom")
+local boxColorCombobox = combobox("Lua", "B", "Color style", "Default", "Old", "Custom", "Gradient")
 local pingCheckbox = checkbox("Lua", "B", "Ping")
+local pingColor = colorPicker("Lua", "B", "Ping", 255, 255, 255, 255)
 local pingSliderWv = slider("Lua", "B", "Ping width", 0, 500, 32, true)
 local pingSliderHv = slider("Lua", "B", "Ping height", 0, 500, 32, true)
 local pingSliderX = slider("Lua", "B", "Ping X slider", 0, w, w / 2, true)
 local pingSliderY = slider("Lua", "B", "Ping Y slider", 0, h, h / 2, true)
 local latencyCheckbox = checkbox("Lua", "B", "Latency")
+local latencyColor = colorPicker("Lua", "B", "Latency", 255, 255, 255, 255)
 local latencySliderWv = slider("Lua", "B", "Latency width", 0, 500, 32, true)
 local latencySliderHv = slider("Lua", "B", "Latency height", 0, 500, 32, true)
 local latencySliderX = slider("Lua", "B", "Latency X slider", 0, w, w / 2, true)
@@ -1430,6 +1434,9 @@ local function on_paintNetvar(ctx)
    			visibility(latencySliderHv, false)
    			visibility(chokeSliderHv, false)
    			visibility(speedSliderHv, false)
+   			visibility(boxColorCombobox, false)
+
+   			visibility(circleColorCombobox, true)
 
     		if getUi(pingCheckbox, true) then
     			if getUi(numbersCheckbox, true) then
@@ -1437,18 +1444,42 @@ local function on_paintNetvar(ctx)
     			else
     				drawText(pxc, pyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Ping")
     			end
-    			
-    			if ping <= 50 then
-    				r, g, b = 0, 220, 0
-    			elseif ping > 50 and ping < 100 then
-    				r, g, b = 190, 145, 0
-    			elseif ping >= 100 and ping <= 150 then
-    				r, g, b = 220, 100, 0
-    			elseif ping > 150 then
-    				r, g, b = 220, 0, 0
-    			end
 
-    			draw_indicator_circle(ctx, pxc, pyc, r, g, b, 255, ping / 150, outline)
+    			if getUi(circleColorCombobox) == "Default" then
+    				visibility(pingColor, false)
+
+    				a = 255
+
+    				if ping <= 50 then
+	    				r, g, b = 0, 220, 0
+	    			elseif ping > 50 and ping < 100 then
+	    				r, g, b = 190, 145, 0
+	    			elseif ping >= 100 and ping <= 150 then
+	    				r, g, b = 220, 100, 0
+	    			elseif ping > 150 then
+	    				r, g, b = 220, 0, 0
+	    			end
+	    		elseif getUi(circleColorCombobox) == "Old" then
+	    			visibility(pingColor, false)
+
+    				a = 255
+
+    				if ping <= 50 then
+	    				r, g, b = 0, 220, 0
+	    			elseif ping > 50 and ping < 100 then
+	    				r, g, b = 190, 145, 0
+	    			elseif ping >= 100 and ping <= 150 then
+	    				r, g, b = 220, 100, 0
+	    			elseif ping > 150 then
+	    				r, g, b = 220, 0, 0
+	    			end
+				elseif getUi(circleColorCombobox) == "Custom" then
+					visibility(pingColor, true)
+
+					r, g, b, a = getUi(pingColor)
+				end
+
+    			draw_indicator_circle(ctx, pxc, pyc, r, g, b, a, ping / 150, outline)
     		end
 
     		if getUi(latencyCheckbox, true) then
@@ -1458,15 +1489,39 @@ local function on_paintNetvar(ctx)
     				drawText(lxc, lyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Latency")
     			end
 
-    			if latencyFixed < 50 then
-    				r, g, b = 0, 220, 0
-    			elseif latencyFixed >= 50 and latencyFixed < 100 then
-    				r, g, b = 190, 145, 0
-    			elseif latencyFixed >= 100 and latencyFixed < 150 then
-    				r, g, b = 220, 100, 0
-    			elseif latencyFixed >= 150 then
-    				r, g, b = 220, 0, 0
-    			end
+    			if getUi(circleColorCombobox) == "Default" then
+    				visibility(latencyColor, false)
+
+    				a = 255
+
+	    			if latencyFixed < 50 then
+	    				r, g, b = 0, 220, 0
+	    			elseif latencyFixed >= 50 and latencyFixed < 100 then
+	    				r, g, b = 190, 145, 0
+	    			elseif latencyFixed >= 100 and latencyFixed < 150 then
+	    				r, g, b = 220, 100, 0
+	    			elseif latencyFixed >= 150 then
+	    				r, g, b = 220, 0, 0
+	    			end
+	    		elseif getUi(circleColorCombobox) == "Old" then
+	    			visibility(latencyColor, false)
+
+    				a = 255
+
+	    			if latencyFixed < 50 then
+	    				r, g, b = 0, 220, 0
+	    			elseif latencyFixed >= 50 and latencyFixed < 100 then
+	    				r, g, b = 190, 145, 0
+	    			elseif latencyFixed >= 100 and latencyFixed < 150 then
+	    				r, g, b = 220, 100, 0
+	    			elseif latencyFixed >= 150 then
+	    				r, g, b = 220, 0, 0
+	    			end
+	    		elseif getUi(circleColorCombobox) == "Custom" then
+	    			visibility(latencyColor, true)
+
+	    			r, g, b, a = getUi(latencyColor)
+	    		end
 
     			if latencyFixed == 0 then
     				draw_indicator_circle(ctx, lxc, lyc, r, g, b, 255, 0, outline)
@@ -1476,13 +1531,35 @@ local function on_paintNetvar(ctx)
     		end
 
     		if getUi(chokeCheckbox, true) then
-    			local r, g, b, a = getUi(chokeColorPicker)
-
     			if getUi(numbersCheckbox, true) then
     				drawText(cxc, cyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
     			else
     				drawText(cxc, cyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Choked")
     			end
+
+    			if getUi(circleColorCombobox) == "Default" then
+    				visibility(chokeColorPicker, false)
+
+    				a = 255
+
+	    			if choked <= 3 then
+	    				r, g, b = 0, 220, 0
+    				elseif choked <= 7 then
+    					r, g, b = 190, 145, 0
+					elseif choked <= 11 then
+						r, g, b = 220, 100, 0
+					elseif choked <= 14 then
+						r, g, b = 220, 0, 0
+					end
+				elseif getUi(circleColorCombobox) == "Old" then
+					visibility(chokeColorPicker, true)
+
+	    			r, g, b, a = getUi(chokeColorPicker)
+	    		elseif getUi(circleColorCombobox) == "Custom" then
+	    			visibility(chokeColorPicker, true)
+
+	    			r, g, b, a = getUi(chokeColorPicker)
+	    		end
 
     			if fakelagEnabled then
     				draw_indicator_circle(ctx, cxc, cyc, r, g, b, a, choked * multiplier / 150, outline)
@@ -1496,13 +1573,36 @@ local function on_paintNetvar(ctx)
 					local velocity = math.sqrt(vx * vx + vy * vy)
 					velocity = math.min(9999, velocity) + 0.2
 					velocity = round(velocity, 0)
-					local r, g, b, a = getUi(speedColorPicker)
 
 					if getUi(numbersCheckbox, true) then
 						drawText(sxc, syc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
 					else
 						drawText(sxc, syc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Speed")
 					end
+
+					if getUi(circleColorCombobox) == "Default" then
+	    				visibility(speedColorPicker, false)
+
+	    				a = 255
+
+	    				if velocity <= 62.5 then
+	    					r, g, b = 0, 220, 0
+    					elseif velocity <= 125 then
+    						r, g, b = 190, 145, 0
+						elseif velocity <= 187.5 then
+							r, g, b = 220, 100, 0
+						elseif velocity <= 250 then
+							r, g, b = 220, 0, 0
+						end
+					elseif getUi(circleColorCombobox) == "Old" then
+						visibility(speedColorPicker, true)
+
+	    				r, g, b, a = getUi(speedColorPicker)
+		    		elseif getUi(circleColorCombobox) == "Custom" then
+		    			visibility(speedColorPicker, true)
+
+	    				r, g, b, a = getUi(speedColorPicker)
+	    			end
 
 					if velocity == 1 then
 						draw_indicator_circle(ctx, sxc, syc, r, g, b, a, 0, outline)
@@ -1522,6 +1622,9 @@ local function on_paintNetvar(ctx)
    			visibility(speedSliderWv, false)
    			visibility(resizeCircleSlider, false)
     		visibility(resizeCircleThiccnessSlider, false)
+    		visibility(circleColorCombobox, false)
+
+    		visibility(boxColorCombobox, true)
 
     		if getUi(pingCheckbox, true) then
     			if getUi(resizeNetvarCheckbox, true) then
@@ -1536,16 +1639,62 @@ local function on_paintNetvar(ctx)
     				drawText(pxb, pyb, 255, 255, 255, 255, "cb", 0, "Ping")
     			end
 
-				drawRectangle(pxb - 78, pyb + 12, 156, ph, 0, 0, 0, 200)
+    			drawRectangle(pxb - 78, pyb + 12, 156, ph, 0, 0, 0, 200)
 
-				if ping <= 50 then
-					drawRectangle(pxb - 75, pyb + 15, ping, ph - 6, 0, 220, 0, 255)
-				elseif ping > 50 and ping < 100 then
-					drawRectangle(pxb - 75, pyb + 15, ping, ph - 6, 190, 145, 0, 255)
-				elseif ping >= 100 and ping <= 150 then
-					drawRectangle(pxb - 75, pyb + 15, ping, ph - 6, 220, 100, 0, 255)
-				elseif ping > 150 then
-					drawRectangle(pxb - 75, pyb + 15, 150, ph - 6, 220, 0, 0, 255)
+    			if getUi(boxColorCombobox) == "Default" then
+    				visibility(pingColor, false)
+
+    				if ping <= 50 then
+						r, g, b, a = 0, 220, 0, 255
+					elseif ping > 50 and ping < 100 then
+						r, g, b, a = 190, 145, 0, 255
+					elseif ping >= 100 and ping <= 150 then
+						r, g, b, a = 220, 100, 0, 255
+					elseif ping > 150 then
+						r, g, b, a = 220, 0, 0, 255
+					end
+
+					if ping <= 150 then
+						drawRectangle(pxb - 75, pyb + 15, ping, ph - 6, r, g, b, a)
+					elseif ping > 150 then
+						drawRectangle(pxb - 75, pyb + 15, 150, ph - 6, r, g, b, a)
+					end
+				elseif getUi(boxColorCombobox) == "Old" then
+					visibility(pingColor, false)
+
+					if ping <= 50 then
+						r, g, b, a = 0, 220, 0, 255
+					elseif ping > 50 and ping < 100 then
+						r, g, b, a = 190, 145, 0, 255
+					elseif ping >= 100 and ping <= 150 then
+						r, g, b, a = 220, 100, 0, 255
+					elseif ping > 150 then
+						r, g, b, a = 220, 0, 0, 255
+					end
+
+					if ping <= 150 then
+						drawRectangle(pxb - 75, pyb + 15, ping, ph - 6, r, g, b, a)
+					elseif ping > 150 then
+						drawRectangle(pxb - 75, pyb + 15, 150, ph - 6, r, g, b, a)
+					end
+				elseif getUi(boxColorCombobox) == "Custom" then
+					visibility(pingColor, true)
+
+					r, g, b, a = getUi(pingColor)
+
+					if ping <= 150 then
+						drawRectangle(pxb - 75, pyb + 15, ping, ph - 6, r, g, b, a)
+					elseif ping > 150 then
+						drawRectangle(pxb - 75, pyb + 15, 150, ph - 6, r, g, b, a)
+					end
+				elseif getUi(boxColorCombobox) == "Gradient" then
+					visibility(pingColor, false)
+
+					if ping <= 150 then
+						drawGradient(pxb - 75, pyb + 15, ping, ph - 6, 0, 220, 0, 255, 220, 0, 0, 255, true)
+					elseif ping > 150 then
+						drawGradient(pxb - 75, pyb + 15, 150, ph - 6, 0, 220, 0, 255, 220, 0, 0, 255, true)
+					end
 				end
     		end
 
@@ -1564,16 +1713,65 @@ local function on_paintNetvar(ctx)
 
     			drawRectangle(lxb - 78, lyb + 12, 156, lh, 0, 0, 0, 200)
 
-    		if latencyFixed == 0 then
-    			elseif latencyFixed < 50 then
-    				drawRectangle(lxb - 75, lyb + 15, latency * 1000, lh - 6, 0, 220, 0, 255)
-    			elseif latencyFixed >= 50 and latencyFixed < 100 then
-    				drawRectangle(lxb - 75, lyb + 15, latency * 1000, lh - 6, 190, 145, 0, 255)
-    			elseif latencyFixed >= 100 and latencyFixed < 150 then
-    				drawRectangle(lxb - 75, lyb + 15, latency * 1000, lh - 6, 220, 100, 0, 255)
-    			elseif latencyFixed >= 150 then
-    				drawRectangle(lxb - 75, lyb + 15, 150, lh - 6, 220, 0, 0, 255)
-    			end
+    			if getUi(boxColorCombobox) == "Default" then
+    				visibility(latencyColor, false)
+
+    				a = 255
+
+    				if latencyFixed < 50 then
+    					r, g, b = 0, 220, 0, 255
+					elseif latencyFixed >= 50 and latencyFixed < 100 then
+						r, g, b = 190, 145, 0
+					elseif latencyFixed >= 100 and latencyFixed < 150 then
+						r, g, b = 220, 100, 0
+					elseif latencyFixed >= 150 then
+						r, g, b = 220, 0, 0
+					end
+
+    				if latencyFixed <= 150 then
+    					drawRectangle(lxb - 75, lyb + 15, latency * 1000, lh - 6, r, g, b, a)
+    				elseif latencyFixed > 150 then
+    					drawRectangle(lxb - 75, lyb + 15, 150, lh - 6, r, g, b, a)
+    				end
+				elseif getUi(boxColorCombobox) == "Old" then
+					visibility(latencyColor, false)
+    				
+    				a = 255
+
+    				if latencyFixed < 50 then
+    					r, g, b = 0, 220, 0
+					elseif latencyFixed >= 50 and latencyFixed < 100 then
+						r, g, b = 190, 145, 0
+					elseif latencyFixed >= 100 and latencyFixed < 150 then
+						r, g, b = 220, 100, 0
+					elseif latencyFixed >= 150 then
+						r, g, b = 220, 0, 0
+					end
+
+					if latencyFixed <= 150 then
+    					drawRectangle(lxb - 75, lyb + 15, latency * 1000, lh - 6, r, g, b, a)
+    				elseif latencyFixed > 150 then
+    					drawRectangle(lxb - 75, lyb + 15, 150, lh - 6, r, g, b, a)
+    				end
+				elseif getUi(boxColorCombobox) == "Custom" then
+					visibility(latencyColor, true)
+
+					r, g, b, a = getUi(latencyColor)
+
+					if latencyFixed <= 150 then
+    					drawRectangle(lxb - 75, lyb + 15, latency * 1000, lh - 6, r, g, b, a)
+    				elseif latencyFixed > 150 then
+    					drawRectangle(lxb - 75, lyb + 15, 150, lh - 6, r, g, b, a)
+    				end
+				elseif getUi(boxColorCombobox) == "Gradient" then
+					visibility(latencyColor, false)
+
+					if latencyFixed <= 150 then
+    					drawGradient(lxb - 75, lyb + 15, latency * 1000, lh - 6, 0, 220, 0, 255, 220, 0, 0, 255, true)
+    				elseif latencyFixed > 150 then
+    					drawGradient(lxb - 75, lyb + 15, 150, lh - 6, 0, 220, 0, 255, 220, 0, 0, 255, true)
+    				end
+				end
     		end
 
     		if getUi(chokeCheckbox, true) then
@@ -1591,9 +1789,40 @@ local function on_paintNetvar(ctx)
     				drawText(cxb, cyb, 255, 255, 255, 255, "cb", 0, "Choked")
     			end
 
-    			if fakelagEnabled then
-					drawRectangle(cxb - 78, cyb + 12, 156, ch, 0, 0, 0, 200)
+    			drawRectangle(cxb - 78, cyb + 12, 156, ch, 0, 0, 0, 200)
+
+    			if getUi(boxColorCombobox) == "Default" then
+    				visibility(chokeColorPicker, false)
+
+    				a = 255
+
+	    			if choked <= 3 then
+	    				r, g, b = 0, 220, 0
+    				elseif choked <= 7 then
+    					r, g, b = 190, 145, 0
+					elseif choked <= 11 then
+						r, g, b = 220, 100, 0
+					elseif choked <= 14 then
+						r, g, b = 220, 0, 0
+					end
+
+    				drawRectangle(cxb - 75, cyb + 15, choked * multiplier, ch - 6, r, g, b, a)
+				elseif getUi(boxColorCombobox) == "Old" then
+					visibility(chokeColorPicker, true)
+
+					r, g, b, a = getUi(chokeColorPicker)
+
 					drawRectangle(cxb - 75, cyb + 15, choked * multiplier, ch - 6, r, g, b, a)
+				elseif getUi(boxColorCombobox) == "Custom" then
+					visibility(chokeColorPicker, true)
+
+					r, g, b, a = getUi(chokeColorPicker)
+
+					drawRectangle(cxb - 75, cyb + 15, choked * multiplier, ch - 6, r, g, b, a)
+				elseif getUi(boxColorCombobox) == "Gradient" then
+					visibility(chokeColorPicker, false)
+
+					drawGradient(cxb - 75, cyb + 15, choked * multiplier, ch - 6, 0, 220, 0, 255, 220, 0, 0, 255, true)
 				end
 			else
 				visibility(chokeColorPicker, false)
@@ -1604,7 +1833,6 @@ local function on_paintNetvar(ctx)
 					local velocity = math.sqrt(vx * vx + vy * vy)
 					velocity = math.min(9999, velocity) + 0.2
 					velocity = round(velocity, 0)
-					local r, g, b, a = getUi(speedColorPicker)
 
 					if getUi(resizeNetvarCheckbox, true) then
 						visibility(speedSliderHv, true)
@@ -1620,10 +1848,54 @@ local function on_paintNetvar(ctx)
 
 					drawRectangle(sxb - 78, syb + 12, 156, sH, 0, 0, 0, 200)
 
-					if velocity > 1 and velocity <= 300 then
-						drawRectangle(sxb - 75, syb + 15, velocity / 2, sH - 6, r, g, b, a)
-					elseif velocity > 300 then
-						drawRectangle(sxb - 75, syb + 15, 150, sH - 6, r, g, b, a)
+					if getUi(boxColorCombobox) == "Default" then
+						visibility(speedColorPicker, false)
+
+    					a = 255
+
+						if velocity <= 62.5 then
+	    					r, g, b = 0, 220, 0
+    					elseif velocity <= 125 then
+    						r, g, b = 190, 145, 0
+						elseif velocity <= 187.5 then
+							r, g, b = 220, 100, 0
+						elseif velocity <= 250 then
+							r, g, b = 220, 0, 0
+						end
+
+						if velocity > 1 and velocity <= 300 then
+							drawRectangle(sxb - 75, syb + 15, velocity / 2, sH - 6, r, g, b, a)
+						elseif velocity > 300 then
+							drawRectangle(sxb - 75, syb + 15, 150, sH - 6, r, g, b, a)
+						end
+					elseif getUi(boxColorCombobox) == "Old" then
+						visibility(speedColorPicker, true)
+
+						r, g, b, a = getUi(speedColorPicker)
+
+						if velocity > 1 and velocity <= 300 then
+							drawRectangle(sxb - 75, syb + 15, velocity / 2, sH - 6, r, g, b, a)
+						elseif velocity > 300 then
+							drawRectangle(sxb - 75, syb + 15, 150, sH - 6, r, g, b, a)
+						end
+					elseif getUi(boxColorCombobox) == "Custom" then
+						visibility(speedColorPicker, true)
+
+						r, g, b, a = getUi(speedColorPicker)
+
+						if velocity > 1 and velocity <= 300 then
+							drawRectangle(sxb - 75, syb + 15, velocity / 2, sH - 6, r, g, b, a)
+						elseif velocity > 300 then
+							drawRectangle(sxb - 75, syb + 15, 150, sH - 6, r, g, b, a)
+						end
+					elseif getUi(boxColorCombobox) == "Gradient" then
+						visibility(speedColorPicker, false)
+
+						if velocity > 1 and velocity <= 300 then
+							drawGradient(sxb - 75, syb + 15, velocity / 2, sH - 6, 0, 220, 0, 255, 220, 0, 0, 255, true)
+						elseif velocity > 300 then
+							drawGradient(sxb - 75, syb + 15, 150, sH - 6, 0, 220, 0, 255, 220, 0, 0, 255, true)
+						end
 					end
 				end
 			else
@@ -1638,6 +1910,9 @@ local function on_paintNetvar(ctx)
    			visibility(speedSliderHv, false)
    			visibility(resizeCircleSlider, false)
     		visibility(resizeCircleThiccnessSlider, false)
+    		visibility(circleColorCombobox, false)
+
+    		visibility(boxColorCombobox, true)
 
     		if getUi(pingCheckbox, true) then
     			if getUi(resizeNetvarCheckbox, true) then
@@ -1654,14 +1929,60 @@ local function on_paintNetvar(ctx)
 
     			drawRectangle(pxb - 17, pyb - 170, pw, 156, 0, 0, 0, 200)
 
-				if ping <= 50 then
-					drawRectangle(pxb - 14, pyb - 167, pw - 6, ping, 0, 220, 0, 255)
-				elseif ping > 50 and ping < 100 then
-					drawRectangle(pxb - 14, pyb - 167, pw - 6, ping, 190, 145, 0, 255)
-				elseif ping >= 100 and ping <= 150 then
-					drawRectangle(pxb - 14, pyb - 167, pw - 6, ping, 220, 100, 0, 255)
-				elseif ping > 150 then
-					drawRectangle(pxb - 14, pyb - 167, pw - 6, 150, 220, 0, 0, 255)
+    			if getUi(boxColorCombobox) == "Default" then
+    				visibility(pingColor, false)
+
+    				if ping <= 50 then
+						r, g, b, a = 0, 220, 0, 255
+					elseif ping > 50 and ping < 100 then
+						r, g, b, a = 190, 145, 0, 255
+					elseif ping >= 100 and ping <= 150 then
+						r, g, b, a = 220, 100, 0, 255
+					elseif ping > 150 then
+						r, g, b, a = 220, 0, 0, 255
+					end
+
+					if ping <= 150 then
+						drawRectangle(pxb - 14, pyb - 167, pw - 6, ping, r, g, b, a)
+					elseif ping > 150 then
+						drawRectangle(pxb - 14, pyb - 167, pw - 6, 150, r, g, b, a)
+					end
+				elseif getUi(boxColorCombobox) == "Old" then
+					visibility(pingColor, false)
+
+					if ping <= 50 then
+						r, g, b, a = 0, 220, 0, 255
+					elseif ping > 50 and ping < 100 then
+						r, g, b, a = 190, 145, 0, 255
+					elseif ping >= 100 and ping <= 150 then
+						r, g, b, a = 220, 100, 0, 255
+					elseif ping > 150 then
+						r, g, b, a = 220, 0, 0, 255
+					end
+
+					if ping <= 150 then
+						drawRectangle(pxb - 14, pyb - 167, pw - 6, ping, r, g, b, a)
+					elseif ping > 150 then
+						drawRectangle(pxb - 14, pyb - 167, pw - 6, 150, r, g, b, a)
+					end
+				elseif getUi(boxColorCombobox) == "Custom" then
+					visibility(pingColor, true)
+
+					r, g, b, a = getUi(pingColor)
+
+					if ping <= 150 then
+						drawRectangle(pxb - 14, pyb - 167, pw - 6, ping, r, g, b, a)
+					elseif ping > 150 then
+						drawRectangle(pxb - 14, pyb - 167, pw - 6, 150, r, g, b, a)
+					end
+				elseif getUi(boxColorCombobox) == "Gradient" then
+					visibility(pingColor, false)
+
+					if ping <= 150 then
+						drawGradient(pxb - 14, pyb - 167, pw - 6, ping, 0, 220, 0, 255, 220, 0, 0, 255, false)
+					elseif ping > 150 then
+						drawGradient(pxb - 14, pyb - 167, pw - 6, 150, 0, 220, 0, 255, 220, 0, 0, 255, false)
+					end
 				end
     		end
 
@@ -1680,17 +2001,66 @@ local function on_paintNetvar(ctx)
 
     			drawRectangle(lxb - 17, lyb - 63, lw, 156, 0, 0, 0, 200)
 
-    		if latencyFixed == 0 then
-    			elseif latencyFixed < 50 then
-    				drawRectangle(lxb - 14, lyb - 60, lw - 6, latency * 1000, 0, 220, 0, 255)
-    			elseif latencyFixed >= 50 and latencyFixed < 100 then
-    				drawRectangle(lxb - 14, lyb - 60, lw - 6, latency * 1000, 190, 145, 0, 255)
-    			elseif latencyFixed >= 100 and latencyFixed < 150 then
-    				drawRectangle(lxb - 14, lyb - 60, lw - 6, latency * 1000, 220, 100, 0, 255)
-    			elseif latencyFixed >= 150 then
-    				drawRectangle(lxb - 14, lyb - 60, lw - 6, 150, 220, 0, 0, 255)
-    			end
-    		end
+    			if getUi(boxColorCombobox) == "Default" then
+    				visibility(latencyColor, false)
+
+    				a = 255
+
+    				if latencyFixed < 50 then
+    					r, g, b = 0, 220, 0, 255
+					elseif latencyFixed >= 50 and latencyFixed < 100 then
+						r, g, b = 190, 145, 0
+					elseif latencyFixed >= 100 and latencyFixed < 150 then
+						r, g, b = 220, 100, 0
+					elseif latencyFixed >= 150 then
+						r, g, b = 220, 0, 0
+					end
+
+    				if latencyFixed <= 150 then
+    					drawRectangle(lxb - 14, lyb - 60, lw - 6, latency * 1000, r, g, b, a)
+    				elseif latencyFixed > 150 then
+    					drawRectangle(lxb - 14, lyb - 60, lw - 6, 150, r, g, b, a)
+    				end
+				elseif getUi(boxColorCombobox) == "Old" then
+					visibility(latencyColor, false)
+    				
+    				a = 255
+
+    				if latencyFixed < 50 then
+    					r, g, b = 0, 220, 0
+					elseif latencyFixed >= 50 and latencyFixed < 100 then
+						r, g, b = 190, 145, 0
+					elseif latencyFixed >= 100 and latencyFixed < 150 then
+						r, g, b = 220, 100, 0
+					elseif latencyFixed >= 150 then
+						r, g, b = 220, 0, 0
+					end
+
+					if latencyFixed <= 150 then
+    					drawRectangle(lxb - 14, lyb - 60, lw - 6, latency * 1000, r, g, b, a)
+    				elseif latencyFixed > 150 then
+    					drawRectangle(lxb - 14, lyb - 60, lw - 6, 150, r, g, b, a)
+    				end
+				elseif getUi(boxColorCombobox) == "Custom" then
+					visibility(latencyColor, true)
+
+					r, g, b, a = getUi(latencyColor)
+
+					if latencyFixed <= 150 then
+    					drawRectangle(lxb - 14, lyb - 60, lw - 6, latency * 1000, r, g, b, a)
+    				elseif latencyFixed > 150 then
+    					drawRectangle(lxb - 14, lyb - 60, lw - 6, 150, r, g, b, a)
+    				end
+				elseif getUi(boxColorCombobox) == "Gradient" then
+					visibility(latencyColor, false)
+
+					if latencyFixed <= 150 then
+    					drawGradient(lxb - 14, lyb - 60, lw - 6, latency * 1000, 0, 220, 0, 255, 220, 0, 0, 255, false)
+    				elseif latencyFixed > 150 then
+    					drawGradient(lxb - 14, lyb - 60, lw - 6, 150, 0, 220, 0, 255, 220, 0, 0, 255, false)
+    				end
+				end
+			end
 
     		if getUi(chokeCheckbox, true) then
     			local r, g, b, a = getUi(chokeColorPicker)
@@ -1707,9 +2077,40 @@ local function on_paintNetvar(ctx)
     				drawText(cxb, cyb + 32, 255, 255, 255, 255, "cb", 0, "Choked")
     			end
 
-    			if fakelagEnabled then
-					drawRectangle(cxb - 17, cyb + 44, cw, 156, 0, 0, 0, 200)
+    			drawRectangle(cxb - 17, cyb + 44, cw, 156, 0, 0, 0, 200)
+
+    			if getUi(boxColorCombobox) == "Default" then
+    				visibility(chokeColorPicker, false)
+
+    				a = 255
+
+	    			if choked <= 3 then
+	    				r, g, b = 0, 220, 0
+    				elseif choked <= 7 then
+    					r, g, b = 190, 145, 0
+					elseif choked <= 11 then
+						r, g, b = 220, 100, 0
+					elseif choked <= 14 then
+						r, g, b = 220, 0, 0
+					end
+
+    				drawRectangle(cxb - 14, cyb + 47, cw - 6, choked * multiplier, r, g, b, a)
+				elseif getUi(boxColorCombobox) == "Old" then
+					visibility(chokeColorPicker, true)
+
+					r, g, b, a = getUi(chokeColorPicker)
+
 					drawRectangle(cxb - 14, cyb + 47, cw - 6, choked * multiplier, r, g, b, a)
+				elseif getUi(boxColorCombobox) == "Custom" then
+					visibility(chokeColorPicker, true)
+
+					r, g, b, a = getUi(chokeColorPicker)
+
+					drawRectangle(cxb - 14, cyb + 47, cw - 6, choked * multiplier, r, g, b, a)
+				elseif getUi(boxColorCombobox) == "Gradient" then
+					visibility(chokeColorPicker, false)
+
+					drawGradient(cxb - 14, cyb + 47, cw - 6, choked * multiplier, 0, 220, 0, 255, 220, 0, 0, 255, false)
 				end
 			else
 				visibility(chokeColorPicker, false)
@@ -1736,10 +2137,54 @@ local function on_paintNetvar(ctx)
 
 					drawRectangle(sxb - 17, syb + 151, sw, 156, 0, 0, 0, 200)
 
-					if velocity > 1 and velocity <= 300 then
-						drawRectangle(sxb - 14, syb + 154, sw - 6, velocity / 2, r, g, b, a)
-					elseif velocity > 300 then
-						drawRectangle(sxb - 14, syb + 154, sw - 6, 150, r, g, b, a)
+					if getUi(boxColorCombobox) == "Default" then
+						visibility(speedColorPicker, false)
+
+    					a = 255
+
+						if velocity <= 62.5 then
+	    					r, g, b = 0, 220, 0
+    					elseif velocity <= 125 then
+    						r, g, b = 190, 145, 0
+						elseif velocity <= 187.5 then
+							r, g, b = 220, 100, 0
+						elseif velocity <= 250 then
+							r, g, b = 220, 0, 0
+						end
+
+						if velocity > 1 and velocity <= 300 then
+							drawRectangle(sxb - 14, syb + 154, sw - 6, velocity / 2, r, g, b, a)
+						elseif velocity > 300 then
+							drawRectangle(sxb - 14, syb + 154, sw - 6, 150, r, g, b, a)
+						end
+					elseif getUi(boxColorCombobox) == "Old" then
+						visibility(speedColorPicker, true)
+
+						r, g, b, a = getUi(speedColorPicker)
+
+						if velocity > 1 and velocity <= 300 then
+							drawRectangle(sxb - 14, syb + 154, sw - 6, velocity / 2, r, g, b, a)
+						elseif velocity > 300 then
+							drawRectangle(sxb - 14, syb + 154, sw - 6, 150, r, g, b, a)
+						end
+					elseif getUi(boxColorCombobox) == "Custom" then
+						visibility(speedColorPicker, true)
+
+						r, g, b, a = getUi(speedColorPicker)
+
+						if velocity > 1 and velocity <= 300 then
+							drawRectangle(sxb - 14, syb + 154, sw - 6, velocity / 2, r, g, b, a)
+						elseif velocity > 300 then
+							drawRectangle(sxb - 14, syb + 154, sw - 6, 150, r, g, b, a)
+						end
+					elseif getUi(boxColorCombobox) == "Gradient" then
+						visibility(speedColorPicker, false)
+
+						if velocity > 1 and velocity <= 300 then
+							drawGradient(sxb - 14, syb + 154, sw - 6, velocity / 2, 0, 220, 0, 255, 220, 0, 0, 255, false)
+						elseif velocity > 300 then
+							drawGradient(sxb - 14, syb + 154, sw - 6, 150, 0, 220, 0, 255, 220, 0, 0, 255, false)
+						end
 					end
 				end
 			else
@@ -1784,6 +2229,8 @@ local function on_paintNetvar(ctx)
 		visibility(speedSliderHv, false)
 		visibility(resizeCircleSlider, false)
     	visibility(resizeCircleThiccnessSlider, false)
+    	visibility(circleColorCombobox, false)
+    	visibility(boxColorCombobox, false)
 	end
 end
 
