@@ -683,8 +683,8 @@ local function on_paintHud(ctx)
 	local playerResource = getAll("CCSPlayerResource")[1]
 	local c4Holder = getProp(playerResource, "m_iPlayerC4")
 	local hasHelmet = getProp(localPlayer, "m_bHasHelmet")
-	local ammo = getProp(getProp(localPlayer, "m_hActiveWeapon"), "m_iClip1")
-	local ammoReserve = getProp(getProp(localPlayer, "m_hActiveWeapon"), "m_iPrimaryReserveAmmoCount")
+	local ammo = getProp(entity.get_player_weapon(entity.get_local_player()), "m_iClip1")
+	local ammoReserve = getProp(entity.get_player_weapon(entity.get_local_player()), "m_iPrimaryReserveAmmoCount")
 
 	local r, g, b, a = 255, 255, 255, 255
 	local flags = "c+"
@@ -748,16 +748,17 @@ local function on_paintHud(ctx)
 			drawText(x + 275, h - 35 - tf, 85, 155, 215, a, flags, maxW, armor)
 			drawText(x + 275, h - 16 - tf, r, g, b, a, "c", maxW, "Armor")
 
-			if ammo == -1 then
-			
-			elseif ammo >= 0 and ammo <10 and ammoReserve >= 0 and ammoReserve <10 then
-				drawText(w - 115, h - 32, r, g, b, a, "c+", 0, ammoReserve)
-				drawText(w - 135, h - 33, r, g, b, a, "c+", 0, "|")
-				drawText(w - 155, h - 32, r, g, b, a, "c+", 0, ammo)
-			elseif ammo >= 10 or ammoReserve >= 10 then
-				drawText(w - 110, h - 32, r, g, b, a, "c+", 0, ammoReserve)
-				drawText(w - 135, h - 33, r, g, b, a, "c+", 0, "|")
-				drawText(w - 160, h - 32, r, g, b, a, "c+", 0, ammo)
+			if health > 0 then
+				if ammo == -1 then
+				elseif ammo >= 0 and ammo < 10 and ammoReserve >= 0 and ammoReserve < 10 then
+					drawText(w - 115, h - 32, r, g, b, a, "c+", 0, ammoReserve)
+					drawText(w - 135, h - 33, r, g, b, a, "c+", 0, "|")
+					drawText(w - 155, h - 32, r, g, b, a, "c+", 0, ammo)
+				elseif ammo >= 10 or ammoReserve >= 10 then
+					drawText(w - 110, h - 32, r, g, b, a, "c+", 0, ammoReserve)
+					drawText(w - 135, h - 33, r, g, b, a, "c+", 0, "|")
+					drawText(w - 160, h - 32, r, g, b, a, "c+", 0, ammo)
+				end
 			end
 
 			if c4Holder == localPlayer then
@@ -1591,7 +1592,7 @@ local function on_paintNetvar(ctx)
     						r, g, b = 190, 145, 0
 						elseif velocity <= 187.5 then
 							r, g, b = 220, 100, 0
-						elseif velocity <= 250 then
+						elseif velocity > 187.5 then
 							r, g, b = 220, 0, 0
 						end
 					elseif getUi(circleColorCombobox) == "Old" then
@@ -1859,7 +1860,7 @@ local function on_paintNetvar(ctx)
     						r, g, b = 190, 145, 0
 						elseif velocity <= 187.5 then
 							r, g, b = 220, 100, 0
-						elseif velocity <= 250 then
+						elseif velocity > 187.5 then
 							r, g, b = 220, 0, 0
 						end
 
@@ -2148,7 +2149,7 @@ local function on_paintNetvar(ctx)
     						r, g, b = 190, 145, 0
 						elseif velocity <= 187.5 then
 							r, g, b = 220, 100, 0
-						elseif velocity <= 250 then
+						elseif velocity > 187.5 then
 							r, g, b = 220, 0, 0
 						end
 
