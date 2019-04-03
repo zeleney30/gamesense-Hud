@@ -120,7 +120,7 @@ local headshot = {}
 ----------------------------------------------------------------------------------------------------------------------------------
 
 --netvar indc--
-local styleCombobox = combobox("Lua", "B", "Style", "Circles", "Horizontal box", "Vertical box")
+local styleCombobox = combobox("Lua", "B", "Style", "Circle outline", "Circle", "Horizontal box", "Vertical box")
 local circleColorCombobox = combobox("Lua", "B", "Color style", "Default", "Old", "Custom")
 local boxColorCombobox = combobox("Lua", "B", "Color style", "Default", "Old", "Custom", "Gradient", "Reverse gradient")
 local pingCheckbox = checkbox("Lua", "B", "Ping")
@@ -1437,7 +1437,7 @@ local function on_paintNetvar(ctx)
 			visibility(speedSliderY, false)
     	end
 
-   		if getUi(styleCombobox) == "Circles" then
+   		if getUi(styleCombobox) == "Circle outline" then
    			visibility(pingSliderWv, false)
    			visibility(latencySliderWv, false)
    			visibility(chokeSliderWv, false)
@@ -1621,6 +1621,202 @@ local function on_paintNetvar(ctx)
 					else
 						draw_indicator_circle(ctx, sxc, syc, r, g, b, a, velocity / 300, outline)
 					end
+				end
+			else
+				visibility(speedColorPicker, false)
+    		end
+
+    	elseif getUi(styleCombobox) == "Circle" then
+    		visibility(pingSliderWv, false)
+   			visibility(latencySliderWv, false)
+   			visibility(chokeSliderWv, false)
+   			visibility(speedSliderWv, false)
+   			visibility(pingSliderHv, false)
+   			visibility(latencySliderHv, false)
+   			visibility(chokeSliderHv, false)
+   			visibility(speedSliderHv, false)
+   			visibility(boxColorCombobox, false)
+
+   			visibility(circleColorCombobox, true)
+
+   			if getUi(pingCheckbox, true) then
+    			if getUi(numbersCheckbox, true) then
+    				drawText(pxc, pyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Ping: ".. ping)
+    			else
+    				drawText(pxc, pyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Ping")
+    			end
+
+    			if getUi(circleColorCombobox) == "Default" then
+    				visibility(pingColor, false)
+
+    				a = 255
+
+    				if ping <= 50 then
+	    				r, g, b = 0, 220, 0
+	    			elseif ping > 50 and ping < 100 then
+	    				r, g, b = 190, 145, 0
+	    			elseif ping >= 100 and ping <= 150 then
+	    				r, g, b = 220, 100, 0
+	    			elseif ping > 150 then
+	    				r, g, b = 220, 0, 0
+	    			end
+	    		elseif getUi(circleColorCombobox) == "Old" then
+	    			visibility(pingColor, false)
+
+    				a = 255
+
+    				if ping <= 50 then
+	    				r, g, b = 0, 220, 0
+	    			elseif ping > 50 and ping < 100 then
+	    				r, g, b = 190, 145, 0
+	    			elseif ping >= 100 and ping <= 150 then
+	    				r, g, b = 220, 100, 0
+	    			elseif ping > 150 then
+	    				r, g, b = 220, 0, 0
+	    			end
+				elseif getUi(circleColorCombobox) == "Custom" then
+					visibility(pingColor, true)
+
+					r, g, b, a = getUi(pingColor)
+				end
+
+				if (ping / 8) <= 25 then
+    				drawCircle(pxc, pyc, r, g, b, a, ping / 8, 0, 1)
+    			elseif (ping / 8) > 25 then
+    				drawCircle(pxc, pyc, r, g, b, a, 25, 0, 1)
+				end
+    		end
+
+   			if getUi(latencyCheckbox, true) then
+    			if getUi(numbersCheckbox, true) then
+    				drawText(lxc, lyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Latency: ".. latencyFixed)
+    			else
+    				drawText(lxc, lyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Latency")
+    			end
+
+    			if getUi(circleColorCombobox) == "Default" then
+    				visibility(latencyColor, false)
+
+    				a = 255
+
+	    			if latencyFixed < 50 then
+	    				r, g, b = 0, 220, 0
+	    			elseif latencyFixed >= 50 and latencyFixed < 100 then
+	    				r, g, b = 190, 145, 0
+	    			elseif latencyFixed >= 100 and latencyFixed < 150 then
+	    				r, g, b = 220, 100, 0
+	    			elseif latencyFixed >= 150 then
+	    				r, g, b = 220, 0, 0
+	    			end
+	    		elseif getUi(circleColorCombobox) == "Old" then
+	    			visibility(latencyColor, false)
+
+    				a = 255
+
+	    			if latencyFixed < 50 then
+	    				r, g, b = 0, 220, 0
+	    			elseif latencyFixed >= 50 and latencyFixed < 100 then
+	    				r, g, b = 190, 145, 0
+	    			elseif latencyFixed >= 100 and latencyFixed < 150 then
+	    				r, g, b = 220, 100, 0
+	    			elseif latencyFixed >= 150 then
+	    				r, g, b = 220, 0, 0
+	    			end
+	    		elseif getUi(circleColorCombobox) == "Custom" then
+	    			visibility(latencyColor, true)
+
+	    			r, g, b, a = getUi(latencyColor)
+	    		end
+
+    			if latencyFixed == 0 then
+    				drawCircle(lxc, lyc, r, g, b, a, 0, 0, 1)
+    			elseif latencyFixed <= 150 then
+    				drawCircle(lxc, lyc, r, g, b, a, latencyFixed / 6, 0, 1)
+				elseif latencyFixed > 150 then
+					drawCircle(lxc, lyc, r, g, b, a, 25, 0, 1)
+    			end
+    		end
+
+   			if getUi(chokeCheckbox, true) then
+    			if getUi(numbersCheckbox, true) then
+    				drawText(cxc, cyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Choked: ".. choked)
+    			else
+    				drawText(cxc, cyc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Choked")
+    			end
+
+    			if getUi(circleColorCombobox) == "Default" then
+    				visibility(chokeColorPicker, false)
+
+    				a = 255
+
+	    			if choked <= 3 then
+	    				r, g, b = 0, 220, 0
+    				elseif choked <= 7 then
+    					r, g, b = 190, 145, 0
+					elseif choked <= 11 then
+						r, g, b = 220, 100, 0
+					elseif choked <= 14 then
+						r, g, b = 220, 0, 0
+					end
+				elseif getUi(circleColorCombobox) == "Old" then
+					visibility(chokeColorPicker, true)
+
+	    			r, g, b, a = getUi(chokeColorPicker)
+	    		elseif getUi(circleColorCombobox) == "Custom" then
+	    			visibility(chokeColorPicker, true)
+
+	    			r, g, b, a = getUi(chokeColorPicker)
+	    		end
+
+    			if fakelagEnabled then
+    				drawCircle(cxc, cyc, r, g, b, a, choked * 1.785714285714286, 0, 1)
+    			end
+    		else
+				visibility(chokeColorPicker, false)
+    		end
+
+    		if getUi(speedCheckbox, true) then
+    			if vx ~= nil then
+					local velocity = math.sqrt(vx * vx + vy * vy)
+					velocity = math.min(9999, velocity) + 0.2
+					velocity = round(velocity, 0)
+
+					if getUi(numbersCheckbox, true) then
+						drawText(sxc, syc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Speed: ".. velocity)
+					else
+						drawText(sxc, syc - 45 - (getUi(resizeCircleSlider) - 36), 255, 255, 255, 255, "cb", 0, "Speed")
+					end
+
+					if getUi(circleColorCombobox) == "Default" then
+	    				visibility(speedColorPicker, false)
+
+	    				a = 255
+
+						if velocity <= 62.5 then
+	    					r, g, b = 0, 220, 0
+    					elseif velocity <= 125 then
+    						r, g, b = 190, 145, 0
+						elseif velocity <= 187.5 then
+							r, g, b = 220, 100, 0
+						elseif velocity > 187.5 then
+							r, g, b = 220, 0, 0
+						end
+
+					elseif getUi(circleColorCombobox) == "Old" then
+						visibility(speedColorPicker, true)
+
+	    				r, g, b, a = getUi(speedColorPicker)
+	    			elseif getUi(circleColorCombobox) == "Custom" then
+		    			visibility(speedColorPicker, true)
+
+	    				r, g, b, a = getUi(speedColorPicker)
+	    			end
+
+	    			if velocity <= 250 then
+		    			drawCircle(sxc, syc, r, g, b, a, velocity / 10, 0, 1)
+		    		elseif velocity > 250 then
+		    			drawCircle(sxc, syc, r, g, b, a, 25, 0, 1)
+		    		end
 				end
 			else
 				visibility(speedColorPicker, false)
