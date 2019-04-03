@@ -2261,6 +2261,7 @@ local function on_paintHealthHands(ctx)
 			setUi(handsColor, 225, 100, 0, 255)
 		elseif hp < 25 and hp >= 0 then
 			setUi(handsColor, 175, 50, 0, 255)
+		elseif hp < 1 then
 		end
 	end
 end
