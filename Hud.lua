@@ -31,7 +31,6 @@ local colorPicker = ui.new_color_picker
 local realTime = globals.realtime
 local callback = client.set_event_callback
 local textbox = ui.new_textbox
-local setClantag = client.set_clan_tag
 local tickInterval = globals.tickinterval()
 local tickCount = globals.tickcount()
 local button = ui.new_button
@@ -39,6 +38,8 @@ local w, h = screenSize()
 ----------------------------------------------------------------------------------------------------------------------------------
 
 local hudCheckbox = checkbox("Lua", "B", "Hud")
+local hudColorCheckbox = checkbox("Lua", "B", "Recolor hud")
+local hudColor = colorPicker("Lua", "B", "Recolor hud", 20, 20, 20, 255)
 local resizeHud = checkbox("Lua", "B", "Resize hud")
 local hudW = slider("Lua", "B", "Hud width", 0, w, w - 350, true)
 local hudH = slider("Lua", "B", "Hud height", 0, h, h - 64, true)
@@ -46,7 +47,9 @@ local reposHud = checkbox("Lua", "B", "Reposition hud")
 local hudSliderX = slider("Lua", "B", "Hud X", 0, w, 0, true)
 local hudSliderY = slider("Lua", "B", "Hud Y", 0, h, h, true)
 local hudFullCheckbox = checkbox("Lua", "B", "Full length")
-local hudMultibox = multibox("Lua", "B", "Extras", {"Keystroke indicator", "Damage indicator", "Fake duck indicator", "Hitrate indicator", "Netvar indicators"--[[, "Custom clantag"--]]})
+local moveIndicatorCheckbox = checkbox("Lua", "B", "Offset indicators")
+local moveIndicatorsSlider = slider("Lua", "B", "Offset amount", 0, 25, 0)
+local hudMultibox = multibox("Lua", "B", "Extras", {"Keystroke indicator", "Damage indicator", "Fake duck indicator", "Hitrate indicator", "Netvar indicators"})
 ----------------------------------------------------------------------------------------------------------------------------------
 
 --keystroke indc--
@@ -116,15 +119,10 @@ local damageQueue = {}
 local headshot = {}
 ----------------------------------------------------------------------------------------------------------------------------------
 
---clantag--
---[[local clantagCheckbox = checkbox("Lua", "B", "Clantag")
-local clantagTextbox = textbox("Lua", "B", "Clantag")--]]
-----------------------------------------------------------------------------------------------------------------------------------
-
 --netvar indc--
 local styleCombobox = combobox("Lua", "B", "Style", "Circles", "Horizontal box", "Vertical box")
 local circleColorCombobox = combobox("Lua", "B", "Color style", "Default", "Old", "Custom")
-local boxColorCombobox = combobox("Lua", "B", "Color style", "Default", "Old", "Custom", "Gradient")
+local boxColorCombobox = combobox("Lua", "B", "Color style", "Default", "Old", "Custom", "Gradient", "Reverse gradient")
 local pingCheckbox = checkbox("Lua", "B", "Ping")
 local pingColor = colorPicker("Lua", "B", "Ping", 255, 255, 255, 255)
 local pingSliderWv = slider("Lua", "B", "Ping width", 0, 500, 32, true)
@@ -255,24 +253,6 @@ local function on_round_prestart(e)
 end
 ----------------------------------------------------------------------------------------------------------------------------------
 
---clantag--
---[[local function time_to_ticks(time)
-	return math.floor(time / tickInterval + .5)
-end
-
-local function ClantagAnimation(text, indices)
-	local latency = client.latency()
-	--local text_anim = "               " .. text .. "                      " 
-	local tickinterval = tickInterval
-	local ticks = tickCount + time_to_ticks(latency)
-	local i = ticks / time_to_ticks(0.3)
-	i = math.floor(i % #indices)
-	i = indices[i+1]+1
-
-	return string.sub(text_anim, i, i+15)
-end--]]
-----------------------------------------------------------------------------------------------------------------------------------
-
 --netvar indc--
 local choked = 0
 
@@ -305,10 +285,11 @@ local function draw_indicator_circle(ctx, x, y, r, g, b, a, percentage, outline)
 end
 ----------------------------------------------------------------------------------------------------------------------------------
 
-local moveIndicatorsSlider = slider("Lua", "B", "Offset indicators", 0, 25, 0)
-
 local function on_paintIndicators(ctx)
-	if getUi(moveIndicatorsSlider) == 1 then
+	if getUi(moveIndicatorCheckbox, true) then
+		visibility(moveIndicatorsSlider, true)
+
+		if getUi(moveIndicatorsSlider) == 1 then
 		drawIndicator(255, 255, 255, 0, " ")
 	elseif getUi(moveIndicatorsSlider) == 2 then
 		drawIndicator(255, 255, 255, 0, " ")
@@ -659,6 +640,9 @@ local function on_paintIndicators(ctx)
 		drawIndicator(255, 255, 255, 0, " ")
 		drawIndicator(255, 255, 255, 0, " ")
 	end
+	else
+		visibility(moveIndicatorsSlider, false)
+	end
 
 	if getUi(hudCheckbox, true) then
 		if inBuyzone == 1 then
@@ -698,8 +682,19 @@ local function on_paintHud(ctx)
 		visibility(hudFullCheckbox, true)
 		visibility(resizeHud, true)
 		visibility(reposHud, true)
+		visibility(hudColorCheckbox, true)
 
 		setProp(localPlayer, "m_iHideHud", 8200)
+
+		if getUi(hudColorCheckbox, true) then
+			visibility(hudColor, true)
+
+			rh, gh, bh, ah = getUi(hudColor)
+		else
+			visibility(hudColor, false)
+
+			rh, gh, bh, ah = 20, 20, 20, 255
+		end
 
 		if getUi(resizeHud, true) then
 			visibility(hudW, true)
@@ -740,7 +735,7 @@ local function on_paintHud(ctx)
 			drawRectangle(x + 1, h - 67 + df, w - 2, 66 - sf, 60, 60, 60, 255)
 			drawRectangle(x + 2, h - 66 + df, w - 4, 64 - sf, 40, 40, 40, 255)
 			drawRectangle(x + 5, h - 64 + df, w - 9, 60 - sf, 60, 60, 60, 255)
-			drawRectangle(x + 6, h - 63 + df, w - 11, 58 - sf, 20, 20, 20, 255)
+			drawRectangle(x + 6, h - 63 + df, w - 11, 58 - sf, rh, gh, bh, ah)
 			drawGradient(x + 7, h - 62 + df, w / 2 - 11, 1, 56, 176, 218, 255, 201, 72, 205, 255, true)
 			drawGradient(x + 7 + w / 2 - 13, h - 62 + df, w / 2, 1, 201, 72, 205, 255, 204, 227, 53, 255, true)
 			drawText(x + 75, h - 35 - tf, 108, 195, 18, a, flags, maxW, health)
@@ -794,7 +789,7 @@ local function on_paintHud(ctx)
 			drawRectangle(x + 1, h - 67 + df, hudWidth - 2, hudHeight - 2, 60, 60, 60, 255)
 			drawRectangle(x + 2, h - 66 + df, hudWidth - 4, hudHeight - 4, 40, 40, 40, 255)
 			drawRectangle(x + 5, h - 64 + df, hudWidth - 9, hudHeight - 8, 60, 60, 60, 255)
-			drawRectangle(x + 6, h - 63 + df, hudWidth - 11, hudHeight - 10, 20, 20, 20, 255)
+			drawRectangle(x + 6, h - 63 + df, hudWidth - 11, hudHeight - 10, rh, gh, bh, ah)
 			drawGradient(x + 7, h - 62 + df, (hudWidth - 11) / 2, 1, 56, 176, 218, 255, 201, 72, 205, 255, true)
 			drawGradient(x + 7 + ((hudWidth - 14) / 2), h - 62 + df, (hudWidth - 11) / 2, 1, 201, 72, 205, 255, 204, 227, 53, 255, true)
 			drawText(x + 75, h - 35 - tf, 108, 195, 18, a, flags, maxW, health)
@@ -835,6 +830,8 @@ local function on_paintHud(ctx)
 		visibility(hudSliderX, false)
 		visibility(hudSliderY, false)
 		visibility(hudFullCheckbox, false)
+		visibility(hudColorCheckbox, false)
+		visibility(hudColor, false)
 	end
 end
 
@@ -957,20 +954,32 @@ local function on_paintKeystroke(ctx)
 			end
 
 			if getUi(boxColorCheckbox, true) then
+				visibility(boxColorPicker, true)
+
 				boxR, boxG, boxB, boxA = getUi(boxColorPicker)
 			else
+				visibility(boxColorPicker, false)
+
 				boxR, boxG, boxB, boxA = 0, 0, 0, 220
 			end
 
 			if getUi(keyUnpressedColorCheckbox, true) then
+				visibility(keyUnpressedColorPicker, true)
+
 				keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA = getUi(keyUnpressedColorPicker)
 			else
+				visibility(keyUnpressedColorPicker, false)
+
 				keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA = 255, 255, 255, 150
 			end
 
 			if getUi(keyPressedColorCheckbox, true) then
+				visibility(keyPressedColorPicker, true)
+
 				keyPressR, keyPressG, keyPressB, keyPressA = getUi(keyPressedColorPicker)
 			else
+				visibility(keyPressedColorPicker, false)
+
 				keyPressR, keyPressG, keyPressB, keyPressA = 50, 255, 50, 220
 			end
 
@@ -1139,6 +1148,7 @@ local function on_paintDmgIndc(ctx)
 		--hs indc--
 		if getUi(hsCheckbox, true) then
 			visibility(hsStyleCombobox, true)
+			visibility(hsColorpicker, true)
 
 			local r, g, b, a = getUi(hsColorpicker)
 
@@ -1154,6 +1164,7 @@ local function on_paintDmgIndc(ctx)
     		end
     	else
     		visibility(hsStyleCombobox, false)
+    		visibility(hsColorpicker, false)
     	end
 
 	else
@@ -1696,6 +1707,14 @@ local function on_paintNetvar(ctx)
 					elseif ping > 150 then
 						drawGradient(pxb - 75, pyb + 15, 150, ph - 6, 0, 220, 0, 255, 220, 0, 0, 255, true)
 					end
+				elseif getUi(boxColorCombobox) == "Reverse gradient" then
+					visibility(pingColor, false)
+
+					if ping <= 150 then
+						drawGradient(pxb - 75, pyb + 15, ping, ph - 6, 220, 0, 0, 255, 0, 220, 0, 255, true)
+					elseif ping > 150 then
+						drawGradient(pxb - 75, pyb + 15, 150, ph - 6, 220, 0, 0, 255, 0, 220, 0, 255, true)
+					end
 				end
     		end
 
@@ -1772,6 +1791,14 @@ local function on_paintNetvar(ctx)
     				elseif latencyFixed > 150 then
     					drawGradient(lxb - 75, lyb + 15, 150, lh - 6, 0, 220, 0, 255, 220, 0, 0, 255, true)
     				end
+    			elseif getUi(boxColorCombobox) == "Reverse gradient" then
+    				visibility(latencyColor, false)
+
+					if latencyFixed <= 150 then
+    					drawGradient(lxb - 75, lyb + 15, latency * 1000, lh - 6, 220, 0, 0, 255, 0, 220, 0, 255, true)
+    				elseif latencyFixed > 150 then
+    					drawGradient(lxb - 75, lyb + 15, 150, lh - 6, 220, 0, 0, 255, 0, 220, 0, 255, true)
+    				end
 				end
     		end
 
@@ -1824,6 +1851,10 @@ local function on_paintNetvar(ctx)
 					visibility(chokeColorPicker, false)
 
 					drawGradient(cxb - 75, cyb + 15, choked * multiplier, ch - 6, 0, 220, 0, 255, 220, 0, 0, 255, true)
+				elseif getUi(boxColorCombobox) == "Reverse gradient" then
+					visibility(chokeColorPicker, false)
+
+					drawGradient(cxb - 75, cyb + 15, choked * multiplier, ch - 6, 220, 0, 0, 255, 0, 220, 0, 255, true)
 				end
 			else
 				visibility(chokeColorPicker, false)
@@ -1896,6 +1927,14 @@ local function on_paintNetvar(ctx)
 							drawGradient(sxb - 75, syb + 15, velocity / 2, sH - 6, 0, 220, 0, 255, 220, 0, 0, 255, true)
 						elseif velocity > 300 then
 							drawGradient(sxb - 75, syb + 15, 150, sH - 6, 0, 220, 0, 255, 220, 0, 0, 255, true)
+						end
+					elseif getUi(boxColorCombobox) == "Reverse gradient" then
+						visibility(speedColorPicker, false)
+
+						if velocity > 1 and velocity <= 300 then
+							drawGradient(sxb - 75, syb + 15, velocity / 2, sH - 6, 220, 0, 0, 255, 0, 220, 0, 255, true)
+						elseif velocity > 300 then
+							drawGradient(sxb - 75, syb + 15, 150, sH - 6, 220, 0, 0, 255, 0, 220, 0, 255, true)
 						end
 					end
 				end
@@ -1984,6 +2023,14 @@ local function on_paintNetvar(ctx)
 					elseif ping > 150 then
 						drawGradient(pxb - 14, pyb - 167, pw - 6, 150, 0, 220, 0, 255, 220, 0, 0, 255, false)
 					end
+				elseif getUi(boxColorCombobox) == "Reverse gradient" then
+					visibility(pingColor, false)
+
+					if ping <= 150 then
+						drawGradient(pxb - 14, pyb - 167, pw - 6, ping, 220, 0, 0, 255, 0, 220, 0, 255, false)
+					elseif ping > 150 then
+						drawGradient(pxb - 14, pyb - 167, pw - 6, 150, 220, 0, 0, 255, 0, 220, 0, 255, false)
+					end
 				end
     		end
 
@@ -2060,6 +2107,14 @@ local function on_paintNetvar(ctx)
     				elseif latencyFixed > 150 then
     					drawGradient(lxb - 14, lyb - 60, lw - 6, 150, 0, 220, 0, 255, 220, 0, 0, 255, false)
     				end
+    			elseif getUi(boxColorCombobox) == "Reverse gradient" then
+    				visibility(latencyColor, false)
+
+					if latencyFixed <= 150 then
+    					drawGradient(lxb - 14, lyb - 60, lw - 6, latency * 1000, 220, 0, 0, 255, 0, 220, 0, 255, false)
+    				elseif latencyFixed > 150 then
+    					drawGradient(lxb - 14, lyb - 60, lw - 6, 150, 220, 0, 0, 255, 0, 220, 0, 255, false)
+    				end
 				end
 			end
 
@@ -2112,6 +2167,10 @@ local function on_paintNetvar(ctx)
 					visibility(chokeColorPicker, false)
 
 					drawGradient(cxb - 14, cyb + 47, cw - 6, choked * multiplier, 0, 220, 0, 255, 220, 0, 0, 255, false)
+				elseif getUi(boxColorCombobox) == "Reverse gradient" then
+					visibility(chokeColorPicker, false)
+
+					drawGradient(cxb - 14, cyb + 47, cw - 6, choked * multiplier, 220, 0, 0, 255, 0, 220, 0, 255, false)
 				end
 			else
 				visibility(chokeColorPicker, false)
@@ -2185,6 +2244,14 @@ local function on_paintNetvar(ctx)
 							drawGradient(sxb - 14, syb + 154, sw - 6, velocity / 2, 0, 220, 0, 255, 220, 0, 0, 255, false)
 						elseif velocity > 300 then
 							drawGradient(sxb - 14, syb + 154, sw - 6, 150, 0, 220, 0, 255, 220, 0, 0, 255, false)
+						end
+					elseif getUi(boxColorCombobox) == "Reverse gradient" then
+						visibility(speedColorPicker, false)
+
+						if velocity > 1 and velocity <= 300 then
+							drawGradient(sxb - 14, syb + 154, sw - 6, velocity / 2, 220, 0, 0, 255, 0, 220, 0, 255, false)
+						elseif velocity > 300 then
+							drawGradient(sxb - 14, syb + 154, sw - 6, 150, 220, 0, 0, 255, 0, 220, 0, 255, false)
 						end
 					end
 				end
