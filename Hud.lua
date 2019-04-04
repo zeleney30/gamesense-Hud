@@ -70,7 +70,7 @@ local sh = hotkey("Lua", "B", "S", true)
 local sSliderX = slider("Lua", "B", "S slider X", 0, w, w / 2, true)
 local sSliderY = slider("Lua", "B", "S slider Y", 0, h, h / 2, true)
 local ahCheckbox = checkbox("Lua", "B", "A")
-local ah = hotkey("Lua", "B", "A", true)
+local ahk = hotkey("Lua", "B", "A", true)
 local aSliderX = slider("Lua", "B", "A slider X", 0, w, w / 2, true)
 local aSliderY = slider("Lua", "B", "A slider Y", 0, h, h / 2, true)
 local dhCheckbox = checkbox("Lua", "B", "D")
@@ -860,20 +860,11 @@ local function on_paintKeystroke(ctx)
 		if contains(hudExtras, "Keystroke indicator") then
 			visibility(m1Checkbox, true)
 			visibility(m2Checkbox, true)
-			visibility(m1h, true)
-			visibility(m2h, true)
 			visibility(whCheckbox, true)
 			visibility(shCheckbox, true)
-			visibility(ahCheckbox, true)
 			visibility(dhCheckbox, true)
 			visibility(spacehCheckbox, true)
 			visibility(slowWalkhCheckbox, true)
-			visibility(wh, true)
-			visibility(sh, true)
-			visibility(ah, true)
-			visibility(dh, true)
-			visibility(spaceh, true)
-			visibility(slowWalkh, true)
 			visibility(boxColorCheckbox, true)
 			visibility(boxColorPicker, true)
 			visibility(keyUnpressedColorCheckbox, true)
@@ -984,75 +975,107 @@ local function on_paintKeystroke(ctx)
 			end
 
 			if getUi(m1Checkbox, true) then
+				visibility(m1h, true)
+
 				drawRectangle(m1x - 29, m1y - 24, 75, 75, boxR, boxG, boxB, boxA)
 				drawText(m1x - 8, m1y, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "M1")
 
 				if getUi(m1h, true) then
 					drawText(m1x - 8, m1y, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "M1")
 				end
+			else
+				visibility(m1h, false)
 			end
 
 			if getUi(m2Checkbox, true) then
+				visibility(m2h, true)
+
 				drawRectangle(m2x - 28, m2y - 24, 75, 75, boxR, boxG, boxB, boxA)
 				drawText(m2x - 8, m2y, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "M2")
 
 				if getUi(m2h, true) then
 					drawText(m2x - 8, m2y, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "M2")
 				end
+			else
+				visibility(m2h, false)
 			end
 
 			if getUi(whCheckbox, true) then
+				visibility(wh, true)
+
 				drawRectangle(wx - 26, wy - 25, 75, 75, boxR, boxG, boxB, boxA)
 				drawText(wx, wy, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "W")
 
 				if getUi(wh) then
 					drawText(wx, wy, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "W")
 				end
+			else
+				visibility(wh, false)
 			end
 
 			if getUi(shCheckbox, true) then
+				visibility(sh, true)
+
 				drawRectangle(sx - 29, sy - 24, 75, 75, boxR, boxG, boxB, boxA)
 				drawText(sx, sy, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "S")
 
 				if getUi(sh) then
 					drawText(sx, sy, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "S")
 				end
+			else
+				visibility(sh, false)
 			end
 
 			if getUi(ahCheckbox, true) then
+				visibility(ahk, true)
+
 				drawRectangle(ax - 29, ay - 24, 75, 75, boxR, boxG, boxB, boxA)
 				drawText(ax, ay, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "A")
 
-				if getUi(ah) then
+				if getUi(ahk) then
 					drawText(ax, ay, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "A")
 				end
+			else
+				visibility(ahk, false)
 			end
 
 			if getUi(dhCheckbox, true) then
+				visibility(dh, true)
+
 				drawRectangle(dx - 28, dy - 24, 75, 75, boxR, boxG, boxB, boxA)
 				drawText(dx, dy, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "+", 0, "D")
 
 				if getUi(dh) then
 					drawText(dx, dy, keyPressR, keyPressG, keyPressB, keyPressA, "+", 0, "D")
 				end
+			else
+				visibility(dh, false)
 			end
 
 			if getUi(spacehCheckbox, true) then
+				visibility(spaceh, true)
+
 				drawRectangle(spacex - 115, spacey - 20, 235, 45, boxR, boxG, boxB, boxA)
 				drawText(spacex, spacey, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "c+", 0, "Space")
 
 				if getUi(spaceh) then
 					drawText(spacex, spacey, keyPressR, keyPressG, keyPressB, keyPressA, "c+", 0, "Space")
 				end
+			else
+				visibility(spaceh, false)
 			end
 
 			if getUi(slowWalkhCheckbox, true) then
+				visibility(slowWalkh, true)
+
 				drawRectangle(slowWalkx - 115, slowWalky - 21, 235, 45, boxR, boxG, boxB, boxA)
 				drawText(slowWalkx, slowWalky, keyUnpressR, keyUnpressG, keyUnpressB, keyUnpressA, "c+", 0, "Slow Walk")
 
 				if getUi(slowWalkh) then
 					drawText(slowWalkx, slowWalky, keyPressR, keyPressG, keyPressB, keyPressA, "c+", 0, "Slow Walk")
 				end
+			else
+				visibility(slowWalkh, false)
 			end
 		else
 			visibility(m1Checkbox, false)
@@ -1071,7 +1094,7 @@ local function on_paintKeystroke(ctx)
 			visibility(slowWalkhCheckbox, false)
 			visibility(wh, false)
 			visibility(sh, false)
-			visibility(ah, false)
+			visibility(ahk, false)
 			visibility(dh, false)
 			visibility(spaceh, false)
 			visibility(slowWalkh, false)
