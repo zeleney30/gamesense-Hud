@@ -120,7 +120,7 @@ local headshot = {}
 ----------------------------------------------------------------------------------------------------------------------------------
 
 --netvar indc--
-local styleCombobox = combobox("Lua", "B", "Style", "Circle outline", "Circle", "Horizontal box", "Vertical box")
+local styleCombobox = combobox("Lua", "B", "Style", "Circle outline", "Circle", "Horizontal box", "Vertical box", "Text", "Indicator")
 local circleColorCombobox = combobox("Lua", "B", "Color style", "Default", "Old", "Custom")
 local boxColorCombobox = combobox("Lua", "B", "Color style", "Default", "Old", "Custom", "Gradient", "Reverse gradient")
 local pingCheckbox = checkbox("Lua", "B", "Ping")
@@ -289,357 +289,9 @@ local function on_paintIndicators(ctx)
 	if getUi(moveIndicatorCheckbox, true) then
 		visibility(moveIndicatorsSlider, true)
 
-		if getUi(moveIndicatorsSlider) == 1 then
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 2 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 3 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 4 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 5 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 6 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 7 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 8 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 9 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 10 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 11 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 12 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 13 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 14 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 15 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 16 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 17 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 18 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 19 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 20 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 21 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 22 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 23 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 24 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	elseif getUi(moveIndicatorsSlider) == 25 then
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-		drawIndicator(255, 255, 255, 0, " ")
-	end
+		for p = getUi(moveIndicatorsSlider), 2, -1 do
+			drawIndicator(255, 255, 255, 0, " ")
+		end
 	else
 		visibility(moveIndicatorsSlider, false)
 	end
@@ -1400,6 +1052,14 @@ local function on_paintNetvar(ctx)
     		cyb = getUi(chokeSliderY)
     		sxb = getUi(speedSliderX)
     		syb = getUi(speedSliderY)
+    		pxt = getUi(pingSliderX)
+    		pyt = getUi(pingSliderY)
+    		lxt = getUi(latencySliderX)
+    		lyt = getUi(latencySliderY)
+    		cxt = getUi(chokeSliderX)
+    		cyt = getUi(chokeSliderY)
+    		sxt = getUi(speedSliderX)
+    		syt = getUi(speedSliderY)
 
     		if getUi(pingCheckbox, true) then
     			visibility(pingSliderX, true)
@@ -1449,6 +1109,14 @@ local function on_paintNetvar(ctx)
 			cyb = h / 2 + 93 - y
 			sxb = w - 82 - x
 			syb = h / 2 + 163 - y
+			pxt = 31
+    		pyt = h / 2 - 21
+    		lxt = 49
+    		lyt = h / 2 - 7
+    		cxt = 47
+    		cyt = h / 2 + 7
+			sxt = 40
+			syt = h / 2 + 21
 
 			visibility(pingSliderX, false)
     		visibility(pingSliderY, false)
@@ -1473,6 +1141,8 @@ local function on_paintNetvar(ctx)
 
    			visibility(circleColorCombobox, true)
    			visibility(resizeNetvarCheckbox, true)
+   			visibility(reposNetvarCheckbox, true)
+   			visibility(numbersCheckbox, true)
 
     		if getUi(pingCheckbox, true) then
     			if getUi(numbersCheckbox, true) then
@@ -1669,6 +1339,8 @@ local function on_paintNetvar(ctx)
     		visibility(resizeCircleThiccnessSlider, false)
 
    			visibility(circleColorCombobox, true)
+   			visibility(reposNetvarCheckbox, true)
+   			visibility(numbersCheckbox, true)
 
    			if getUi(pingCheckbox, true) then
     			if getUi(numbersCheckbox, true) then
@@ -1865,6 +1537,8 @@ local function on_paintNetvar(ctx)
 
     		visibility(boxColorCombobox, true)
     		visibility(resizeNetvarCheckbox, true)
+    		visibility(reposNetvarCheckbox, true)
+    		visibility(numbersCheckbox, true)
 
     		if getUi(pingCheckbox, true) then
     			if getUi(resizeNetvarCheckbox, true) then
@@ -2182,6 +1856,8 @@ local function on_paintNetvar(ctx)
 
     		visibility(boxColorCombobox, true)
     		visibility(resizeNetvarCheckbox, true)
+    		visibility(reposNetvarCheckbox, true)
+    		visibility(numbersCheckbox, true)
 
     		if getUi(pingCheckbox, true) then
     			if getUi(resizeNetvarCheckbox, true) then
@@ -2487,16 +2163,395 @@ local function on_paintNetvar(ctx)
 			else
 				visibility(speedColorPicker, false)
     		end
-  		end
+    	elseif getUi(styleCombobox) == "Text" then
+    		visibility(resizeNetvarCheckbox, false)
+    		visibility(pingSliderWv, false)
+   			visibility(latencySliderWv, false)
+   			visibility(chokeSliderWv, false)
+   			visibility(speedSliderWv, false)
+   			visibility(pingSliderHv, false)
+   			visibility(latencySliderHv, false)
+   			visibility(chokeSliderHv, false)
+   			visibility(speedSliderHv, false)
+   			visibility(boxColorCombobox, false)
+   			visibility(pingSliderWv, false)
+   			visibility(latencySliderWv, false)
+   			visibility(chokeSliderWv, false)
+   			visibility(speedSliderWv, false)
+   			visibility(resizeCircleSlider, false)
+    		visibility(resizeCircleThiccnessSlider, false)
+    		visibility(numbersCheckbox, false)
 
-   		if getUi(pingCheckbox, true) or getUi(latencyCheckbox, true) or getUi(chokeCheckbox, true) or getUi(speedCheckbox, true) then
-   				visibility(numbersCheckbox, true)
-   				visibility(reposNetvarCheckbox, true)
-  		else
-  			visibility(numbersCheckbox, false)
-  			visibility(resizeNetvarCheckbox, false)
-  			visibility(reposNetvarCheckbox, false)
-   		end
+   			visibility(circleColorCombobox, true)
+   			visibility(reposNetvarCheckbox, true)
+
+   			if getUi(pingCheckbox, true) then
+    			if getUi(resizeNetvarCheckbox, true) then
+    				visibility(pingSliderWv, true)
+    			else
+    				visibility(pingSliderWv, false)
+    			end
+
+    			if getUi(circleColorCombobox) == "Default" then
+    				visibility(pingColor, false)
+
+    				if ping <= 50 then
+						r, g, b, a = 0, 220, 0, 255
+					elseif ping > 50 and ping < 100 then
+						r, g, b, a = 190, 145, 0, 255
+					elseif ping >= 100 and ping <= 150 then
+						r, g, b, a = 220, 100, 0, 255
+					elseif ping > 150 then
+						r, g, b, a = 220, 0, 0, 255
+					end
+				elseif getUi(circleColorCombobox) == "Old" then
+					visibility(pingColor, false)
+
+    				if ping <= 50 then
+						r, g, b, a = 0, 220, 0, 255
+					elseif ping > 50 and ping < 100 then
+						r, g, b, a = 190, 145, 0, 255
+					elseif ping >= 100 and ping <= 150 then
+						r, g, b, a = 220, 100, 0, 255
+					elseif ping > 150 then
+						r, g, b, a = 220, 0, 0, 255
+					end
+				elseif getUi(circleColorCombobox) == "Custom" then
+					visibility(pingColor, true)
+
+					r, g, b, a = getUi(pingColor)
+				end
+
+				drawText(pxt - 26, pyt, 255, 255, 255, 255, "", 0, "Ping:")
+				drawText(pxt, pyt, r, g, b, a, "", 0, ping)
+			end
+
+   			if getUi(latencyCheckbox, true) then
+    			if getUi(resizeNetvarCheckbox, true) then
+    				visibility(latencySliderWv, true)
+    			else
+    				visibility(latencySliderWv, false)
+    			end
+
+    			if getUi(circleColorCombobox) == "Default" then
+    				visibility(latencyColor, false)
+
+    				a = 255
+
+    				if latencyFixed < 50 then
+    					r, g, b = 0, 220, 0, 255
+					elseif latencyFixed >= 50 and latencyFixed < 100 then
+						r, g, b = 190, 145, 0
+					elseif latencyFixed >= 100 and latencyFixed < 150 then
+						r, g, b = 220, 100, 0
+					elseif latencyFixed >= 150 then
+						r, g, b = 220, 0, 0
+					end
+				elseif getUi(circleColorCombobox) == "Old" then
+					visibility(latencyColor, false)
+
+					a = 255
+
+					if latencyFixed < 50 then
+    					r, g, b = 0, 220, 0
+					elseif latencyFixed >= 50 and latencyFixed < 100 then
+						r, g, b = 190, 145, 0
+					elseif latencyFixed >= 100 and latencyFixed < 150 then
+						r, g, b = 220, 100, 0
+					elseif latencyFixed >= 150 then
+						r, g, b = 220, 0, 0
+					end
+				elseif getUi(circleColorCombobox) == "Custom" then
+					visibility(latencyColor, true)
+
+					r, g, b, a = getUi(latencyColor)
+				end
+
+				drawText(lxt - 44, lyt, 255, 255, 255, 255, "", 0, "Latency:")
+				drawText(lxt, lyt, r, g, b, a, "", 0, latencyFixed)
+			end
+
+   			if getUi(chokeCheckbox, true) then
+    			local r, g, b, a = getUi(chokeColorPicker)
+
+    			if getUi(resizeNetvarCheckbox, true) then
+    				visibility(chokeSliderWv, true)
+    			else
+    				visibility(chokeSliderWv, false)
+    			end
+
+    			if getUi(circleColorCombobox) == "Default" then
+    				visibility(chokeColorPicker, false)
+
+    				a = 255
+
+	    			if choked <= 3 then
+	    				r, g, b = 0, 220, 0
+    				elseif choked <= 7 then
+    					r, g, b = 190, 145, 0
+					elseif choked <= 11 then
+						r, g, b = 220, 100, 0
+					elseif choked <= 14 then
+						r, g, b = 220, 0, 0
+					end
+				elseif getUi(circleColorCombobox) == "Old" then
+					visibility(chokeColorPicker, true)
+
+					r, g, b, a = getUi(chokeColorPicker)
+				elseif getUi(circleColorCombobox) == "Custom" then
+					visibility(chokeColorPicker, true)
+
+					r, g, b, a = getUi(chokeColorPicker)
+				end
+
+				drawText(cxt - 42, cyt, 255, 255, 255, 255, "", 0, "Choked:")
+				drawText(cxt, cyt, r, g, b, a, "", 0, choked)
+			else
+				visibility(chokeColorPicker, false)
+			end
+
+    		if getUi(speedCheckbox, true) then
+    			if vx ~= nil then
+					local velocity = math.sqrt(vx * vx + vy * vy)
+					velocity = math.min(9999, velocity) + 0.2
+					velocity = round(velocity, 0)
+					local r, g, b, a = getUi(speedColorPicker)
+
+					if getUi(resizeNetvarCheckbox, true) then
+						visibility(speedSliderWv, true)
+					else
+						visibility(speedSliderWv, false)
+					end
+
+					if getUi(circleColorCombobox) == "Default" then
+						visibility(speedColorPicker, false)
+
+						if velocity <= 62.5 then
+	    					r, g, b = 0, 220, 0
+						elseif velocity <= 125 then
+							r, g, b = 190, 145, 0
+						elseif velocity <= 187.5 then
+							r, g, b = 220, 100, 0
+						elseif velocity > 187.5 then
+							r, g, b = 220, 0, 0
+						end
+					elseif getUi(circleColorCombobox) == "Old" then
+						visibility(speedColorPicker, true)
+
+						r, g, b, a = getUi(speedColorPicker)
+					elseif getUi(circleColorCombobox) == "Custom" then
+						visibility(speedColorPicker, true)
+
+						r, g, b, a = getUi(speedColorPicker)
+					end
+
+					drawText(sxt - 35, syt, 255, 255, 255, 255, "", 0, "Speed:")
+					drawText(sxt, syt, r, g, b, a, "", 0, velocity)
+				end
+			else
+				visibility(speedColorPicker, false)
+			end
+    	elseif getUi(styleCombobox) == "Indicator" then
+    		visibility(resizeNetvarCheckbox, false)
+    		visibility(pingSliderWv, false)
+   			visibility(latencySliderWv, false)
+   			visibility(chokeSliderWv, false)
+   			visibility(speedSliderWv, false)
+   			visibility(pingSliderHv, false)
+   			visibility(latencySliderHv, false)
+   			visibility(chokeSliderHv, false)
+   			visibility(speedSliderHv, false)
+   			visibility(boxColorCombobox, false)
+   			visibility(pingSliderWv, false)
+   			visibility(latencySliderWv, false)
+   			visibility(chokeSliderWv, false)
+   			visibility(speedSliderWv, false)
+   			visibility(resizeCircleSlider, false)
+    		visibility(resizeCircleThiccnessSlider, false)
+    		visibility(reposNetvarCheckbox, false)
+
+   			visibility(circleColorCombobox, true)
+   			visibility(numbersCheckbox, true)
+
+   			if getUi(speedCheckbox, true) then
+    			if vx ~= nil then
+					local velocity = math.sqrt(vx * vx + vy * vy)
+					velocity = math.min(9999, velocity) + 0.2
+					velocity = round(velocity, 0)
+					local r, g, b, a = getUi(speedColorPicker)
+
+					if getUi(resizeNetvarCheckbox, true) then
+						visibility(speedSliderWv, true)
+					else
+						visibility(speedSliderWv, false)
+					end
+
+					if getUi(circleColorCombobox) == "Default" then
+						visibility(speedColorPicker, false)
+
+						if velocity <= 62.5 then
+	    					r, g, b = 0, 220, 0
+						elseif velocity <= 125 then
+							r, g, b = 190, 145, 0
+						elseif velocity <= 187.5 then
+							r, g, b = 220, 100, 0
+						elseif velocity > 187.5 then
+							r, g, b = 220, 0, 0
+						end
+					elseif getUi(circleColorCombobox) == "Old" then
+						visibility(speedColorPicker, true)
+
+						r, g, b, a = getUi(speedColorPicker)
+					elseif getUi(circleColorCombobox) == "Custom" then
+						visibility(speedColorPicker, true)
+
+						r, g, b, a = getUi(speedColorPicker)
+					end
+
+					if getUi(numbersCheckbox, true) then
+    					drawIndicator(r, g, b, a, "Speed: ".. velocity)
+	    			else
+	    				drawIndicator(r, g, b, a, "Speed")
+	    			end
+				end
+			else
+				visibility(speedColorPicker, false)
+			end
+
+			if getUi(chokeCheckbox, true) then
+    			local r, g, b, a = getUi(chokeColorPicker)
+
+    			if getUi(resizeNetvarCheckbox, true) then
+    				visibility(chokeSliderWv, true)
+    			else
+    				visibility(chokeSliderWv, false)
+    			end
+
+    			if getUi(circleColorCombobox) == "Default" then
+    				visibility(chokeColorPicker, false)
+
+    				a = 255
+
+	    			if choked <= 3 then
+	    				r, g, b = 0, 220, 0
+    				elseif choked <= 7 then
+    					r, g, b = 190, 145, 0
+					elseif choked <= 11 then
+						r, g, b = 220, 100, 0
+					elseif choked <= 14 then
+						r, g, b = 220, 0, 0
+					end
+				elseif getUi(circleColorCombobox) == "Old" then
+					visibility(chokeColorPicker, true)
+
+					r, g, b, a = getUi(chokeColorPicker)
+				elseif getUi(circleColorCombobox) == "Custom" then
+					visibility(chokeColorPicker, true)
+
+					r, g, b, a = getUi(chokeColorPicker)
+				end
+
+				if getUi(numbersCheckbox, true) then
+    				drawIndicator(r, g, b, a, "Choked: ".. choked)
+    			else
+    				drawIndicator(r, g, b, a, "Choked")
+    			end
+			else
+				visibility(chokeColorPicker, false)
+			end
+
+   			if getUi(latencyCheckbox, true) then
+    			if getUi(resizeNetvarCheckbox, true) then
+    				visibility(latencySliderWv, true)
+    			else
+    				visibility(latencySliderWv, false)
+    			end
+
+    			if getUi(circleColorCombobox) == "Default" then
+    				visibility(latencyColor, false)
+
+    				a = 255
+
+    				if latencyFixed < 50 then
+    					r, g, b = 0, 220, 0, 255
+					elseif latencyFixed >= 50 and latencyFixed < 100 then
+						r, g, b = 190, 145, 0
+					elseif latencyFixed >= 100 and latencyFixed < 150 then
+						r, g, b = 220, 100, 0
+					elseif latencyFixed >= 150 then
+						r, g, b = 220, 0, 0
+					end
+				elseif getUi(circleColorCombobox) == "Old" then
+					visibility(latencyColor, false)
+
+					a = 255
+
+					if latencyFixed < 50 then
+    					r, g, b = 0, 220, 0
+					elseif latencyFixed >= 50 and latencyFixed < 100 then
+						r, g, b = 190, 145, 0
+					elseif latencyFixed >= 100 and latencyFixed < 150 then
+						r, g, b = 220, 100, 0
+					elseif latencyFixed >= 150 then
+						r, g, b = 220, 0, 0
+					end
+				elseif getUi(circleColorCombobox) == "Custom" then
+					visibility(latencyColor, true)
+
+					r, g, b, a = getUi(latencyColor)
+				end
+
+				if getUi(numbersCheckbox, true) then
+    				drawIndicator(r, g, b, a, "Latency: ".. latencyFixed)
+    			else
+    				drawIndicator(r, g, b, a, "Latency")
+    			end
+			end
+
+			if getUi(pingCheckbox, true) then
+    			if getUi(resizeNetvarCheckbox, true) then
+    				visibility(pingSliderWv, true)
+    			else
+    				visibility(pingSliderWv, false)
+    			end
+
+    			if getUi(circleColorCombobox) == "Default" then
+    				visibility(pingColor, false)
+
+    				if ping <= 50 then
+						r, g, b, a = 0, 220, 0, 255
+					elseif ping > 50 and ping < 100 then
+						r, g, b, a = 190, 145, 0, 255
+					elseif ping >= 100 and ping <= 150 then
+						r, g, b, a = 220, 100, 0, 255
+					elseif ping > 150 then
+						r, g, b, a = 220, 0, 0, 255
+					end
+				elseif getUi(circleColorCombobox) == "Old" then
+					visibility(pingColor, false)
+
+    				if ping <= 50 then
+						r, g, b, a = 0, 220, 0, 255
+					elseif ping > 50 and ping < 100 then
+						r, g, b, a = 190, 145, 0, 255
+					elseif ping >= 100 and ping <= 150 then
+						r, g, b, a = 220, 100, 0, 255
+					elseif ping > 150 then
+						r, g, b, a = 220, 0, 0, 255
+					end
+				elseif getUi(circleColorCombobox) == "Custom" then
+					visibility(pingColor, true)
+
+					r, g, b, a = getUi(pingColor)
+				end
+
+				if getUi(numbersCheckbox, true) then
+    				drawIndicator(r, g, b, a, "Ping: ".. ping)
+    			else
+    				drawIndicator(r, g, b, a, "Ping")
+    			end
+			end
+  		end
 	else
     	visibility(styleCombobox, false)
     	visibility(pingCheckbox, false)
