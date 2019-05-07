@@ -49,7 +49,7 @@ local hudSliderY = slider("Lua", "B", "Hud Y", 0, h, h, true)
 local hudFullCheckbox = checkbox("Lua", "B", "Full length")
 local moveIndicatorCheckbox = checkbox("Lua", "B", "Offset indicators")
 local moveIndicatorsSlider = slider("Lua", "B", "Offset amount", 0, 25, 0)
-local hudMultibox = multibox("Lua", "B", "Extras", {"Keystroke indicator", "Damage indicator", "Fake duck indicator", "Hitrate indicator", "Netvar indicators"})
+local hudMultibox = multibox("Lua", "B", "Extras", {"Keystroke indicator", "Damage indicator", "Fake duck indicator", "Hitrate indicator", "Netvar indicators", "Anti-aim log"})
 ----------------------------------------------------------------------------------------------------------------------------------
 
 --keystroke indc--
@@ -159,6 +159,16 @@ local reposNetvarCheckbox = checkbox("Lua", "B", "Reposition netvar indicators")
 local healthHandCheckbox = checkbox("Lua", "B", "Health based hand chams")
 ----------------------------------------------------------------------------------------------------------------------------------
 
+--Anti-aim log
+local pitch = referenceUi("AA", "Anti-aimbot angles", "Pitch")
+local yaw, yawAngle = referenceUi("AA", "Anti-aimbot angles", "Yaw")
+local yawJitter, yawJitterAngle = referenceUi("AA", "Anti-aimbot angles", "Yaw jitter")
+local bodyYaw, bodyYawAngle = referenceUi("AA", "Anti-aimbot angles", "Body yaw")
+
+local aaLogX = slider("Lua", "B", "Anti-aim log X", 0, w, w / 2, true)
+local aaLogY = slider("Lua", "B", "Anti-aim log Y", 0, h, h / 2, true)
+----------------------------------------------------------------------------------------------------------------------------------
+
 --bomb timer--
 local bombTimeCheckbox = checkbox("Lua", "B", "Bomb timer")
 
@@ -200,7 +210,7 @@ local function on_player_hurt(e)
 	local localPlayer = entity.get_local_player()
 	local attacker = userToIndex(e.attacker)
 
-	if userToIndex(e.attacker) == localPlayer then
+	if attacker == localPlayer then
 	    local x, y, z = getProp(userToIndex(e.userid), "m_vecOrigin")
         local duckAmount = getProp(userToIndex(e.userid), "m_flDuckAmount")
  
@@ -2649,6 +2659,47 @@ end
 
 local bombTimeError = callback('paint', on_paintBombTime)
 	if bombTimeError then
+		consoleLog("client.set_event_callback failed: ", error)
+	end
+----------------------------------------------------------------------------------------------------------------------------------
+
+local function on_paintAaLog(ctx)
+	local hudExtras = getUi(hudMultibox)
+
+	if contains(hudExtras, "Anti-aim log") then
+		visibility(aaLogX, true)
+		visibility(aaLogY, true)
+
+		drawRectangle(getUi(aaLogX) - 130 / 2, getUi(aaLogY) - 66 / 2, 130, 66, 35, 35, 35, 220)
+		drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 8, 255, 255, 255, 255, "c", 0, "Anti-aim logs")
+		drawLine(getUi(aaLogX) - 57, getUi(aaLogY) - 66 / 2 + 16, getUi(aaLogX) + 57, getUi(aaLogY) - 66 / 2 + 16, 0, 255, 255, 255)
+		drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 23, 255, 255, 255, 255, "c", 0, "Pitch: "..getUi(pitch))
+
+		if getUi(yaw) == "Off" then
+			drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 34, 255, 255, 255, 255, "c", 0, "Yaw: "..getUi(yaw))
+		else
+			drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 34, 255, 255, 255, 255, "c", 0, "Yaw: "..getUi(yaw).." | "..getUi(yawAngle))
+		end
+
+		if getUi(yawJitter) == "Off" then
+			drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 45, 255, 255, 255, 255, "c", 0, "Yaw jitter: "..getUi(yawJitter))
+		else
+			drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 45, 255, 255, 255, 255, "c", 0, "Yaw jitter: "..getUi(yawJitter).." | "..getUi(yawJitterAngle))
+		end
+
+		if getUi(bodyYaw) == "Off" or getUi(bodyYaw) == "Opposite" then
+			drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 56, 255, 255, 255, 255, "c", 0, "Body yaw: "..getUi(bodyYaw))
+		else
+			drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 56, 255, 255, 255, 255, "c", 0, "Body yaw: "..getUi(bodyYaw).." | "..getUi(bodyYawAngle))
+		end
+	else
+		visibility(aaLogX, false)
+		visibility(aaLogY, false)
+	end
+end
+
+local aaLogError = callback('paint', on_paintAaLog)
+	if aaLogError then
 		consoleLog("client.set_event_callback failed: ", error)
 	end
 ----------------------------------------------------------------------------------------------------------------------------------
