@@ -49,7 +49,7 @@ local hudSliderY = slider("Lua", "B", "Hud Y", 0, h, h, true)
 local hudFullCheckbox = checkbox("Lua", "B", "Full length")
 local moveIndicatorCheckbox = checkbox("Lua", "B", "Offset indicators")
 local moveIndicatorsSlider = slider("Lua", "B", "Offset amount", 0, 25, 0)
-local hudMultibox = multibox("Lua", "B", "Extras", {"Keystroke indicator", "Damage indicator", "Fake duck indicator", "Hitrate indicator", "Netvar indicators", "Anti-aim log"})
+local hudMultibox = multibox("Lua", "B", "Extras", {"Keystroke indicator", "Damage indicator", "Fake duck indicator", "Hitrate indicator", "Netvar indicators", "Anti-aim info", "Aimbot info"})
 ----------------------------------------------------------------------------------------------------------------------------------
 
 --keystroke indc--
@@ -159,16 +159,6 @@ local reposNetvarCheckbox = checkbox("Lua", "B", "Reposition netvar indicators")
 local healthHandCheckbox = checkbox("Lua", "B", "Health based hand chams")
 ----------------------------------------------------------------------------------------------------------------------------------
 
---Anti-aim log
-local pitch = referenceUi("AA", "Anti-aimbot angles", "Pitch")
-local yaw, yawAngle = referenceUi("AA", "Anti-aimbot angles", "Yaw")
-local yawJitter, yawJitterAngle = referenceUi("AA", "Anti-aimbot angles", "Yaw jitter")
-local bodyYaw, bodyYawAngle = referenceUi("AA", "Anti-aimbot angles", "Body yaw")
-
-local aaLogX = slider("Lua", "B", "Anti-aim log X", 0, w, w / 2, true)
-local aaLogY = slider("Lua", "B", "Anti-aim log Y", 0, h, h / 2, true)
-----------------------------------------------------------------------------------------------------------------------------------
-
 --bomb timer--
 local bombTimeCheckbox = checkbox("Lua", "B", "Bomb timer")
 
@@ -271,19 +261,16 @@ local function on_run_command(c)
 end
 
 local function draw_indicator_circle(ctx, x, y, r, g, b, a, percentage, outline)
+    visibility(resizeCircleSlider, getUi(resizeNetvarCheckbox))
+    visibility(resizeCircleThiccnessSlider, getUi(resizeNetvarCheckbox))
+
     local outline = outline == nil and true or outline
     local start_degrees = 0
 
     if getUi(resizeNetvarCheckbox, true) then
-    	visibility(resizeCircleSlider, true)
-    	visibility(resizeCircleThiccnessSlider, true)
-
     	radius = getUi(resizeCircleSlider)
     	thiccness = getUi(resizeCircleThiccnessSlider)
     else
-    	visibility(resizeCircleSlider, false)
-    	visibility(resizeCircleThiccnessSlider, false)
-
     	radius = 36
     	thiccness = 13
     end
@@ -296,14 +283,12 @@ end
 ----------------------------------------------------------------------------------------------------------------------------------
 
 local function on_paintIndicators(ctx)
-	if getUi(moveIndicatorCheckbox, true) then
-		visibility(moveIndicatorsSlider, true)
+	visibility(moveIndicatorsSlider, getUi(moveIndicatorCheckbox))
 
+	if getUi(moveIndicatorCheckbox, true) then
 		for p = getUi(moveIndicatorsSlider), 2, -1 do
 			drawIndicator(255, 255, 255, 0, " ")
 		end
-	else
-		visibility(moveIndicatorsSlider, false)
 	end
 
 	if getUi(hudCheckbox, true) then
@@ -320,6 +305,16 @@ local indicatorError = callback('paint', on_paintIndicators)
 ----------------------------------------------------------------------------------------------------------------------------------
 
 local function on_paintHud(ctx)
+	visibility(hudFullCheckbox, getUi(hudCheckbox))
+	visibility(resizeHud, getUi(hudCheckbox))
+	visibility(reposHud, getUi(hudCheckbox))
+	visibility(hudColorCheckbox, getUi(hudCheckbox))
+	visibility(hudColor, getUi(hudColorCheckbox))
+	visibility(hudW, getUi(resizeHud))
+	visibility(hudH, getUi(resizeHud))
+	visibility(hudSliderX, getUi(reposHud))
+	visibility(hudSliderY, getUi(reposHud))
+
 	local localPlayer = entity.get_local_player()
 	local health = getProp(localPlayer, "m_iHealth")
 	local armor = getProp(localPlayer, "m_ArmorValue")
@@ -341,48 +336,27 @@ local function on_paintHud(ctx)
 	local tf = 3
 
 	if getUi(hudCheckbox, true) then
-		visibility(hudFullCheckbox, true)
-		visibility(resizeHud, true)
-		visibility(reposHud, true)
-		visibility(hudColorCheckbox, true)
-
 		setProp(localPlayer, "m_iHideHud", 8200)
 
 		if getUi(hudColorCheckbox, true) then
-			visibility(hudColor, true)
-
 			rh, gh, bh, ah = getUi(hudColor)
 		else
-			visibility(hudColor, false)
-
 			rh, gh, bh, ah = 20, 20, 20, 255
 		end
 
 		if getUi(resizeHud, true) then
-			visibility(hudW, true)
-			visibility(hudH, true)
-
 			hudWidth = getUi(hudW)
 			hudHeight = getUi(hudH)
 		else
-			visibility(hudW, false)
-			visibility(hudH, false)
-
 			hudWidth = 350
 			hudHeight = 64
 		end
 
 		if getUi(reposHud, true) then
-			visibility(hudSliderX, true)
-			visibility(hudSliderY, true)
-
 			x = getUi(hudSliderX)
 			h = getUi(hudSliderY)
 			y = 0
 		else
-			visibility(hudSliderX, false)
-			visibility(hudSliderY, false)
-
 			w, h = screenSize()
 			x, y = 0, 0
 		end
@@ -485,14 +459,10 @@ local function on_paintHud(ctx)
 			end
 		end
 	else
-		visibility(resizeHud, false)
 		visibility(hudW, false)
 		visibility(hudH, false)
-		visibility(reposHud, false)
 		visibility(hudSliderX, false)
 		visibility(hudSliderY, false)
-		visibility(hudFullCheckbox, false)
-		visibility(hudColorCheckbox, false)
 		visibility(hudColor, false)
 	end
 end
@@ -514,45 +484,94 @@ local indcError = callback('paint', on_paintIndc)
 
 ----------------------------------------------------------------------------------------------------------------------------------
 local function on_paintKeystroke(ctx)
+	local hudExtras = getUi(hudMultibox)
+
+	visibility(m1Checkbox, contains(hudExtras, "Keystroke indicator"))
+	visibility(m2Checkbox, contains(hudExtras, "Keystroke indicator"))
+	visibility(whCheckbox, contains(hudExtras, "Keystroke indicator"))
+	visibility(shCheckbox, contains(hudExtras, "Keystroke indicator"))
+	visibility(ahCheckbox, contains(hudExtras, "Keystroke indicator"))
+	visibility(dhCheckbox, contains(hudExtras, "Keystroke indicator"))
+	visibility(spacehCheckbox, contains(hudExtras, "Keystroke indicator"))
+	visibility(slowWalkhCheckbox, contains(hudExtras, "Keystroke indicator"))
+	visibility(boxColorCheckbox, contains(hudExtras, "Keystroke indicator"))
+	visibility(boxColorPicker, contains(hudExtras, "Keystroke indicator"))
+	visibility(keyUnpressedColorCheckbox, contains(hudExtras, "Keystroke indicator"))
+	visibility(keyUnpressedColorPicker, contains(hudExtras, "Keystroke indicator"))
+	visibility(keyPressedColorCheckbox, contains(hudExtras, "Keystroke indicator"))
+	visibility(keyPressedColorPicker, contains(hudExtras, "Keystroke indicator"))
+	visibility(reposKeyindcCheckbox, contains(hudExtras, "Keystroke indicator"))
+
 	local localPlayer = entity.get_local_player()
 	local health = getProp(localPlayer, "m_iHealth")
-	local hudExtras = getUi(hudMultibox)
 
 	if health > 0 then
 		if contains(hudExtras, "Keystroke indicator") then
-			visibility(m1Checkbox, true)
-			visibility(m2Checkbox, true)
-			visibility(whCheckbox, true)
-			visibility(shCheckbox, true)
-			visibility(dhCheckbox, true)
-			visibility(spacehCheckbox, true)
-			visibility(slowWalkhCheckbox, true)
-			visibility(boxColorCheckbox, true)
-			visibility(boxColorPicker, true)
-			visibility(keyUnpressedColorCheckbox, true)
-			visibility(keyUnpressedColorPicker, true)
-			visibility(keyPressedColorCheckbox, true)
-			visibility(keyPressedColorPicker, true)
-			visibility(reposKeyindcCheckbox, true)
-			visibility(reposKeyindcCheckbox, true)
-
 			if getUi(reposKeyindcCheckbox, true) then
-				visibility(m1SliderX, true)
-				visibility(m1SliderY, true)
-				visibility(m2SliderX, true)
-				visibility(m2SliderY, true)
-				visibility(wSliderX, true)
-				visibility(wSliderY, true)
-				visibility(sSliderX, true)
-				visibility(sSliderY, true)
-				visibility(aSliderX, true)
-				visibility(aSliderY, true)
-				visibility(dSliderX, true)
-				visibility(dSliderY, true)
-				visibility(spaceSliderX, true)
-				visibility(spaceSliderY, true)
-				visibility(slowWalkSliderX, true)
-				visibility(slowWalkSliderY, true)
+				if getUi(m1Checkbox, true) then
+					visibility(m1SliderX, true)
+					visibility(m1SliderY, true)
+				else
+					visibility(m1SliderX, false)
+					visibility(m1SliderY, false)
+				end
+
+				if getUi(m2Checkbox, true) then
+					visibility(m2SliderX, true)
+					visibility(m2SliderY, true)
+				else
+					visibility(m2SliderX, false)
+					visibility(m2SliderY, false)
+				end
+
+				if getUi(whCheckbox, true) then
+					visibility(wSliderX, true)
+					visibility(wSliderY, true)
+				else
+					visibility(wSliderX, false)
+					visibility(wSliderY, false)
+				end
+				
+				if getUi(shCheckbox, true) then
+					visibility(sSliderX, true)
+					visibility(sSliderY, true)
+				else
+					visibility(sSliderX, false)
+					visibility(sSliderY, false)
+				end
+
+				if getUi(ahCheckbox, true) then
+					visibility(aSliderX, true)
+					visibility(aSliderY, true)
+				else
+					visibility(aSliderX, false)
+					visibility(aSliderY, false)
+				end
+
+				if getUi(dhCheckbox, true) then
+					visibility(dSliderX, true)
+					visibility(dSliderY, true)
+				else
+					visibility(dSliderX, false)
+					visibility(dSliderY, false)
+				end
+
+				if getUi(spacehCheckbox, true) then
+					visibility(spaceSliderX, true)
+					visibility(spaceSliderY, true)
+				else
+					visibility(spaceSliderX, false)
+					visibility(spaceSliderY, false)
+				end
+
+				if getUi(slowWalkhCheckbox, true) then
+					visibility(slowWalkSliderX, true)
+					visibility(slowWalkSliderY, true)
+				else
+					visibility(slowWalkSliderX, false)
+					visibility(slowWalkSliderY, false)
+				end
+
 
 				m1x = getUi(m1SliderX)
 				m1y = getUi(m1SliderY)
@@ -571,7 +590,6 @@ local function on_paintKeystroke(ctx)
 				slowWalkx = getUi(slowWalkSliderX)
 				slowWalky = getUi(slowWalkSliderY)
 			else
-				visibility(m1SliderX, false)
 				visibility(m1SliderY, false)
 				visibility(m2SliderX, false)
 				visibility(m2SliderY, false)
@@ -740,32 +758,18 @@ local function on_paintKeystroke(ctx)
 				visibility(slowWalkh, false)
 			end
 		else
-			visibility(m1Checkbox, false)
 			visibility(m1h, false)
 			visibility(m1SliderX, false)
 			visibility(m1SliderY, false)
-			visibility(m2Checkbox, false)
 			visibility(m2h, false)
 			visibility(m2SliderX, false)
 			visibility(m2SliderY, false)
-			visibility(whCheckbox, false)
-			visibility(shCheckbox, false)
-			visibility(ahCheckbox, false)
-			visibility(dhCheckbox, false)
-			visibility(spacehCheckbox, false)
-			visibility(slowWalkhCheckbox, false)
 			visibility(wh, false)
 			visibility(sh, false)
 			visibility(ahk, false)
 			visibility(dh, false)
 			visibility(spaceh, false)
 			visibility(slowWalkh, false)
-			visibility(boxColorCheckbox, false)
-			visibility(boxColorPicker, false)
-			visibility(keyUnpressedColorCheckbox, false)
-			visibility(keyUnpressedColorPicker, false)
-			visibility(keyPressedColorCheckbox, false)
-			visibility(keyPressedColorPicker, false)
 			visibility(wSliderX, false)
 			visibility(wSliderY, false)
 			visibility(sSliderX, false)
@@ -793,12 +797,13 @@ local keystrokeError = callback('paint', on_paintKeystroke)
 local function on_paintDmgIndc(ctx)
 	local hudExtras = getUi(hudMultibox)
 
-	if contains(hudExtras, "Damage indicator") then
-		visibility(largeDmgIndcCombobox, true)
-		visibility(dmgIndcColorpicker, true)
-		visibility(hsCheckbox, true)
-		visibility(hsColorpicker, true)
+	visibility(largeDmgIndcCombobox, contains(hudExtras, "Damage indicator"))
+	visibility(dmgIndcColorpicker, contains(hudExtras, "Damage indicator"))
+	visibility(hsCheckbox, contains(hudExtras, "Damage indicator"))
+	visibility(hsStyleCombobox, getUi(hsCheckbox))
+	visibility(hsColorpicker, getUi(hsCheckbox))
 
+	if contains(hudExtras, "Damage indicator") then
 		local r, g, b, a = getUi(dmgIndcColorpicker)
 
 		if getUi(largeDmgIndcCombobox) == "Normal" then
@@ -832,9 +837,6 @@ local function on_paintDmgIndc(ctx)
 
 		--hs indc--
 		if getUi(hsCheckbox, true) then
-			visibility(hsStyleCombobox, true)
-			visibility(hsColorpicker, true)
-
 			local r, g, b, a = getUi(hsColorpicker)
 
     		for i = 1, #headshot do
@@ -847,17 +849,11 @@ local function on_paintDmgIndc(ctx)
             		drawText(x, y, r, g, b, a, hsFlag, 0, "Headshot")
         		end
     		end
-    	else
-    		visibility(hsStyleCombobox, false)
-    		visibility(hsColorpicker, false)
     	end
-
 	else
-		visibility(largeDmgIndcCombobox, false)
-		visibility(dmgIndcColorpicker, false)
-		visibility(hsCheckbox, false)
-		visibility(hsColorpicker, false)
 		visibility(hsStyleCombobox, false)
+		visibility(dmgIndcColorpicker, false)
+		visibility(hsColorpicker, false)
     end
 end
 
@@ -931,16 +927,20 @@ local fdIndError = callback('paint', on_paintFdIndc)
 
 ----------------------------------------------------------------------------------------------------------------------------------
 local function on_paintHitrate(ctx)
+	local hudExtras = getUi(hudMultibox)
+
+	visibility(hitsCheckbox, contains(hudExtras, "Hitrate indicator"))
+	visibility(missesCheckbox, contains(hudExtras, "Hitrate indicator"))
+	visibility(percentCheckbox, contains(hudExtras, "Hitrate indicator"))
+	visibility(percentColorPicker, getUi(percentCheckbox))
+	visibility(missesColorPicker, getUi(missesCheckbox))
+	visibility(hitsColorPicker, getUi(hitsCheckbox))
+
 	local localPlayer = entity.get_local_player()
 	local health = getProp(localPlayer, "m_iHealth")
-	local hudExtras = getUi(hudMultibox)
 
 	if health > 0 then
 		if contains(hudExtras, "Hitrate indicator") then
-			visibility(hitsCheckbox, true)
-			visibility(missesCheckbox, true)
-			visibility(percentCheckbox, true)
-
        		local total = hits + misses
         	local hitPercent = hits / total
         	local hitPercentFixed = 0
@@ -951,37 +951,22 @@ local function on_paintHitrate(ctx)
 			end
 
 			if getUi(percentCheckbox, true) then
-				visibility(percentColorPicker, true)
-
 				local r, g, b, a = getUi(percentColorPicker)
 				drawIndicator(r, g, b, a, "%: ".. hitPercentFixed)
-			else
-				visibility(percentColorPicker, false)
 			end
 
 			if getUi(missesCheckbox, true) then
-				visibility(missesColorPicker, true)
-
 				local r, g, b, a = getUi(missesColorPicker)
 				drawIndicator(r, g, b, a, "Misses: ".. misses)
-			else
-				visibility(missesColorPicker, false)
 			end
 
 			if getUi(hitsCheckbox, true) then
-				visibility(hitsColorPicker, true)
-
 				local r, g, b, a = getUi(hitsColorPicker)
 				drawIndicator(r, g, b, a, "Hits: ".. hits)
-			else
-				visibility(hitsColorPicker, false)
 			end
 		else
-			visibility(hitsCheckbox, false)
 			visibility(hitsColorPicker, false)
-			visibility(missesCheckbox, false)
 			visibility(missesColorPicker, false)
-			visibility(percentCheckbox, false)
 			visibility(percentColorPicker, false)
 		end
     end
@@ -995,17 +980,16 @@ local hitrateError = callback('paint', on_paintHitrate)
 ----------------------------------------------------------------------------------------------------------------------------------
 local function on_paintNetvar(ctx)
 	local hudExtras = getUi(hudMultibox)
-	
-	if contains(hudExtras, "Netvar indicators") then
-    	visibility(styleCombobox, true)
-    	visibility(pingCheckbox, true)
-    	visibility(latencyCheckbox, true)
-    	visibility(chokeCheckbox, true)
-    	visibility(chokeColorPicker, true)
-    	visibility(speedCheckbox, true)
-    	visibility(speedColorPicker, true)
-    	visibility(resizeNetvarCheckbox, true)
 
+	visibility(styleCombobox, contains(hudExtras, "Netvar indicators"))
+	visibility(pingCheckbox, contains(hudExtras, "Netvar indicators"))
+	visibility(latencyCheckbox, contains(hudExtras, "Netvar indicators"))
+	visibility(chokeCheckbox, contains(hudExtras, "Netvar indicators"))
+	visibility(speedCheckbox, contains(hudExtras, "Netvar indicators"))
+	visibility(resizeNetvarCheckbox, contains(hudExtras, "Netvar indicators"))
+	visibility(numbersCheckbox, contains(hudExtras, "Netvar indicators"))
+
+	if contains(hudExtras, "Netvar indicators") then
     	local hudExtras = getUi(hudMultibox)
     	local latency = client.latency()
     	local latencyFixed = math.floor(latency * 1000)
@@ -2563,12 +2547,9 @@ local function on_paintNetvar(ctx)
 			end
   		end
 	else
-    	visibility(styleCombobox, false)
-    	visibility(pingCheckbox, false)
-    	visibility(latencyCheckbox, false)
-    	visibility(chokeCheckbox, false)
+		visibility(pingColor, false)
+		visibility(latencyColor, false)
     	visibility(chokeColorPicker, false)
-    	visibility(speedCheckbox, false)
     	visibility(speedColorPicker, false)
     	visibility(pingSliderX, false)
     	visibility(pingSliderY, false)
@@ -2578,9 +2559,6 @@ local function on_paintNetvar(ctx)
     	visibility(chokeSliderY, false)
     	visibility(speedSliderX, false)
     	visibility(speedSliderY, false)
-   	 	visibility(numbersCheckbox, false)
-   	 	visibility(reposNetvarCheckbox, false)
-   	 	visibility(resizeNetvarCheckbox, false)
    	 	visibility(pingSliderWv, false)
 		visibility(pingSliderHv, false)
 		visibility(latencySliderWv, false)
@@ -2593,6 +2571,8 @@ local function on_paintNetvar(ctx)
     	visibility(resizeCircleThiccnessSlider, false)
     	visibility(circleColorCombobox, false)
     	visibility(boxColorCombobox, false)
+   	 	visibility(reposNetvarCheckbox, false)
+   	 	visibility(resizeNetvarCheckbox, false)    	
 	end
 end
 
@@ -2663,43 +2643,102 @@ local bombTimeError = callback('paint', on_paintBombTime)
 	end
 ----------------------------------------------------------------------------------------------------------------------------------
 
-local function on_paintAaLog(ctx)
+--Anti-aim info
+local aaInfoX = slider("Lua", "B", "Anti-aim info X", 0, w, w / 2, true)
+local aaInfoY = slider("Lua", "B", "Anti-aim info Y", 0, h, h / 2, true)
+
+local pitch = referenceUi("AA", "Anti-aimbot angles", "Pitch")
+local yaw, yawAngle = referenceUi("AA", "Anti-aimbot angles", "Yaw")
+local yawJitter, yawJitterAngle = referenceUi("AA", "Anti-aimbot angles", "Yaw jitter")
+local bodyYaw, bodyYawAngle = referenceUi("AA", "Anti-aimbot angles", "Body yaw")
+
+local function on_paintAaInfo(ctx)
 	local hudExtras = getUi(hudMultibox)
 
-	if contains(hudExtras, "Anti-aim log") then
-		visibility(aaLogX, true)
-		visibility(aaLogY, true)
+	visibility(aaInfoX, contains(hudExtras, "Anti-aim info"))
+	visibility(aaInfoY, contains(hudExtras, "Anti-aim info"))
 
-		drawRectangle(getUi(aaLogX) - 130 / 2, getUi(aaLogY) - 66 / 2, 130, 66, 35, 35, 35, 220)
-		drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 8, 255, 255, 255, 255, "c", 0, "Anti-aim logs")
-		drawLine(getUi(aaLogX) - 57, getUi(aaLogY) - 66 / 2 + 16, getUi(aaLogX) + 57, getUi(aaLogY) - 66 / 2 + 16, 0, 255, 255, 255)
-		drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 23, 255, 255, 255, 255, "c", 0, "Pitch: "..getUi(pitch))
+	if contains(hudExtras, "Anti-aim info") then
+		drawRectangle(getUi(aaInfoX) - 130 / 2, getUi(aaInfoY) - 66 / 2, 130, 66, 35, 35, 35, 220)
+		drawText(getUi(aaInfoX), getUi(aaInfoY) - 66 / 2 + 8, 255, 255, 255, 255, "c", 0, "Anti-aim info")
+		drawLine(getUi(aaInfoX) - 57, getUi(aaInfoY) - 66 / 2 + 16, getUi(aaInfoX) + 57, getUi(aaInfoY) - 66 / 2 + 16, 0, 255, 255, 255)
+		drawText(getUi(aaInfoX), getUi(aaInfoY) - 66 / 2 + 23, 255, 255, 255, 255, "c", 0, "Pitch: "..getUi(pitch))
 
 		if getUi(yaw) == "Off" then
-			drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 34, 255, 255, 255, 255, "c", 0, "Yaw: "..getUi(yaw))
+			drawText(getUi(aaInfoX), getUi(aaInfoY) - 66 / 2 + 34, 255, 255, 255, 255, "c", 0, "Yaw: "..getUi(yaw))
 		else
-			drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 34, 255, 255, 255, 255, "c", 0, "Yaw: "..getUi(yaw).." | "..getUi(yawAngle))
+			drawText(getUi(aaInfoX), getUi(aaInfoY) - 66 / 2 + 34, 255, 255, 255, 255, "c", 0, "Yaw: "..getUi(yaw).." | "..getUi(yawAngle))
 		end
 
 		if getUi(yawJitter) == "Off" then
-			drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 45, 255, 255, 255, 255, "c", 0, "Yaw jitter: "..getUi(yawJitter))
+			drawText(getUi(aaInfoX), getUi(aaInfoY) - 66 / 2 + 45, 255, 255, 255, 255, "c", 0, "Yaw jitter: "..getUi(yawJitter))
 		else
-			drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 45, 255, 255, 255, 255, "c", 0, "Yaw jitter: "..getUi(yawJitter).." | "..getUi(yawJitterAngle))
+			drawText(getUi(aaInfoX), getUi(aaInfoY) - 66 / 2 + 45, 255, 255, 255, 255, "c", 0, "Yaw jitter: "..getUi(yawJitter).." | "..getUi(yawJitterAngle))
 		end
 
 		if getUi(bodyYaw) == "Off" or getUi(bodyYaw) == "Opposite" then
-			drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 56, 255, 255, 255, 255, "c", 0, "Body yaw: "..getUi(bodyYaw))
+			drawText(getUi(aaInfoX), getUi(aaInfoY) - 66 / 2 + 56, 255, 255, 255, 255, "c", 0, "Body yaw: "..getUi(bodyYaw))
 		else
-			drawText(getUi(aaLogX), getUi(aaLogY) - 66 / 2 + 56, 255, 255, 255, 255, "c", 0, "Body yaw: "..getUi(bodyYaw).." | "..getUi(bodyYawAngle))
+			drawText(getUi(aaInfoX), getUi(aaInfoY) - 66 / 2 + 56, 255, 255, 255, 255, "c", 0, "Body yaw: "..getUi(bodyYaw).." | "..getUi(bodyYawAngle))
 		end
-	else
-		visibility(aaLogX, false)
-		visibility(aaLogY, false)
 	end
 end
 
-local aaLogError = callback('paint', on_paintAaLog)
+local aaLogError = callback('paint', on_paintAaInfo)
 	if aaLogError then
+		consoleLog("client.set_event_callback failed: ", error)
+	end
+----------------------------------------------------------------------------------------------------------------------------------
+
+local aimInfoX = slider("Lua", "B", "Aimbot info X", 0, w, w / 2, true)
+local aimInfoY = slider("Lua", "B", "Aimbot info Y", 0, h, h / 2, true)
+
+local target = referenceUi("Rage", "Aimbot", "Target selection")
+local mp = referenceUi("Rage", "Aimbot", "Multi-point scale")
+local bmp = referenceUi("Rage", "Aimbot", "Stomach hitbox scale")
+local hc = referenceUi("Rage", "Aimbot", "Minimum hit chance")
+local md = referenceUi("Rage", "Aimbot", "Minimum damage")
+
+local function on_paintAimbotInfo(ctx)
+	local hudExtras = getUi(hudMultibox)
+
+	visibility(aimInfoX, contains(hudExtras, "Aimbot info"))
+	visibility(aimInfoY, contains(hudExtras, "Aimbot info"))
+
+	if getUi(mp) == 24 then
+		nmp = "Auto"
+	else
+		nmp = getUi(mp)
+	end
+
+	if getUi(hc) == 0 then
+		nhc = "Off"
+	else
+		nhc = getUi(hc)
+	end
+
+	if getUi(md) == 0 then
+		nmd = "Auto"
+	elseif getUi(md) > 100 then
+		nmd = "HP + "..getUi(md) - 100
+	else
+		nmd = getUi(md)
+	end
+
+	if contains(hudExtras, "Aimbot info") then
+		drawRectangle(getUi(aimInfoX) - 130 / 2, getUi(aimInfoY) - 66 / 2, 130, 66, 35, 35, 35, 220)
+		drawText(getUi(aimInfoX), getUi(aimInfoY) - 66 / 2 + 8, 255, 255, 255, 255, "c", 0, "Aimbot info")
+		drawLine(getUi(aimInfoX) - 57, getUi(aimInfoY) - 66 / 2 + 16, getUi(aimInfoX) + 57, getUi(aimInfoY) - 66 / 2 + 16, 0, 255, 255, 255)
+
+		drawText(getUi(aimInfoX), getUi(aimInfoY) - 66 / 2 + 23, 255, 255, 255, 255, "c", 0, "Target: "..getUi(target))
+		drawText(getUi(aimInfoX), getUi(aimInfoY) - 66 / 2 + 34, 255, 255, 255, 255, "c", 0, "Multi-point: "..nmp.." | "..getUi(bmp))
+		drawText(getUi(aimInfoX), getUi(aimInfoY) - 66 / 2 + 45, 255, 255, 255, 255, "c", 0, "Hit chance: "..nhc)
+		drawText(getUi(aimInfoX), getUi(aimInfoY) - 66 / 2 + 56, 255, 255, 255, 255, "c", 0, "Min damage: "..nmd)
+	end
+end
+
+local aimbotInforError = callback('paint', on_paintAimbotInfo)
+	if aimbotInforError then
 		consoleLog("client.set_event_callback failed: ", error)
 	end
 ----------------------------------------------------------------------------------------------------------------------------------
