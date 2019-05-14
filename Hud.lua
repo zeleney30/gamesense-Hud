@@ -120,7 +120,7 @@ local headshot = {}
 ----------------------------------------------------------------------------------------------------------------------------------
 
 --netvar indc--
-local styleCombobox = combobox("Lua", "B", "Style", "Circle outline", "Circle", "Horizontal box", "Vertical box", "Text", "Indicator")
+local styleCombobox = combobox("Lua", "B", "Style", "Circle outline", "Circle", "Horizontal box", "Vertical box", "Text", "Indicator", "New")
 local circleColorCombobox = combobox("Lua", "B", "Color style", "Default", "Old", "Custom")
 local boxColorCombobox = combobox("Lua", "B", "Color style", "Default", "Old", "Custom", "Gradient", "Reverse gradient")
 local pingCheckbox = checkbox("Lua", "B", "Ping")
@@ -151,7 +151,11 @@ local numbersCheckbox = checkbox("Lua", "B", "Display numbers")
 local resizeNetvarCheckbox = checkbox("Lua", "B", "Resize netvar indicators")
 local resizeCircleSlider = slider("Lua", "B", "Size", 0, 100, 36, true)
 local resizeCircleThiccnessSlider = slider("Lua", "B", "Thickness", 0, 100, 13, true)
+local backgroundColCheckbox = checkbox("Lua", "B", "Background color")
+local backgroundCol = colorPicker("Lua", "B", "Background color", 35, 35, 35, 220)
 local reposNetvarCheckbox = checkbox("Lua", "B", "Reposition netvar indicators")
+local newPosX = slider("Lua", "B", "Position X", 0, w, w / 2 - 160 / 2, true)
+local newPosY = slider("Lua", "B", "Position Y", 0, h, h / 2 - 70 / 2, true)
 
 ----------------------------------------------------------------------------------------------------------------------------------
 
@@ -1132,6 +1136,10 @@ local function on_paintNetvar(ctx)
    			visibility(chokeSliderHv, false)
    			visibility(speedSliderHv, false)
    			visibility(boxColorCombobox, false)
+   			visibility(newPosX, false)
+    		visibility(newPosY, false)
+    		visibility(backgroundColCheckbox, false)
+    		visibility(backgroundCol, false)
 
    			visibility(circleColorCombobox, true)
    			visibility(resizeNetvarCheckbox, true)
@@ -1331,6 +1339,10 @@ local function on_paintNetvar(ctx)
    			visibility(speedSliderWv, false)
    			visibility(resizeCircleSlider, false)
     		visibility(resizeCircleThiccnessSlider, false)
+    		visibility(newPosX, false)
+    		visibility(newPosY, false)
+    		visibility(backgroundColCheckbox, false)
+    		visibility(backgroundCol, false)
 
    			visibility(circleColorCombobox, true)
    			visibility(reposNetvarCheckbox, true)
@@ -1520,7 +1532,6 @@ local function on_paintNetvar(ctx)
     		end
 
    		elseif getUi(styleCombobox) == "Horizontal box" then
-   			visibility(resizeNetvarCheckbox, true)
    			visibility(pingSliderWv, false)
    			visibility(latencySliderWv, false)
    			visibility(chokeSliderWv, false)
@@ -1528,6 +1539,10 @@ local function on_paintNetvar(ctx)
    			visibility(resizeCircleSlider, false)
     		visibility(resizeCircleThiccnessSlider, false)
     		visibility(circleColorCombobox, false)
+    		visibility(newPosX, false)
+    		visibility(newPosY, false)
+    		visibility(backgroundColCheckbox, false)
+    		visibility(backgroundCol, false)
 
     		visibility(boxColorCombobox, true)
     		visibility(resizeNetvarCheckbox, true)
@@ -1839,7 +1854,6 @@ local function on_paintNetvar(ctx)
     		end
 
     	elseif getUi(styleCombobox) == "Vertical box" then
-    		visibility(resizeNetvarCheckbox, true)
     		visibility(pingSliderHv, false)
    			visibility(latencySliderHv, false)
    			visibility(chokeSliderHv, false)
@@ -1847,6 +1861,10 @@ local function on_paintNetvar(ctx)
    			visibility(resizeCircleSlider, false)
     		visibility(resizeCircleThiccnessSlider, false)
     		visibility(circleColorCombobox, false)
+    		visibility(newPosX, false)
+    		visibility(newPosY, false)
+    		visibility(backgroundColCheckbox, false)
+    		visibility(backgroundCol, false)
 
     		visibility(boxColorCombobox, true)
     		visibility(resizeNetvarCheckbox, true)
@@ -2175,6 +2193,10 @@ local function on_paintNetvar(ctx)
    			visibility(resizeCircleSlider, false)
     		visibility(resizeCircleThiccnessSlider, false)
     		visibility(numbersCheckbox, false)
+    		visibility(newPosX, false)
+    		visibility(newPosY, false)
+    		visibility(backgroundColCheckbox, false)
+    		visibility(backgroundCol, false)
 
    			visibility(circleColorCombobox, true)
    			visibility(reposNetvarCheckbox, true)
@@ -2363,6 +2385,10 @@ local function on_paintNetvar(ctx)
    			visibility(resizeCircleSlider, false)
     		visibility(resizeCircleThiccnessSlider, false)
     		visibility(reposNetvarCheckbox, false)
+    		visibility(newPosX, false)
+    		visibility(newPosY, false)
+    		visibility(backgroundColCheckbox, false)
+    		visibility(backgroundCol, false)
 
    			visibility(circleColorCombobox, true)
    			visibility(numbersCheckbox, true)
@@ -2545,6 +2571,320 @@ local function on_paintNetvar(ctx)
     				drawIndicator(r, g, b, a, "Ping")
     			end
 			end
+    	elseif getUi(styleCombobox) == "New" then
+    		visibility(newPosX, getUi(reposNetvarCheckbox))
+    		visibility(newPosY, getUi(reposNetvarCheckbox))
+    		visibility(resizeNetvarCheckbox, false)
+    		visibility(pingSliderHv, false)
+   			visibility(latencySliderHv, false)
+   			visibility(chokeSliderHv, false)
+   			visibility(speedSliderHv, false)
+   			visibility(resizeCircleSlider, false)
+    		visibility(resizeCircleThiccnessSlider, false)
+    		visibility(circleColorCombobox, false)
+    		visibility(pingSliderWv, false)
+			visibility(pingSliderHv, false)
+			visibility(latencySliderWv, false)
+			visibility(latencySliderHv, false)
+			visibility(chokeSliderWv, false)
+			visibility(chokeSliderHv, false)
+			visibility(speedSliderWv, false)
+			visibility(speedSliderHv, false)
+			visibility(pingSliderX, false)
+	    	visibility(pingSliderY, false)
+	    	visibility(latencySliderX, false)
+	    	visibility(latencySliderY, false)
+	    	visibility(chokeSliderX, false)
+	    	visibility(chokeSliderY, false)
+	    	visibility(speedSliderX, false)
+	    	visibility(speedSliderY, false)
+
+    		visibility(boxColorCombobox, true)
+    		visibility(reposNetvarCheckbox, true)
+    		visibility(numbersCheckbox, true)
+    		visibility(backgroundColCheckbox, true)
+    		visibility(backgroundCol, getUi(backgroundColCheckbox))
+
+    		if getUi(backgroundColCheckbox, true) then
+	    		br, bg, bb, ba = getUi(backgroundCol)
+	    	else
+	    		br, bg, bb, ba = 35, 35, 35, 220
+	    	end
+
+    		drawRectangle(getUi(newPosX), getUi(newPosY), 160, 70, br, bg, bb, ba)
+
+    		drawText(getUi(newPosX) + 5, getUi(newPosY) + 5, 255, 255, 255, 255, "", 0, "Ping")
+	    	drawRectangle(getUi(newPosX) + 51, getUi(newPosY) + 8, 99.5, 7, 0, 0, 0, 255)
+
+
+			drawText(getUi(newPosX) + 5, getUi(newPosY) + 20, 255, 255, 255, 255, "", 0, "Latency")
+    		drawRectangle(getUi(newPosX) + 51, getUi(newPosY) + 23, 99.5, 7, 0, 0, 0, 255)
+
+    		drawText(getUi(newPosX) + 5, getUi(newPosY) + 35, 255, 255, 255, 255, "", 0, "Choke")
+    		drawRectangle(getUi(newPosX) + 51, getUi(newPosY) + 38, 99.5, 7, 0, 0, 0, 255)
+
+    		drawText(getUi(newPosX) + 5, getUi(newPosY) + 50, 255, 255, 255, 255, "", 0, "Speed")
+    		drawRectangle(getUi(newPosX) + 51, getUi(newPosY) + 53, 99.5, 7, 0, 0, 0, 255)
+
+	    	if getUi(boxColorCombobox) == "Default" then
+	    		visibility(pingColor, false)
+	    		visibility(latencyColor, false)
+	    		visibility(chokeColorPicker, false)
+	    		visibility(speedColorPicker, false)
+
+	    		--ping
+	    		if ping < 24.3125 then
+    				pr, pg, pb = 0, 220, 0
+    			elseif ping >= 24.3125 and ping < 48.75 then
+    				pr, pg, pb = 190, 145, 0
+    			elseif ping >= 48.75 and ping < 73.125 then
+    				pr, pg, pb = 220, 100, 0
+    			elseif ping >= 73.125 then
+    				pr, pg, pb = 220, 0, 0
+	    		end
+	    		
+	    		if ping <= 97.5 then
+		    		drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 9, ping * 0.65, 5, pr, pg, pb, 255)
+		    	else
+		    		drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 9, 97.5, 5, pr, pg, pb, 255)
+		    	end
+
+		    	--latency
+	    		if latencyFixed < 50 then
+    				lr, lg, lb = 0, 220, 0
+    			elseif latencyFixed >= 50 and latencyFixed < 100 then
+    				lr, lg, lb = 190, 145, 0
+    			elseif latencyFixed >= 100 and latencyFixed < 150 then
+    				lr, lg, lb = 220, 100, 0
+    			elseif latencyFixed >= 150 then
+    				lr, lg, lb = 220, 0, 0
+	    		end
+
+		    	if latencyFixed <= 97.5 then
+		    		drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 24, latency * 1000 * 0.65, 5, lr, lg, lb, 255)
+		    	else
+		    		drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 24, 97.5, 5, lr, lg, lb, 255)
+		    	end
+
+		    	--choked packets
+		    	if choked <= 3 then
+    				cr, cg, cb = 0, 220, 0
+				elseif choked <= 7 then
+					cr, cg, cb = 190, 145, 0
+				elseif choked <= 11 then
+					cr, cg, cb = 220, 100, 0
+				elseif choked <= 14 then
+					cr, cg, cb = 220, 0, 0
+				end
+
+		    	drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 39, choked * 6.964285714285714, 5, cr, cg, cb, 255)
+
+				--speed
+		    	if vx ~= nil then
+					local velocity = math.sqrt(vx * vx + vy * vy)
+					velocity = math.min(9999, velocity) + 0.2
+					velocity = round(velocity, 0)
+
+		    		
+
+	    			if velocity <= 62.5 then
+    					sr, sg, sb = 0, 220, 0
+					elseif velocity <= 125 then
+						sr, sg, sb = 190, 145, 0
+					elseif velocity <= 187.5 then
+						sr, sg, sb = 220, 100, 0
+					elseif velocity > 187.5 then
+						sr, sg, sb = 220, 0, 0
+					end
+
+		    		if velocity <= 300 then
+		    			drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 54, velocity * 0.325, 5, sr, sg, sb, 255)
+		    		else
+		    			drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 54, 97.5, 5, sr, sg, sb, 255)
+		    		end
+		    	end		    	
+	    	elseif getUi(boxColorCombobox) == "Old" then
+	    		visibility(pingColor, false)
+	    		visibility(latencyColor, false)
+	    		visibility(chokeColorPicker, true)
+	    		visibility(speedColorPicker, true)
+
+	    		--ping
+	    		if ping < 24.3125 then
+    				pr, pg, pb = 0, 220, 0
+    			elseif ping >= 24.3125 and ping < 48.75 then
+    				pr, pg, pb = 190, 145, 0
+    			elseif ping >= 48.75 and ping < 73.125 then
+    				pr, pg, pb = 220, 100, 0
+    			elseif ping >= 73.125 then
+    				pr, pg, pb = 220, 0, 0
+	    		end
+	    		
+	    		if ping <= 97.5 then
+		    		drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 9, ping * 0.65, 5, pr, pg, pb, 255)
+		    	else
+		    		drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 9, 97.5, 5, pr, pg, pb, 255)
+		    	end
+
+		    	--latency
+	    		if latencyFixed < 50 then
+    				lr, lg, lb = 0, 220, 0
+    			elseif latencyFixed >= 50 and latencyFixed < 100 then
+    				lr, lg, lb = 190, 145, 0
+    			elseif latencyFixed >= 100 and latencyFixed < 150 then
+    				lr, lg, lb = 220, 100, 0
+    			elseif latencyFixed >= 150 then
+    				lr, lg, lb = 220, 0, 0
+	    		end
+
+		    	if latencyFixed <= 97.5 then
+		    		drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 24, latency * 1000 * 0.65, 5, lr, lg, lb, 255)
+		    	else
+		    		drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 24, 97.5, 5, lr, lg, lb, 255)
+		    	end
+
+		    	--choked packets
+    			cr, cg, cb = getUi(chokeColorPicker)
+
+		    	drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 39, choked * 6.964285714285714, 5, cr, cg, cb, 255)
+
+				--speed
+		    	if vx ~= nil then
+					local velocity = math.sqrt(vx * vx + vy * vy)
+					velocity = math.min(9999, velocity) + 0.2
+					velocity = round(velocity, 0)
+
+    				sr, sg, sb = getUi(speedColorPicker)
+
+		    		if velocity <= 300 then
+		    			drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 54, velocity * 0.325, 5, sr, sg, sb, 255)
+		    		else
+		    			drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 54, 97.5, 5, sr, sg, sb, 255)
+		    		end
+		    	end	
+		    elseif getUi(boxColorCombobox) == "Custom" then
+	    		visibility(pingColor, true)
+	    		visibility(latencyColor, true)
+	    		visibility(chokeColorPicker, true)
+	    		visibility(speedColorPicker, true)
+
+	    		--ping
+    			pr, pg, pb = getUi(pingColor)
+	    		
+	    		if ping <= 97.5 then
+		    		drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 9, ping * 0.65, 5, pr, pg, pb, 255)
+		    	else
+		    		drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 9, 97.5, 5, pr, pg, pb, 255)
+		    	end
+
+		    	--latency
+    			lr, lg, lb = getUi(latencyColor)
+
+		    	if latencyFixed <= 97.5 then
+		    		drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 24, latency * 1000 * 0.65, 5, lr, lg, lb, 255)
+		    	else
+		    		drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 24, 97.5, 5, lr, lg, lb, 255)
+		    	end
+
+		    	--choked packets
+    			cr, cg, cb = getUi(chokeColorPicker)
+
+		    	drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 39, choked * 6.964285714285714, 5, cr, cg, cb, 255)
+
+				--speed
+		    	if vx ~= nil then
+					local velocity = math.sqrt(vx * vx + vy * vy)
+					velocity = math.min(9999, velocity) + 0.2
+					velocity = round(velocity, 0)
+
+    				sr, sg, sb = getUi(speedColorPicker)
+
+		    		if velocity <= 300 then
+		    			drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 54, velocity * 0.325, 5, sr, sg, sb, 255)
+		    		else
+		    			drawRectangle(getUi(newPosX) + 52, getUi(newPosY) + 54, 97.5, 5, sr, sg, sb, 255)
+		    		end
+		    	end
+		    elseif getUi(boxColorCombobox) == "Gradient" then
+		    	visibility(pingColor, false)
+	    		visibility(latencyColor, false)
+	    		visibility(chokeColorPicker, false)
+	    		visibility(speedColorPicker, false)
+
+	    		--ping
+	    		if ping <= 97.5 then
+		    		drawGradient(getUi(newPosX) + 52, getUi(newPosY) + 9, ping * 0.65, 5, 0, 220, 0, 255, 220, 0, 0, 255, true)
+		    	else
+		    		drawGradient(getUi(newPosX) + 52, getUi(newPosY) + 9, 97.5, 5, 0, 220, 0, 255, 220, 0, 0, 255, true)
+		    	end
+
+		    	--latency
+		    	if latencyFixed <= 97.5 then
+		    		drawGradient(getUi(newPosX) + 52, getUi(newPosY) + 24, latency * 1000 * 0.65, 5, 0, 220, 0, 255, 220, 0, 0, 255, true)
+		    	else
+		    		drawGradient(getUi(newPosX) + 52, getUi(newPosY) + 24, 97.5, 5, 0, 220, 0, 255, 220, 0, 0, 255, true)
+		    	end
+
+		    	--choked packets
+		    	drawGradient(getUi(newPosX) + 52, getUi(newPosY) + 39, choked * 6.964285714285714, 5, 0, 220, 0, 255, 220, 0, 0, 255, true)
+
+				--speed
+		    	if vx ~= nil then
+					local velocity = math.sqrt(vx * vx + vy * vy)
+					velocity = math.min(9999, velocity) + 0.2
+					velocity = round(velocity, 0)
+
+		    		if velocity <= 300 then
+		    			drawGradient(getUi(newPosX) + 52, getUi(newPosY) + 54, velocity * 0.325, 5, 0, 220, 0, 255, 220, 0, 0, 255, true)
+		    		else
+		    			drawGradient(getUi(newPosX) + 52, getUi(newPosY) + 54, 97.5, 5, 0, 220, 0, 255, 220, 0, 0, 255, true)
+		    		end
+		    	end
+		    elseif getUi(boxColorCombobox) == "Reverse gradient" then
+		    	visibility(pingColor, false)
+	    		visibility(latencyColor, false)
+	    		visibility(chokeColorPicker, false)
+	    		visibility(speedColorPicker, false)
+
+	    		--ping
+	    		if ping <= 97.5 then
+		    		drawGradient(getUi(newPosX) + 52, getUi(newPosY) + 9, ping * 0.65, 5, 220, 0, 0, 255, 0, 220, 0, 255, true)
+		    	else
+		    		drawGradient(getUi(newPosX) + 52, getUi(newPosY) + 9, 97.5, 5, 220, 0, 0, 255, 0, 220, 0, 255, true)
+		    	end
+
+		    	--latency
+		    	if latencyFixed <= 97.5 then
+		    		drawGradient(getUi(newPosX) + 52, getUi(newPosY) + 24, latency * 1000 * 0.65, 5, 220, 0, 0, 255, 0, 220, 0, 255, true)
+		    	else
+		    		drawGradient(getUi(newPosX) + 52, getUi(newPosY) + 24, 97.5, 5, 220, 0, 0, 255, 0, 220, 0, 255, true)
+		    	end
+
+		    	--choked packets
+		    	drawGradient(getUi(newPosX) + 52, getUi(newPosY) + 39, choked * 6.964285714285714, 5, 220, 0, 0, 255, 0, 220, 0, 255, true)
+
+				--speed
+		    	if vx ~= nil then
+					local velocity = math.sqrt(vx * vx + vy * vy)
+					velocity = math.min(9999, velocity) + 0.2
+					velocity = round(velocity, 0)
+
+		    		if velocity <= 300 then
+		    			drawGradient(getUi(newPosX) + 52, getUi(newPosY) + 54, velocity * 0.325, 5, 220, 0, 0, 255, 0, 220, 0, 255, true)
+		    		else
+		    			drawGradient(getUi(newPosX) + 52, getUi(newPosY) + 54, 97.5, 5, 220, 0, 0, 255, 0, 220, 0, 255, true)
+		    		end
+		    	end
+	    	end    	
+
+	    	if getUi(numbersCheckbox, true) then
+	    		--ping
+	    		if ping <= 97.5 then
+		    		drawText(getUi(newPosX) + 42 + ping * 0.65, getUi(newPosY) + 5, 255, 255, 255, 255, "", 0, ping)
+		    	else
+		    		drawText(getUi(newPosX) + 42 + 97.5, getUi(newPosY) + 5, 255, 255, 255, 255, "", 0, ping)
+		    	end
+	    	end
   		end
 	else
 		visibility(pingColor, false)
@@ -2572,7 +2912,7 @@ local function on_paintNetvar(ctx)
     	visibility(circleColorCombobox, false)
     	visibility(boxColorCombobox, false)
    	 	visibility(reposNetvarCheckbox, false)
-   	 	visibility(resizeNetvarCheckbox, false)    	
+   	 	visibility(resizeNetvarCheckbox, false)
 	end
 end
 
