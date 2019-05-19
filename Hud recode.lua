@@ -207,10 +207,12 @@ local function paint_hud(ctx)
 
 			--ammo--
 			rectangle(w / 2 + w * 0.025 - 17, h / 2 - 51, 17, 102, 20, 20, 20, 255)
-			if ammo <= 10 then
-				rectangle(w / 2 + w * 0.025 + 1 - 17, h / 2 - 50 + 100 - ammo * 10, 15, ammo * 10, 255, 255, 255, 255)
-			else
-				rectangle(w / 2 + w * 0.025 + 1 - 17, h / 2 - 50, 15, 100, 255, 255, 255, 255)
+			if hp > 0 then
+				if ammo <= 10 then
+					rectangle(w / 2 + w * 0.025 + 1 - 17, h / 2 - 50 + 100 - ammo * 10, 15, ammo * 10, 255, 255, 255, 255)
+				else
+					rectangle(w / 2 + w * 0.025 + 1 - 17, h / 2 - 50, 15, 100, 255, 255, 255, 255)
+				end
 			end
 
 			if ammo >= 0 then
@@ -219,13 +221,17 @@ local function paint_hud(ctx)
 				text(w / 2 + w * 0.025 - 8, h / 2 + 57, 255, 255, 255, 255, "c", 0, "0")
 			end
 
+			--armor--
 			if hasHelmet == 1 then
 				text(w / 2, h / 2 + 57, 0, 0, 255, 255, "c", 0, "hk")
 			elseif armor > 0 and hasHelmet == 0 then
 				text(w / 2, h / 2 + 57, 0, 0, 220, 255, "c", 0, "k")
 			end
 
-			--armor--
+			--money--
+			if inBuyzone == 1 then
+				text(w / 2, h / 2 - 57, 255, 255, 255, 255, "c", 0, "$"..money)
+			end
 		end
 	else
 		visible(menu.style, false)
