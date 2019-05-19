@@ -80,7 +80,16 @@ local function paint_hud(ctx)
 
 		setprop(localPlayer, "m_iHideHud", 8200)
 
-		if getui(menu.style) == "Default" then
+		if getui(menu.style) == "-" then
+			visible(menu.full, false)
+			visible(menu.col, false)
+			visible(menu.reposition, false)
+			visible(menu.xpos, false)
+			visible(menu.ypos, false)
+			visible(menu.resize, false)
+			visible(menu.width, false)
+			visible(menu.height, false)
+		elseif getui(menu.style) == "Default" then
 			local images_lib = require "images"
 			local imageIcons = images_lib.load(require("imagepack_icons"))
 
@@ -96,26 +105,25 @@ local function paint_hud(ctx)
 
 				if getui(menu.reposition, true) then
 					x = getui(menu.xpos)
-					h = getui(menu.ypos)
-					y = 0
+					y = getui(menu.ypos)
 				else
-					w, h = client.screen_size()
-					x, y = 0, 0
+					useless, y = client.screen_size()
+					x = 0
 				end
 
 			if getui(menu.full, true) then
 				--hp/armor--
-				rectangle(x, h - 68 + 4, w, 68 - 4, 10, 10, 10, 255)
-				rectangle(x + 1, h - 67 + 4, w - 2, 66 - 4, 60, 60, 60, 255)
-				rectangle(x + 2, h - 66 + 4, w - 4, 64 - 4, 40, 40, 40, 255)
-				rectangle(x + 5, h - 64 + 4, w - 9, 60 - 4, 60, 60, 60, 255)
-				rectangle(x + 6, h - 63 + 4, w - 11, 58 - 4, r, g, b, a)
-				gradient(x + 7, h - 62 + 4, w / 2 - 11, 1, 56, 176, 218, 255, 201, 72, 205, 255, true)
-				gradient(x + 7 + w / 2 - 13, h - 62 + 4, w / 2, 1, 201, 72, 205, 255, 204, 227, 53, 255, true)
-				text(x + 75, h - 35 - 3, 108, 195, 18, 255, "c+", 0, hp)
-				text(x + 75, h - 16 - 3, 255, 255, 255, 255, "c", 0, "Health")
-				text(x + 275, h - 35 - 3, 85, 155, 215, 255, "c+", 0, armor)
-				text(x + 275, h - 16 - 3, 255, 255, 255, 255, "c", 0, "Armor")
+				rectangle(x, y - 68 + 4, w, 68 - 4, 10, 10, 10, 255)
+				rectangle(x + 1, y - 67 + 4, w - 2, 66 - 4, 60, 60, 60, 255)
+				rectangle(x + 2, y - 66 + 4, w - 4, 64 - 4, 40, 40, 40, 255)
+				rectangle(x + 5, y - 64 + 4, w - 9, 60 - 4, 60, 60, 60, 255)
+				rectangle(x + 6, y - 63 + 4, w - 11, 58 - 4, r, g, b, a)
+				gradient(x + 7, y - 62 + 4, w / 2 - 11, 1, 56, 176, 218, 255, 201, 72, 205, 255, true)
+				gradient(x + 7 + w / 2 - 13, y - 62 + 4, w / 2, 1, 201, 72, 205, 255, 204, 227, 53, 255, true)
+				text(x + 75, y - 35 - 3, 108, 195, 18, 255, "c+", 0, hp)
+				text(x + 75, y - 16 - 3, 255, 255, 255, 255, "c", 0, "Health")
+				text(x + 275, y - 35 - 3, 85, 155, 215, 255, "c+", 0, armor)
+				text(x + 275, y - 16 - 3, 255, 255, 255, 255, "c", 0, "Armor")
 
 				if hp > 0 then
 					if ammo == -1 then
@@ -131,17 +139,17 @@ local function paint_hud(ctx)
 				end
 			else
 				--hp/armor--
-				rectangle(x, h - 68 + 4, hudWidth, hudHeight --[[64--]], 10, 10, 10, 255)
-				rectangle(x + 1, h - 67 + 4, hudWidth - 2, hudHeight - 2, 60, 60, 60, 255)
-				rectangle(x + 2, h - 66 + 4, hudWidth - 4, hudHeight - 4, 40, 40, 40, 255)
-				rectangle(x + 5, h - 64 + 4, hudWidth - 9, hudHeight - 8, 60, 60, 60, 255)
-				rectangle(x + 6, h - 63 + 4, hudWidth - 11, hudHeight - 10, r, g, b, a)
-				gradient(x + 7, h - 62 + 4, (hudWidth - 11) / 2, 1, 56, 176, 218, 255, 201, 72, 205, 255, true)
-				gradient(x + 7 + ((hudWidth - 14) / 2), h - 62 + 4, (hudWidth - 11) / 2, 1, 201, 72, 205, 255, 204, 227, 53, 255, true)
-				text(x + 75, h - 35 - 3, 108, 195, 18, 255, "c+", 0, hp)
-				text(x + 75, h - 16 - 3, 255, 255, 255, 255, "c", 0, "Health")
-				text(x + 275, h - 35 - 3, 85, 155, 215, 255, "c+", 0, armor)
-				text(x + 275, h - 16 - 3, 255, 255, 255, 255, "c", 0, "Armor")
+				rectangle(x, y - 68 + 4, hudWidth, hudHeight --[[64--]], 10, 10, 10, 255)
+				rectangle(x + 1, y - 67 + 4, hudWidth - 2, hudHeight - 2, 60, 60, 60, 255)
+				rectangle(x + 2, y - 66 + 4, hudWidth - 4, hudHeight - 4, 40, 40, 40, 255)
+				rectangle(x + 5, y - 64 + 4, hudWidth - 9, hudHeight - 8, 60, 60, 60, 255)
+				rectangle(x + 6, y - 63 + 4, hudWidth - 11, hudHeight - 10, r, g, b, a)
+				gradient(x + 7, y - 62 + 4, (hudWidth - 11) / 2, 1, 56, 176, 218, 255, 201, 72, 205, 255, true)
+				gradient(x + 7 + ((hudWidth - 14) / 2), y - 62 + 4, (hudWidth - 11) / 2, 1, 201, 72, 205, 255, 204, 227, 53, 255, true)
+				text(x + 75, y - 35 - 3, 108, 195, 18, 255, "c+", 0, hp)
+				text(x + 75, y - 16 - 3, 255, 255, 255, 255, "c", 0, "Health")
+				text(x + 275, y - 35 - 3, 85, 155, 215, 255, "c+", 0, armor)
+				text(x + 275, y - 16 - 3, 255, 255, 255, 255, "c", 0, "Armor")
 			end
 
 			if c4Holder == localPlayer then
@@ -157,16 +165,16 @@ local function paint_hud(ctx)
 				--loop through all elements in images_icons
 				local image = imageIcons["armor_helmet"]
 				--calculate x and y of the current image
-				local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
+				local x_i, y_i = x+math.floor(((i-1) / 16))*125, 0+(i % 16)*30
 				--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
-				local width, height = image:draw(x + 180, h - 53 + 7, nil, 32, 255, 255, 255, 255)
+				local width, height = image:draw(x + 180, y - 53 + 7, nil, 32, 255, 255, 255, 255)
 			elseif armor > 0 and hasHelmet == 0 then
 				--loop through all elements in images_icons
 				local image = imageIcons["armor"]
 				--calculate x and y of the current image
 				local x_i, y_i = x+math.floor(((i-1) / 16))*125, y+(i % 16)*30
 				--draw the image, only specify the height (width is calculated automatically to match the aspect ratio)
-				local width, height = image:draw(x + 180, h - 53 + 7, nil, 32, 255, 255, 255, 255)
+				local width, height = image:draw(x + 180, y - 53 + 7, nil, 32, 255, 255, 255, 255)
 			end
 
 			if inBuyzone == 1 then
@@ -175,6 +183,15 @@ local function paint_hud(ctx)
 
 			indicator(255, 255, 255, 0, " ")
 		elseif getui(menu.style) == "New" then
+			visible(menu.full, false)
+			visible(menu.col, false)
+			visible(menu.reposition, false)
+			visible(menu.xpos, false)
+			visible(menu.ypos, false)
+			visible(menu.resize, false)
+			visible(menu.width, false)
+			visible(menu.height, false)
+
 			--hp--
 			rectangle(w / 2 - w * 0.025, h / 2 - 51, 17, 102, 20, 20, 20, 255)
 
