@@ -13,6 +13,7 @@ local uicallback = ui.set_callback
 local visible = ui.set_visible
 local indicator = renderer.indicator
 local combo = ui.new_combobox
+local triangle = renderer.triangle
 
 local w, h = client.screen_size()
 
@@ -20,7 +21,7 @@ local menu =
 {
 	enable = checkbox("Lua", "B", "Enable hud"),
 	col = color("Lua", "B", "Col", 20, 20, 20, 255),
-	style = combo("Lua", "B", "Style", "-", "Default", "New"),
+	style = combo("Lua", "B", "Style", "-", "Default", "New", "Another name"),
 	full = checkbox("Lua", "B", "Full length"),
 	reposition = checkbox("Lua", "B", "Reposition hud"),
 	xpos = slider("Lua", "B", "X Position", 0, w, w / 2, true),
@@ -45,7 +46,7 @@ uicallback(menu.style, function()
 	visible(menu.col, getui(menu.style) == "Default")
 	visible(menu.full, getui(menu.style) == "Default")
 	visible(menu.resize, getui(menu.style) == "Default")
-	visible(menu.reposition, getui(menu.style) == "Default")
+	visible(menu.reposition, getui(menu.style) ~= "New")
 end)
 
 uicallback(menu.enable, function() 
@@ -213,10 +214,12 @@ local function paint_hud(ctx)
 				else
 					rectangle(w / 2 + w * 0.025 + 1 - 17, h / 2 - 50, 15, 100, 255, 255, 255, 255)
 				end
-			end
 
-			if ammo >= 0 then
-				text(w / 2 + w * 0.025 - 8, h / 2 + 57, 255, 255, 255, 255, "c", 0, ammo)
+				if ammo >= 0 then
+					text(w / 2 + w * 0.025 - 8, h / 2 + 57, 255, 255, 255, 255, "c", 0, ammo)
+				else
+					text(w / 2 + w * 0.025 - 8, h / 2 + 57, 255, 255, 255, 255, "c", 0, "0")
+				end
 			else
 				text(w / 2 + w * 0.025 - 8, h / 2 + 57, 255, 255, 255, 255, "c", 0, "0")
 			end
@@ -231,6 +234,50 @@ local function paint_hud(ctx)
 			--money--
 			if inBuyzone == 1 then
 				text(w / 2, h / 2 - 57, 255, 255, 255, 255, "c", 0, "$"..money)
+			end
+		elseif getui(menu.style) == "Another name" then
+			if getui(menu.reposition, true) then
+				x = getui(menu.xpos)
+				y = getui(menu.ypos)
+			else
+				useless, y = client.screen_size()
+				x = 20
+			end
+
+			local up = 20
+
+			--black
+			--left triangle
+			triangle(x - 1, y - 1 - up, x - 1, y + 16 - up, x - 17, y + 16 - up, 0, 0, 0, 255)
+			--rectangle
+			rectangle(x - 1, y - 1 - up, 72, 17, 0, 0, 0, 255)
+			--right triangle
+			triangle(x + 71, y - 1 - up, x + 92, y - 1 - up, x + 71, y + 16 - up, 0, 0, 0, 255)
+
+			local r, g, b = 125, hp * 2, 0
+
+			if hp >= 100 then
+				--left triangle
+				triangle(x, y - up, x, y + 15 - up, x - 15, y + 15 - up, r, g, b, 255)
+				--rectangle
+				rectangle(x, y - up, 70, 15, r, g, b, 255)
+				--right trangle
+				triangle(x + 70, y - up, x + 90, y - up, x + 70, y + 15 - up, r, g, b, 255)
+			elseif hp >= 86 and hp < 100 then
+				--left triangle
+				triangle(x, y - up, x, y + 15 - up, x - 15, y + 15 - up, r, g, b, 255)
+				--rectangle
+				rectangle(x, y - up, 70, 15, r, g, b, 255)
+				--right trangle
+				triangle(x + 70 - (14 - hp) - 90, y - up, x + 90 - (14 - hp) - 90, y - up, x + 70 - (14 - hp) - 90, y + 15 - up, r, g, b, 255)
+			elseif hp > 14 and hp < 86 then
+				--left triangle
+				triangle(x, y - up, x, y + 15 - up, x - 15, y + 15 - up, r, g, b, 255)
+				--rectangle
+				rectangle(x, y - up, hp - 15, 15, r, g, b, 255)
+			elseif hp <= 14 and hp > 0 then
+				--left triangle
+				triangle(x - (14 - hp), y + (14 - hp) - up, x - (14 - hp), y + 15 - up, x - 15, y + 15 - up, r, g, b, 255)
 			end
 		end
 	else
