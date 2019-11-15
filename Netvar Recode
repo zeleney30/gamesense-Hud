@@ -971,7 +971,7 @@ callback('paint', Bars)
 
 local function Skeet(ctx)
 	if getui(style) == "Skeet" then
-		local w = 237
+		local w = 247
 		local h = 90
 
 		--BACKGROUND--
@@ -985,55 +985,63 @@ local function Skeet(ctx)
 
 		--PING--
 		text(getui(x) + 15, getui(y) + 15, 255, 255, 255, 255, "", 0, "Ping:")
-		rect(getui(x) + 69, getui(y) + 17, 152, 8, 0, 0, 0, 255)								-- hehe 69 ;) --
-		rect(getui(x) + 70, getui(y) + 18, 150, 6, 29, 29, 29, 255)
+		rect(getui(x) + 79, getui(y) + 17, 152, 8, 0, 0, 0, 255)								-- hehe 69 ;) --
+		rect(getui(x) + 80, getui(y) + 18, 150, 6, 29, 29, 29, 255)
 
 		if ping <= 150 then
-			rect(getui(x) + 70, getui(y) + 18, ping, 6, prg, pgg, pbg, pag)
+			rect(getui(x) + 80, getui(y) + 18, ping, 6, prg, pgg, pbg, pag)
 		else
-			rect(getui(x) + 70, getui(y) + 18, 150, 6, prg, pgg, pbg, pag)
+			rect(getui(x) + 80, getui(y) + 18, 150, 6, prg, pgg, pbg, pag)
 		end
 
 		--LATENCY--
 		text(getui(x) + 15, getui(y) + 30, 255, 255, 255, 255, "", 0, "Latency:")
-		rect(getui(x) + 69, getui(y) + 32, 152, 8, 0, 0, 0, 255)
-		rect(getui(x) + 70, getui(y) + 33, 150, 6, 29, 29, 29, 255)
+		rect(getui(x) + 79, getui(y) + 32, 152, 8, 0, 0, 0, 255)
+		rect(getui(x) + 80, getui(y) + 33, 150, 6, 29, 29, 29, 255)
 
 		if delay <= 150 then
-			rect(getui(x) + 70, getui(y) + 33, latency, 6, lrg, lgg, lbg, lag)				--imagine lagging--
+			rect(getui(x) + 80, getui(y) + 33, latency, 6, lrg, lgg, lbg, lag)				--imagine lagging--
 		else
-			rect(getui(x) + 70, getui(y) + 33, 150, 6, lrg, lgg, lbg, lag)
+			rect(getui(x) + 80, getui(y) + 33, 150, 6, lrg, lgg, lbg, lag)
 		end
 
 		--CHOKE--
 		text(getui(x) + 15, getui(y) + 45, 255, 255, 255, 255, "", 0, "Choke:")
-		rect(getui(x) + 69, getui(y) + 47, 152, 8, 0, 0, 0, 255)
-		rect(getui(x) + 70, getui(y) + 48, 150, 6, 29, 29, 29, 255)
+		rect(getui(x) + 79, getui(y) + 47, 152, 8, 0, 0, 0, 255)
+		rect(getui(x) + 80, getui(y) + 48, 150, 6, 29, 29, 29, 255)
 
-		rect(getui(x) + 70, getui(y) + 48, choke * 10.71428571428571, 6, crg, cgg, cbg, cag)
+		rect(getui(x) + 80, getui(y) + 48, choke * 10.71428571428571, 6, crg, cgg, cbg, cag)
 		
 		--SPEED--
 		text(getui(x) + 15, getui(y) + 60, 255, 255, 255, 255, "", 0, "Speed: ")
-		rect(getui(x) + 69, getui(y) + 62, 152, 8, 0, 0, 0, 255)
-		rect(getui(x) + 70, getui(y) + 63, 150, 6, 29, 29, 29, 255)
+		rect(getui(x) + 79, getui(y) + 62, 152, 8, 0, 0, 0, 255)
+		rect(getui(x) + 80, getui(y) + 63, 150, 6, 29, 29, 29, 255)
 
 		if velocity <= 300 then
-			rect(getui(x) + 70, getui(y) + 63, velocity / 2, 6, srg, sgg, sbg, sag)			--saggy tits--
+			rect(getui(x) + 80, getui(y) + 63, velocity / 2, 6, srg, sgg, sbg, sag)			--saggy tits--
 		else
-			rect(getui(x) + 70, getui(y) + 63, 150, 6, srg, sgg, sbg, sag)
+			rect(getui(x) + 80, getui(y) + 63, 150, 6, srg, sgg, sbg, sag)
 		end
 
 		--FPS--
 		text(getui(x) + 15, getui(y) + 75, 255, 255, 255, 255, "", 0, "Fps:")
-		rect(getui(x) + 69, getui(y) + 77, 152, 8, 0, 0, 0, 255)
-		rect(getui(x) + 70, getui(y) + 78, 150, 6, 29, 29, 29, 255)
+		rect(getui(x) + 79, getui(y) + 77, 152, 8, 0, 0, 0, 255)
+		rect(getui(x) + 80, getui(y) + 78, 150, 6, 29, 29, 29, 255)
 
 		if fps() <= 150 then
-			rect(getui(x) + 70, getui(y) + 78, fps(), 6, frg, fgg, fbg, fag)				--ha gey--
+			rect(getui(x) + 80, getui(y) + 78, fps(), 6, frg, fgg, fbg, fag)				--ha gey--
 		else
-			rect(getui(x) + 70, getui(y) + 78, 150, 6, frg, fgg, fbg, fag)
+			rect(getui(x) + 80, getui(y) + 78, 150, 6, frg, fgg, fbg, fag)
 		end
 
+		--NUMCHECK--
+		if getui(numcheck, true) then
+			text(getui(x) + 42, getui(y) + 15, 255, 255, 255, 255, "", 0, ping)
+			text(getui(x) + 60, getui(y) + 30, 255, 255, 255, 255, "", 0, latency)
+			text(getui(x) + 52, getui(y) + 45, 255, 255, 255, 255, "", 0, choke)
+			text(getui(x) + 51, getui(y) + 60, 255, 255, 255, 255, "", 0, velocity)
+			text(getui(x) + 38, getui(y) + 75, 255, 255, 255, 255, "", 0, fps())
+		end
 	end
 end
 
